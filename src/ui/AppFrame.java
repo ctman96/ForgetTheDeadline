@@ -1,13 +1,12 @@
 package ui;
 
-import data.IDistributor;
-import data.IProduct;
 import ui.view.ProductView;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class AppFrame extends JFrame {
 
@@ -16,41 +15,42 @@ public class AppFrame extends JFrame {
     private JPanel viewPanel;
     private JLabel console;
 
-    private ProductView productView = new ProductView();
+    public interface ViewItem {
+        /**
+         * @return The name to display as a view item
+         */
+        public String getName();
+
+        /**
+         * @return The callback to call when view item is selected
+         */
+        public Consumer<AppFrame> getCallback();
+    }
+
+    private ViewItem[] viewItems;
 
     public AppFrame() {
         super("ForgetTheDeadline");
 
         this.menuBar = new JMenuBar();
 
-        // List of tables
-        String[] data = {
-                "Branch",
-                "Employee",
-                "Distributor",
-                "Product",
-                "Stock",
-                "Customer",
-                "Membership",
-                "Sale"
-        };
-        this.viewList = new JList<>(data);
-
-        // Table view PLACEHOLDER
-        this.viewPanel = new JPanel();
-
-        // Debug console
-        this.console = new JLabel();
-        this.console.setHorizontalAlignment(SwingConstants.LEFT);
-
+        // View list
+        this.viewList = new JList();
         this.viewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.viewList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                String table = (String) viewList.getModel().getElementAt(viewList.getSelectedIndex());
-                onTableSelect(table);
+                onViewSelect(viewList.getSelectedIndex());
             }
         });
+        this.setViewItems(new ViewItem[0]);
+
+        // View container
+        this.viewPanel = new JPanel();
+
+        // Debug status bar
+        this.console = new JLabel();
+        this.console.setHorizontalAlignment(SwingConstants.LEFT);
 
         JScrollPane listScrollPane = new JScrollPane(viewList);
 
@@ -61,20 +61,35 @@ public class AppFrame extends JFrame {
         this.pack();
     }
 
-    private void onTableSelect(String table) {
-        this.log(String.format("%s selected", table));
-
-        this.viewPanel.removeAll();
-        switch (table) {
-            case "Product":
-                this.viewPanel.add(this.productView);
-                break;
+    public void setViewItems(ViewItem[] viewItems) {
+        String[] viewNames = new String[viewItems.length];
+        for (int i = 0; i < viewItems.length; i++) {
+            viewNames[i] = viewItems[i].getName();
         }
+        this.viewList.setListData(viewNames);
+        this.viewItems = viewItems;
+    }
 
+    private void onViewSelect(int index) {
+        this.log(String.format("%s selected", this.viewItems[index].getName()));
+        this.viewItems[index].getCallback().accept(this);
+    }
+
+    public void clearView() {
+        this.viewPanel.removeAll();
         this.pack();
     }
 
-    private void log(String message) {
-        this.console.setText(String.format("<html>%s</html>", message));
+    public void setView(JComponent component) {
+        this.viewPanel.removeAll();
+        this.viewPanel.add(component);
+        this.pack();
+    }
+
+    /**
+     * @param message an html and plain string
+     */
+    public void log(String message) {
+        this.console.setText(message);
     }
 }

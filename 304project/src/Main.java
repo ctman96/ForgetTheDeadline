@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Date;
 
 import oracle.jdbc.driver.OracleDriver;
 
@@ -13,7 +14,7 @@ public class Main {
             DriverManager.registerDriver(new OracleDriver());
             
             System.out.println("Creating Connection...");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@dbhost.ugrad.cs.ubc.ca:1522:ug", "ora_o2e9", "a40149122");
+            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2e9", "a40149122");
             
             System.out.println("Database Create and Populate...");
             createpopDatabase(con);
@@ -60,21 +61,48 @@ public class Main {
     }
     
     public static void buyProduct(Connection con, String SKU, String EID, String payment, String CID){
-    	Statement stmt = null;
+    	PreparedStatement update_stmt = null;
+    	PreparedStatement insert_stmt = null;
+    	String update_str = "update Stock s " +
+    						"set quantity = (select s.quantity " +
+    										"from Stock s,Employee e " +
+    										"where s.BID = e.BID and s.SKU = ?) - 1" +
+    						"where s.SKU = ?";
+    	String insert_str = "insert into sales values(?, (select max(snum)" +
+    						"from sales) + 1, ?, ?, ?, ?)";
     	try{
     		con.setAutoCommit(false);
     		System.out.println("Create Statement...");
-    		//String sql = "Select BID from "
-    		//stmt = con.prepareStatement(sql);
+    		update_stmt = con.prepareStatement(update_str);
+    		insert_stmt = con.prepareStatement(insert_str);
+    		
+    		update_stmt.setString(1,SKU);
+    		update_stmt.setString(2,SKU);
+    		update_stmt.executeUpdate();
+    		
+    		insert_stmt.setString(1, payment);
+    		insert_stmt.setString(2, SKU);
+    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    		Date date = new Date();
+    		insert_stmt.setDate(3, date);
+    		insert_stmt.setString(4,CID);
+    		insert_stmt.setString(5,EID);
+    		
+    		con.commit();
     		
     	} catch (SQLException e){
     		e.printStackTrace();
     	} finally{
     		try{
-    			if(stmt != null){
-    				stmt.close();
+    			if(update_stmt != null){
+    				update_stmt.close();
     				con.setAutoCommit(true);
     			}
+    			if(insert_stmt != null){
+    				insert_stmt.close();
+    			}
+    			con.setAutoCommit(true);
+    			
     		} catch(SQLException se){
     		}
     	}

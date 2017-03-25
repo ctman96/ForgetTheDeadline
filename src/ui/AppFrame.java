@@ -1,9 +1,12 @@
 package ui;
 
+import ui.dialog.NewProductDialog;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class AppFrame extends JFrame {
 
@@ -30,6 +33,14 @@ public class AppFrame extends JFrame {
         super("ForgetTheDeadline");
 
         this.menuBar = new JMenuBar();
+        JMenuItem newMenuItem = new JMenuItem("New...");
+        newMenuItem.addActionListener((ActionEvent e) -> {
+            JDialog dialog = new NewProductDialog(this);
+            dialog.pack();
+            dialog.setModal(true);
+            dialog.setVisible(true);
+        });
+        this.menuBar.add(newMenuItem);
 
         // View list
         this.viewList = new JList<>();
@@ -55,7 +66,6 @@ public class AppFrame extends JFrame {
         this.getContentPane().add(listScrollPane, BorderLayout.LINE_START);
         this.getContentPane().add(this.viewPanel, BorderLayout.CENTER);
         this.getContentPane().add(this.console, BorderLayout.PAGE_END);
-        this.pack();
     }
 
     public void setViewItems(ViewItem[] viewItems) {
@@ -65,7 +75,6 @@ public class AppFrame extends JFrame {
         }
         this.viewList.setListData(viewNames);
         this.viewItems = viewItems;
-        this.pack();
     }
 
     private void onViewSelect(int index) {
@@ -75,13 +84,11 @@ public class AppFrame extends JFrame {
 
     public void clearView() {
         this.viewPanel.removeAll();
-        this.pack();
     }
 
     public void setView(Component component) {
         this.viewPanel.removeAll();
         this.viewPanel.add(new JScrollPane(component));
-        this.pack();
     }
 
     /**

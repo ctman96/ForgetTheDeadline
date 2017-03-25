@@ -18,7 +18,6 @@ public class Main {
         }
 
         AppFrame frame = new AppFrame();
-        frame.setPreferredSize(new Dimension(800, 500));
 
         AppFrame.ViewItem[] viewItems = new AppFrame.ViewItem[2];
 
@@ -95,6 +94,8 @@ public class Main {
         };
 
         frame.setViewItems(viewItems);
+        frame.setPreferredSize(new Dimension(800, 500));
+        frame.pack();
         frame.setDefaultCloseOperation(AppFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

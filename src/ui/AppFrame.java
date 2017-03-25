@@ -1,12 +1,9 @@
 package ui;
 
-import ui.view.ProductView;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.util.function.Consumer;
 
 public class AppFrame extends JFrame {
 
@@ -19,12 +16,12 @@ public class AppFrame extends JFrame {
         /**
          * @return The name to display as a view item
          */
-        public String getName();
+        public Object getName();
 
         /**
          * @return The callback to call when view item is selected
          */
-        public Consumer<AppFrame> getCallback();
+        public Runnable getCallback();
     }
 
     private ViewItem[] viewItems;
@@ -35,7 +32,7 @@ public class AppFrame extends JFrame {
         this.menuBar = new JMenuBar();
 
         // View list
-        this.viewList = new JList();
+        this.viewList = new JList<>();
         this.viewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.viewList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -62,17 +59,18 @@ public class AppFrame extends JFrame {
     }
 
     public void setViewItems(ViewItem[] viewItems) {
-        String[] viewNames = new String[viewItems.length];
+        Object[] viewNames = new Object[viewItems.length];
         for (int i = 0; i < viewItems.length; i++) {
             viewNames[i] = viewItems[i].getName();
         }
         this.viewList.setListData(viewNames);
         this.viewItems = viewItems;
+        this.pack();
     }
 
     private void onViewSelect(int index) {
         this.log(String.format("%s selected", this.viewItems[index].getName()));
-        this.viewItems[index].getCallback().accept(this);
+        this.viewItems[index].getCallback().run();
     }
 
     public void clearView() {
@@ -80,9 +78,9 @@ public class AppFrame extends JFrame {
         this.pack();
     }
 
-    public void setView(JComponent component) {
+    public void setView(Component component) {
         this.viewPanel.removeAll();
-        this.viewPanel.add(component);
+        this.viewPanel.add(new JScrollPane(component));
         this.pack();
     }
 

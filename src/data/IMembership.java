@@ -1,6 +1,6 @@
 package data;
 
-import java.util.Date;
+import java.sql.Date;
 
 public interface IMembership {
     public int getPoints();

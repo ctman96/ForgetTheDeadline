@@ -3,53 +3,28 @@ package ui.view;
 import data.IProduct;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 
-public class ProductView extends JScrollPane {
-
-    static String[] columnNames = {
-            "SKU",
-            "Name",
-            "Price",
-            "Distributor"
-    };
-
-    private IProduct[] data;
-    private JTable table;
-    private ProductTableModel tableModel;
-
+public class ProductView extends JTable {
     public ProductView() {
-        super();
-        this.data = new IProduct[0];
-        this.tableModel = new ProductTableModel();
-        this.table = new JTable(this.tableModel);
-        this.setViewportView(this.table);
+        super(new ProductTableModel());
     }
 
     public void setData(IProduct[] newData) {
-        this.data = newData;
-        this.tableModel.fireTableDataChanged();
+        ((ProductTableModel)this.getModel()).setData(newData);
     }
 
-    private class ProductTableModel extends AbstractTableModel {
-        @Override
-        public String getColumnName(int i) {
-            return columnNames[i];
+    private static class ProductTableModel extends DataTableModel<IProduct, ProductTableModel.ColumnNames> {
+        enum ColumnNames {
+            SKU, Name, Price, Distributor
         }
 
-        @Override
-        public int getRowCount() {
-            return data.length;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
+        ProductTableModel() {
+            super(IProduct.class, ColumnNames.class);
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            IProduct product = data[rowIndex];
+            IProduct product = this.data[rowIndex];
             switch (columnIndex) {
                 case 0:
                     return product.getSKU();

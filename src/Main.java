@@ -1,7 +1,7 @@
-import java.lang.System;
+import java.awt.*;
+import java.math.BigDecimal;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 import data.IDistributor;
 import data.IProduct;
@@ -18,11 +18,11 @@ public class Main {
         }
 
         AppFrame frame = new AppFrame();
-        frame.setDefaultCloseOperation(AppFrame.EXIT_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(800, 500));
 
         AppFrame.ViewItem[] viewItems = new AppFrame.ViewItem[2];
-        // Example of Product view
 
+        // Example of Product view
         ProductView productView = new ProductView();
         IProduct[] data = new IProduct[1];
         data[0] = new IProduct() {
@@ -38,8 +38,8 @@ public class Main {
             }
 
             @Override
-            public double getPrice() {
-                return 12.75;
+            public BigDecimal getPrice() {
+                return new BigDecimal(12.75);
             }
 
             @Override
@@ -71,13 +71,13 @@ public class Main {
 
         viewItems[0] = new AppFrame.ViewItem() {
             @Override
-            public String getName() {
+            public Object getName() {
                 return "Product";
             }
 
             @Override
-            public Consumer<AppFrame> getCallback() {
-                return (AppFrame frame) -> frame.setView(productView);
+            public Runnable getCallback() {
+                return () -> frame.setView(productView);
             }
         };
 
@@ -89,13 +89,12 @@ public class Main {
             }
 
             @Override
-            public Consumer<AppFrame> getCallback() {
-                return AppFrame::clearView;
+            public Runnable getCallback() {
+                return frame::clearView;
             }
         };
 
         frame.setViewItems(viewItems);
-
         frame.setDefaultCloseOperation(AppFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

@@ -54,7 +54,7 @@ public class AppFrame extends JFrame {
         this.setViewItems(new ViewItem[0]);
 
         // View container
-        this.viewPanel = new JPanel();
+        this.viewPanel = new JPanel(new BorderLayout());
 
         // Debug status bar
         this.console = new JLabel();

@@ -1,10 +1,11 @@
-1)
-
+--1) TESTED CONFIRMED
 UPDATE Stock s
-  SET Quantity = (SELECT s.Quantity
-                  FROM Stock s, Employee e
-                  WHERE s.BID = e.BID AND e.EID = '30000000' AND s.SKU = '10000000')-1
-WHERE s.SKU = '10000000';
+SET Quantity = (SELECT s.Quantity
+                FROM Stock s, Employee e
+                WHERE e.EID = '30000000' AND s.BID = e.BID AND s.SKU = '10000000')-1
+WHERE s.SKU = '10000000' AND s.bid = (SELECT s.BID
+                 FROM Stock s, Employee e
+                 WHERE e.EID = '30000000' AND s.BID = e.BID AND s.SKU = '10000000');
 
 
 

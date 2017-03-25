@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import oracle.jdbc.driver.OracleDriver;
@@ -16,14 +18,11 @@ public class Main {
             System.out.println("Creating Connection...");
             con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2e9", "a40149122");
             
-            System.out.println("Database Create and Populate...");
-            createpopDatabase(con);
-            
             String SKU = null;
             String EID = null;
             String payment = null;
             String CID = null;
-            //buyProduct(con,SKU,EID,payment,CID);
+            buyProduct(con,SKU,EID,payment,CID);
             
             
         } catch (SQLException e) {
@@ -39,26 +38,7 @@ public class Main {
 
     }
     
-    public static void createpopDatabase(Connection con){
-    	Statement stmt = null;
-    	try{
-    	System.out.println("Create Statement...");
-    	stmt = con.createStatement();
-    	
-    	String sql = "CREATE TABLE Branch";
-    	stmt.executeUpdate(sql);
-    	
-    	} catch (SQLException e){
-    		e.printStackTrace();
-    	} finally{
-    		try{
-    			if(stmt != null)
-    				stmt.close();
-    		} catch(SQLException se){
-    		}
-    	}
-    	System.out.println("Database Created and Populated");
-    }
+
     
     public static void buyProduct(Connection con, String SKU, String EID, String payment, String CID){
     	PreparedStatement update_stmt = null;
@@ -66,7 +46,7 @@ public class Main {
     	String update_str = "update Stock s " +
     						"set quantity = (select s.quantity " +
     										"from Stock s,Employee e " +
-    										"where s.BID = e.BID and s.SKU = ?) - 1" +
+    										"where s.BID = e.BID and s.SKU = ? and e.EID = ?) - 1" +
     						"where s.SKU = ?";
     	String insert_str = "insert into sales values(?, (select max(snum)" +
     						"from sales) + 1, ?, ?, ?, ?)";
@@ -78,15 +58,16 @@ public class Main {
     		
     		update_stmt.setString(1,SKU);
     		update_stmt.setString(2,SKU);
+    		update_stmt.setString(3,EID);
     		update_stmt.executeUpdate();
     		
     		insert_stmt.setString(1, payment);
     		insert_stmt.setString(2, SKU);
-    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     		Date date = new Date();
-    		insert_stmt.setDate(3, date);
+    		insert_stmt.setDate(3, (java.sql.Date) date);
     		insert_stmt.setString(4,CID);
     		insert_stmt.setString(5,EID);
+    		insert_stmt.executeUpdate();
     		
     		con.commit();
     		

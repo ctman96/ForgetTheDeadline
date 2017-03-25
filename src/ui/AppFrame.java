@@ -34,23 +34,22 @@ public class AppFrame extends JFrame {
 
         this.menuBar = new JMenuBar();
         JMenuItem newMenuItem = new JMenuItem("New...");
+        newMenuItem.setActionCommand("new");
         newMenuItem.addActionListener((ActionEvent e) -> {
-            JDialog dialog = new NewProductDialog(this);
-            dialog.pack();
-            dialog.setModal(true);
-            dialog.setVisible(true);
+            if (e.getActionCommand().equals("new")) {
+                NewProductDialog dialog = new NewProductDialog(this);
+                dialog.pack();
+                dialog.setModal(true);
+                dialog.setVisible(true);
+                log(dialog.getInput().getPrice().toString());
+            }
         });
         this.menuBar.add(newMenuItem);
 
         // View list
         this.viewList = new JList<>();
         this.viewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.viewList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                onViewSelect(viewList.getSelectedIndex());
-            }
-        });
+        this.viewList.addListSelectionListener(e -> onViewSelect(viewList.getSelectedIndex()));
         this.setViewItems(new ViewItem[0]);
 
         // View container
@@ -84,6 +83,7 @@ public class AppFrame extends JFrame {
 
     public void clearView() {
         this.viewPanel.removeAll();
+        this.viewPanel.repaint();
     }
 
     public void setView(Component component) {

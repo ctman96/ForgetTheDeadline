@@ -13,7 +13,7 @@ public class Main {
             DriverManager.registerDriver(new OracleDriver());
             
             System.out.println("Creating Connection...");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@dbhost.ugrad.cs.ubc.ca:1522:ug", "ora_o2e9", "a40149122");
+            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145");
             
             createDatabase(con);
         } catch (SQLException e) {

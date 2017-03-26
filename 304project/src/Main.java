@@ -41,8 +41,11 @@ public class Main {
             BigDecimal Wage = null;
             String pname = null;
             String BID = null;
-            
             addEmployee(con,EID, Name, Address, Phone, Wage, pname, BID);
+            
+            System.out.println("Removing an Employee...");
+            EID = null;
+            removeEmployee(con,EID);
             
             
             
@@ -173,6 +176,33 @@ public class Main {
     		try{
     			if(insert_stmt != null){
     				insert_stmt.close();
+    			}
+    			con.setAutoCommit(true);
+    			
+    		} catch(SQLException se){
+    		}
+    	}
+    }
+    
+    public static void removeEmployee(Connection con,String EID){
+    	Statement drop_stmt = null;
+    	String drop_str = "delete from Employee" +
+    						"where EID =" + EID;
+    	try{
+    		con.setAutoCommit(false);
+    		System.out.println("Create Statement...");
+    		drop_stmt = con.createStatement();
+    		
+    		drop_stmt.executeUpdate(drop_str);
+    		
+    		con.commit();
+    		
+    	} catch (Exception e){
+    		e.printStackTrace();
+    	} finally{
+    		try{
+    			if(drop_stmt != null){
+    				drop_stmt.close();
     			}
     			con.setAutoCommit(true);
     			

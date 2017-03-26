@@ -53,9 +53,11 @@ public abstract class CheckedInputDialog<T> extends JDialog implements CheckedIn
     private JButton cancelButton;
     private boolean ok = false;
 
-    public CheckedInputDialog(Frame owner, CheckedInputComponent[] inputComponents) {
+    public CheckedInputDialog(Frame owner) {
         super(owner);
+    }
 
+    public void setInputComponents(CheckedInputComponent[] inputComponents) {
         int inputSize = inputComponents.length;
 
         JLabel[] labels = new JLabel[inputSize];
@@ -129,9 +131,11 @@ public abstract class CheckedInputDialog<T> extends JDialog implements CheckedIn
 
             verticalGroup.addGroup(
                     layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(okButton)
-                        .addComponent(cancelButton)
+                            .addComponent(okButton)
+                            .addComponent(cancelButton)
             );
+
+            layout.setVerticalGroup(verticalGroup);
         }
     }
 

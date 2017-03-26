@@ -43,7 +43,7 @@ public class NewProductDialog extends CheckedInputDialog<IProduct> {
     };
 
     public NewProductDialog(Frame owner, IDistributor[] distributors) {
-        super(owner, new CheckedInputComponent[0]); // TODO
+        super(owner);
         this.setTitle("New Product...");
 
         this.skuField = new StringTextField();
@@ -52,11 +52,13 @@ public class NewProductDialog extends CheckedInputDialog<IProduct> {
         this.distributorField = new ObjectSelectField<>(distributors);
 
         CheckedInputComponent[] inputComponents = {
-            makeCheckedInputComponent("SKU:", skuField),
+                makeCheckedInputComponent("SKU:", skuField),
                 makeCheckedInputComponent("Name:", nameField),
                 makeCheckedInputComponent("Price:", priceField),
                 makeCheckedInputComponent("Distributor:", distributorField),
         };
+
+        this.setInputComponents(inputComponents);
         
         this.skuField.getDocument().addDocumentListener(defaultDocumentListener);
         this.nameField.getDocument().addDocumentListener(defaultDocumentListener);

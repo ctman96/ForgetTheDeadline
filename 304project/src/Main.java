@@ -236,9 +236,37 @@ public class Main {
 	public static void addGameStore(Connection con, String bid, String sku, int quantity, int maxQuantity){
 
 	}
-	//TODO
+	//TODO TEST
 	public static void changeGamePrice(Connection con, String sku, BigDecimal newPrice){
+		PreparedStatement update_stmt = null;
+		String update_str =
+				"UPDATE Product p " +
+						"SET price = ? " +
+						"WHERE p.SKU = ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			update_stmt = con.prepareStatement(update_str);
 
+			update_stmt.setBigDecimal(1,newPrice);
+			update_stmt.setString(2,sku);
+			System.out.println("Execute...");
+			update_stmt.executeUpdate();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(update_stmt != null){
+					update_stmt.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+		}
 	}
 
 	//TODO TEST

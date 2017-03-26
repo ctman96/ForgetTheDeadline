@@ -44,6 +44,7 @@ public class Main {
 			did = "20000000";
 			bid = "00000000";
 			createPurchaseOrder(con,did,bid);
+
             //11) Test updateProductQuantity
 			int addQuantity = 10;
 			bid = "00000000";
@@ -138,7 +139,7 @@ public class Main {
     		//SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
 			//java.util.Date utilDate = fm.parse(stringDate);
     		//java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-			java.sql.Date sqlDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());;
+			java.sql.Date sqlDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
     		insert_stmt.setDate(4,sqlDate);
 			insert_stmt.setString(5,cid);
     		insert_stmt.setString(6,eid);
@@ -193,7 +194,52 @@ public class Main {
 	//TODO
 	// need to change, not void, needs to return info. ResultSet?
 	public static void checkCustomerAccount(Connection con, String name, String phone){
+		PreparedStatement select_stmt1 = null;
+		PreparedStatement select_stmt2 = null;
+		String select_str1 = "SELECT * FROM Customer c WHERE c.Name = ? AND c.Phone = ?";
+		String select_str2 =
+				"SELECT * " +
+				"FROM Sale s, Customer c " +
+				"WHERE s.CID = c.CID AND c.Name = ? AND c.Phone=? " +
+				"AND s.saleDate >= ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt1 = con.prepareStatement(select_str1);
+			select_stmt2 = con.prepareStatement(select_str2);
 
+			select_stmt1.setString(1,name);
+			select_stmt1.setString(2,phone);
+			System.out.println("Execute...");
+			select_stmt1.executeUpdate();
+			//Do something with result
+
+			select_stmt2.setString(1,name);
+			select_stmt2.setString(2,phone);
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.DAY_OF_MONTH, -30);
+			java.util.Date date = c.getTime();
+			java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+			select_stmt2.setDate(3,sqlDate);
+			System.out.println("Execute...");
+			select_stmt2.executeUpdate();
+			//Do something with result
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt1 != null && select_stmt2 != null){
+					select_stmt1.close();
+					select_stmt2.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+		}
 	}
 	//TODO
 	// need to change, not void, needs to return info. ResultSet?

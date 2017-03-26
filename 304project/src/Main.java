@@ -26,14 +26,44 @@ public class Main {
 			System.out.println("Building Database...");
             createDatabase(con);
 
-            String sku = "10000000";
-            String eid = "30000000";
-            String payment = "CC123123";
-            String cid = "35553916";
+            String sku = "";
+            String eid = "";
+            String payment = "";
+            String cid = "";
+            String bid = "";
+            String did = "";
+
+			//1) Test buyProduct
+            sku = "10000000";
+            eid = "30000000";
+            payment = "CC123123";
+            cid = "35553916";
             buyProduct(con,sku,eid,payment,cid);
-            
-            
-        } catch (SQLException e) {
+
+            //10) Test createPurchaseOrder
+			did = "20000000";
+			bid = "00000000";
+			createPurchaseOrder(con,did,bid);
+            //11) Test updateProductQuantity
+			int addQuantity = 10;
+			bid = "00000000";
+			sku = "10000000";
+			updateProductQuantity(con,bid,sku,addQuantity);
+
+			//12) Test createInventoryCount
+			bid = "00000000";
+			createInventoryCount(con,bid);
+
+            //13) Test createSaleReport
+			String strStartDate = new String("20/12/2016");
+			String strEndDate = new String("01/01/2017");
+			java.util.Date startDate = new SimpleDateFormat("dd/MM/yy").parse(strStartDate);
+			java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
+			createSaleReport(con,startDate,endDate);
+
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         }finally{
         	try{
@@ -98,9 +128,8 @@ public class Main {
     		update_stmt.setString(3,sku);
 			update_stmt.setString(4,eid);
 			update_stmt.setString(5,sku);
-			System.out.println("Executing statement: "+update_stmt);
+			System.out.println("Execute...");
     		update_stmt.executeUpdate();
-			System.out.println("Executed");
     		
     		insert_stmt.setString(1, payment);
     		insert_stmt.setString(2, "50000000");
@@ -113,9 +142,8 @@ public class Main {
     		insert_stmt.setDate(4,sqlDate);
 			insert_stmt.setString(5,cid);
     		insert_stmt.setString(6,eid);
-			System.out.println("Executing statement: "+insert_stmt);
+			System.out.println("Execute...");
     		insert_stmt.executeUpdate();
-			System.out.println("Executed");
 
     		con.commit();
 			System.out.println("Changes commited");
@@ -170,23 +198,141 @@ public class Main {
 	//TODO
 	// need to change, not void, needs to return info. ResultSet?
 	public static void createPurchaseOrder(Connection con, String did, String bid){
+		PreparedStatement select_stmt = null;
+		String select_str =
+				"SELECT Name, s.SKU, Price, " +
+				"  maxquantity - quantity as orderQuantity, " +
+				"  Price*(maxquantity - quantity) as orderPrice " +
+				"FROM Stock s, Product p " +
+				"WHERE p.DID = ? AND s.BID = ? " +
+				"  AND s.SKU=p.SKU AND maxquantity-quantity > 0";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
 
+			select_stmt.setString(1,did);
+			select_stmt.setString(2,bid);
+
+			System.out.println("Execute...");
+			select_stmt.executeUpdate();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+		}
 	}
-	//TODO
+
+	//
 	public static void updateProductQuantity(Connection con, String bid, String sku, int addQuantity){
+		PreparedStatement update_stmt = null;
+		String update_str =
+						"UPDATE Stock s " +
+						"SET quantity = s.quantity + ? " +
+						"WHERE s.BID = ? AND s.SKU = ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			update_stmt = con.prepareStatement(update_str);
 
+			update_stmt.setInt(1,addQuantity);
+			update_stmt.setString(2,bid);
+			update_stmt.setString(3,sku);
+
+			System.out.println("Execute...");
+			update_stmt.executeUpdate();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(update_stmt != null){
+					update_stmt.close();
+					con.setAutoCommit(true);
+				}
+			}catch(SQLException se){
+			}
+		}
 	}
 
-	//TODO
-	// need to change, not void, needs to return info. ResultSet?
+	// TODO: need to change to return info
 	public static void createInventoryCount(Connection con, String bid){
+		PreparedStatement select_stmt = null;
+		String select_str =
+						"SELECT Name, s.SKU, Price, Quantity " +
+						"FROM Stock s, Product p " +
+						"WHERE s.SKU = p.SKU AND s.BID = ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
 
+			select_stmt.setString(1,bid);
+			System.out.println("Execute...");
+			select_stmt.executeUpdate();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+		}
 	}
 
-	//TODO
-	// need to change, not void, needs to return info. ResultSet?
-	public static void createSaleReport(Connection con, Date startDate, Date endDate){
+	// TODO: need to change to return info
+	public static void createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate){
+		PreparedStatement select_stmt = null;
+		String select_str =
+				"SELECT * " +
+				"FROM Sale " +
+				"WHERE ? <= SALEDATE AND SALEDATE <= ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+			java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+			select_stmt.setDate(1,sqlStartDate);
+			select_stmt.setDate(2,sqlEndDate);
 
+			System.out.println("Execute...");
+			select_stmt.executeUpdate();
+
+			con.commit();
+			System.out.println("Changes commited");
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+		}
 	}
 
 }

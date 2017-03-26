@@ -36,30 +36,35 @@ public class Main {
             String name = "";
             int quantity = 0;
             int maxQuantity = 0;
+            int addQuantity = 0;
             BigDecimal wage = null;
-            String position = null;
-            String phone = null;
-            String address = null;
+            String position = "";
+            String phone = "";
+            String address = "";
 
 			//1) Test buyProduct
             sku = "10000000";
             eid = "30000000";
             payment = "CC123123";
             cid = "35553916";
+			System.out.println("Test buyProduct");
             buyProduct(con,sku,eid,payment,cid);
             
             //4) Test add Employee
-            eid = null;
-            name = null;
-            bid = null;
+			//TODO
+            eid = "";
+            name = "";
+            bid = "";
             wage = null;
-            position = null;
-            phone = null;
-            address = null;
+            position = "";
+            phone = "";
+            address = "";
+			System.out.println("Test addEmployee");
             addEmployee(con,eid,name,bid,wage,position,phone,address);
             
             //5) Test remove Employee
             eid = null;
+			System.out.println("Test removeEmployee");
             removeEmployee(con,eid);
             
             //6) Test addGameDatabase
@@ -67,6 +72,7 @@ public class Main {
             sku = null;
             price = null;
             did = null;
+			System.out.println("Test addGameDatabase");
             addGameDatabase(con,name,sku,price,did);
             
             //7) Test addGameStore
@@ -74,22 +80,26 @@ public class Main {
             sku = null;
             quantity = 0;
             maxQuantity = 0;
+			System.out.println("Test addGameStore");
             addGameStore(con,bid,sku,quantity,maxQuantity);
             
 
             //10) Test createPurchaseOrder
 			did = "20000000";
 			bid = "00000000";
+			System.out.println("Test createPurchaseOrder");
 			createPurchaseOrder(con,did,bid);
 
             //11) Test updateProductQuantity
-			int addQuantity = 10;
+			addQuantity = 10;
 			bid = "00000000";
 			sku = "10000000";
+			System.out.println("Test updateProductQuantity");
 			updateProductQuantity(con,bid,sku,addQuantity);
 
 			//12) Test createInventoryCount
 			bid = "00000000";
+			System.out.println("Test createInventoryCount");
 			createInventoryCount(con,bid);
 
             //13) Test createSaleReport
@@ -97,6 +107,7 @@ public class Main {
 			String strEndDate = new String("01/01/2017");
 			java.util.Date startDate = new SimpleDateFormat("dd/MM/yy").parse(strStartDate);
 			java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
+			System.out.println("Test createSaleReport");
 			createSaleReport(con,startDate,endDate);
 
 
@@ -224,6 +235,7 @@ public class Main {
 			insert_stmt.executeUpdate();
 
 			con.commit();
+			System.out.println("Changes Commited");
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -241,16 +253,17 @@ public class Main {
 	//TODO
 	public static void removeEmployee(Connection con,String eid){
 		Statement drop_stmt = null;
-		String drop_str = "delete from Employee" +
-				"where EID =" + eid;
+		String drop_str = "DELETE FROM Employee" +
+				"WHERE EID = " + eid;
 		try{
 			con.setAutoCommit(false);
 			System.out.println("Create Statement...");
-			drop_stmt = con.createStatement();
+			drop_stmt = con.prepareStatement(drop_str);
 
 			drop_stmt.executeUpdate(drop_str);
 
 			con.commit();
+			System.out.println("Changes Commited");
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -283,6 +296,7 @@ public class Main {
 			insert_stmt.executeUpdate();
 
 			con.commit();
+			System.out.println("Changes Commited");
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -315,6 +329,7 @@ public class Main {
 			insert_stmt.executeUpdate();
 
 			con.commit();
+			System.out.println("Changes Commited");
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -457,10 +472,10 @@ public class Main {
 			}
 		}
 	}
-	//TODO
-	// need to change, not void, needs to return info. ResultSet?
-	public static void createPurchaseOrder(Connection con, String did, String bid){
+	//
+	public static ResultSet createPurchaseOrder(Connection con, String did, String bid){
 		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
 		String select_str =
 				"SELECT Name, s.SKU, Price, " +
 				"  maxquantity - quantity as orderQuantity, " +
@@ -477,7 +492,7 @@ public class Main {
 			select_stmt.setString(2,bid);
 
 			System.out.println("Execute...");
-			select_stmt.executeUpdate();
+			rs = select_stmt.executeQuery();
 
 			con.commit();
 			System.out.println("Changes commited");
@@ -492,6 +507,7 @@ public class Main {
 				}
 			} catch(SQLException se){
 			}
+			return rs;
 		}
 	}
 
@@ -531,9 +547,10 @@ public class Main {
 		}
 	}
 
-	// TODO: need to change to return info
-	public static void createInventoryCount(Connection con, String bid){
+	//
+	public static ResultSet createInventoryCount(Connection con, String bid){
 		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
 		String select_str =
 						"SELECT Name, s.SKU, Price, Quantity " +
 						"FROM Stock s, Product p " +
@@ -545,10 +562,11 @@ public class Main {
 
 			select_stmt.setString(1,bid);
 			System.out.println("Execute...");
-			select_stmt.executeUpdate();
+			rs = select_stmt.executeQuery();
 
 			con.commit();
 			System.out.println("Changes commited");
+
 
 		}catch(Exception e){
 			e.printStackTrace();
@@ -560,12 +578,14 @@ public class Main {
 				}
 			} catch(SQLException se){
 			}
+			return rs;
 		}
 	}
 
-	// TODO: need to change to return info
-	public static void createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate){
+	//
+	public static ResultSet createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate){
 		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
 		String select_str =
 				"SELECT * " +
 				"FROM Sale " +
@@ -580,7 +600,7 @@ public class Main {
 			select_stmt.setDate(2,sqlEndDate);
 
 			System.out.println("Execute...");
-			select_stmt.executeUpdate();
+			rs = select_stmt.executeQuery();
 
 			con.commit();
 			System.out.println("Changes commited");
@@ -594,6 +614,7 @@ public class Main {
 				}
 			} catch(SQLException se){
 			}
+			return rs;
 		}
 	}
 

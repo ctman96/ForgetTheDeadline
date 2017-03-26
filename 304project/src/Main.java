@@ -218,7 +218,7 @@ public class Main {
     public static void addEmployee(Connection con, String eid, String name, String bid, BigDecimal wage, String position, String phone, String address){
 		PreparedStatement insert_stmt = null;
 		String insert_str = "insert into Employee values(?, ?"+
-				", ?, ?, ?, ?)";
+				", ?, ?, ?, ?, ?)";
 		try{
 			con.setAutoCommit(false);
 			System.out.println("Create Statement...");
@@ -253,12 +253,12 @@ public class Main {
 	//TODO
 	public static void removeEmployee(Connection con,String eid){
 		Statement drop_stmt = null;
-		String drop_str = "DELETE FROM Employee" +
+		String drop_str = "DELETE FROM Employee " +
 				"WHERE EID = " + eid;
 		try{
 			con.setAutoCommit(false);
 			System.out.println("Create Statement...");
-			drop_stmt = con.prepareStatement(drop_str);
+			drop_stmt = con.createStatement();
 
 			drop_stmt.executeUpdate(drop_str);
 

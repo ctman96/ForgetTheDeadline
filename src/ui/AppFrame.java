@@ -1,5 +1,6 @@
 package ui;
 
+import data.IDistributor;
 import ui.dialog.NewProductDialog;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.event.ActionEvent;
 public class AppFrame extends JFrame {
 
     private JMenuBar menuBar;
-    private JList viewList;
+    private JList<Object> viewList;
     private JPanel viewPanel;
     private JLabel console;
 
@@ -37,11 +38,10 @@ public class AppFrame extends JFrame {
         newMenuItem.setActionCommand("new");
         newMenuItem.addActionListener((ActionEvent e) -> {
             if (e.getActionCommand().equals("new")) {
-                NewProductDialog dialog = new NewProductDialog(this);
+                NewProductDialog dialog = new NewProductDialog(this, new IDistributor[0]);
                 dialog.pack();
                 dialog.setModal(true);
                 dialog.setVisible(true);
-                log(dialog.getInput().getPrice().toString());
             }
         });
         this.menuBar.add(newMenuItem);

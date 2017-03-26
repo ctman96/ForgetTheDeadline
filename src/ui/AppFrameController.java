@@ -4,10 +4,11 @@ import data.IDistributor;
 import data.IProduct;
 import ui.view.ProductView;
 
+import javax.swing.*;
 import java.math.BigDecimal;
 
 public class AppFrameController {
-    AppFrame appFrame;
+    private AppFrame appFrame;
 
     public AppFrameController() {
         setupAppFrame();
@@ -96,6 +97,6 @@ public class AppFrameController {
 
         this.appFrame.setViewItems(viewItems);
         this.appFrame.pack();
-        this.appFrame.setDefaultCloseOperation(AppFrame.EXIT_ON_CLOSE);
+        this.appFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 }

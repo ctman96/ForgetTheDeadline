@@ -2,30 +2,30 @@ package ui.dialog;
 
 import data.IDistributor;
 import data.IProduct;
+import ui.util.CheckedInput;
+import ui.field.DecimalTextField;
+import ui.field.ObjectSelectField;
+import ui.field.StringTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.math.BigDecimal;
-import java.security.acl.Group;
 import java.text.DecimalFormat;
-import java.text.Format;
-import java.text.NumberFormat;
-import java.text.ParseException;
 
-public class NewProductDialog extends JDialog {
+public class NewProductDialog extends JDialog implements CheckedInput<IProduct> {
 
-    static final DecimalFormat priceFormat = new DecimalFormat("#0.00");
+    private static final DecimalFormat priceFormat = new DecimalFormat("#0.00");
     static {
-        priceFormat.setMinimumFractionDigits(2);
+        priceFormat.setMaximumFractionDigits(2);
         priceFormat.setParseBigDecimal(true);
     }
 
-    private JTextField skuField;
-    private JTextField nameField;
-    private JTextField priceField;
-    private JComboBox distributorField;
+    private StringTextField skuField;
+    private StringTextField nameField;
+    private DecimalTextField priceField;
+    private ObjectSelectField<IDistributor> distributorField;
 
     private JButton okButton;
     private JButton cancelButton;
@@ -34,26 +34,26 @@ public class NewProductDialog extends JDialog {
     private IProduct product = new IProduct() {
         @Override
         public String getSKU() {
-            return skuField.getText();
+            return skuField.getInputValue();
         }
 
         @Override
         public String getName() {
-            return nameField.getText();
+            return nameField.getInputValue();
         }
 
         @Override
         public BigDecimal getPrice() throws NumberFormatException {
-            return new BigDecimal(priceField.getText());
+            return priceField.getInputValue();
         }
 
         @Override
         public IDistributor getDistributor() {
-            return null; // TODO
+            return distributorField.getInputValue();
         }
     };
 
-    public NewProductDialog(Frame owner) {
+    public NewProductDialog(Frame owner, IDistributor[] distributors) {
         super(owner);
         this.setTitle("New Product...");
 
@@ -62,10 +62,10 @@ public class NewProductDialog extends JDialog {
         JLabel priceLabel = new JLabel("Price:");
         JLabel distributorLabel = new JLabel("Distributor:");
 
-        this.skuField = new JTextField();
-        this.nameField = new JTextField();
-        this.priceField = new JFormattedTextField(priceFormat);
-        this.distributorField = new JComboBox(); // TODO
+        this.skuField = new StringTextField();
+        this.nameField = new StringTextField();
+        this.priceField = new DecimalTextField(priceFormat);
+        this.distributorField = new ObjectSelectField<>(distributors);
 
         this.okButton = new JButton("OK");
         this.okButton.addActionListener((e) -> dispose());
@@ -96,7 +96,7 @@ public class NewProductDialog extends JDialog {
         this.skuField.getDocument().addDocumentListener(listener);
         this.nameField.getDocument().addDocumentListener(listener);
         this.priceField.getDocument().addDocumentListener(listener);
-        // TODO
+        this.distributorField.addActionListener((e) -> onValueChange());
 
         Container contentPane = this.getContentPane();
         GroupLayout layout = new GroupLayout(contentPane);
@@ -141,24 +141,13 @@ public class NewProductDialog extends JDialog {
         );
     }
 
-    public void onValueChange() {
-        boolean ok = true;
-        if (this.product.getName().isEmpty()) {
-            ok = false;
-        }
-
-        if (this.product.getSKU().isEmpty()) {
-            ok = false;
-        }
-
-        try {
-            this.product.getPrice();
-        } catch (NumberFormatException e) {
-            ok = false;
-        }
-
-        // TODO handle distributor
-        this.setOk(ok);
+    private void onValueChange() {
+        this.setOk(
+            skuField.isInputValid() &&
+            nameField.isInputValid() &&
+            priceField.isInputValid() &&
+            distributorField.isInputValid()
+        );
     }
 
     private void setOk(boolean ok) {
@@ -166,11 +155,11 @@ public class NewProductDialog extends JDialog {
         this.okButton.setEnabled(this.ok);
     }
 
-    public boolean isOk() {
+    public boolean isInputValid() {
         return this.ok;
     }
 
-    public IProduct getInput() {
+    public IProduct getInputValue() {
         return this.product;
     }
 }

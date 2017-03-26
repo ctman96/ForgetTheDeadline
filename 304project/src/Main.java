@@ -186,12 +186,52 @@ public class Main {
 	public static void changeGamePrice(Connection con, String sku, BigDecimal newPrice){
 
 	}
-	//TODO
+	//TODO TEST
 	public static void checkCustomerAccount(Connection con, String cid){
+		PreparedStatement select_stmt1 = null;
+		PreparedStatement select_stmt2 = null;
+		String select_str1 = "SELECT * FROM Customer c WHERE c.CID=?";
+		String select_str2 = "SELECT * " +
+				"FROM Sale s " +
+				"WHERE s.CID = ? AND s.saleDate >= ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt1 = con.prepareStatement(select_str1);
+			select_stmt2 = con.prepareStatement(select_str2);
 
+			select_stmt1.setString(1,cid);
+			System.out.println("Execute...");
+			select_stmt1.executeUpdate();
+			//do something
+
+			select_stmt2.setString(1,cid);
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.DAY_OF_MONTH, -30);
+			java.util.Date date = c.getTime();
+			java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+			select_stmt2.setDate(2,sqlDate);
+			System.out.println("Execute...");
+			select_stmt2.executeUpdate();
+			//do something
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt1 != null && select_stmt2 != null){
+					select_stmt1.close();
+					select_stmt2.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+		}
 	}
 
-	//TODO
+	//TODO TEST
 	// need to change, not void, needs to return info. ResultSet?
 	public static void checkCustomerAccount(Connection con, String name, String phone){
 		PreparedStatement select_stmt1 = null;

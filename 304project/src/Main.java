@@ -52,34 +52,34 @@ public class Main {
             
             //4) Test add Employee
 			//TODO
-            eid = "";
-            name = "";
-            bid = "";
-            wage = null;
-            position = "";
-            phone = "";
-            address = "";
+            eid = "33330000";
+            name = "Tester Man";
+            bid = "00000000";
+            wage = new BigDecimal(10.00);
+            position = "Janitor";
+            phone = "2501011011";
+            address = "1234 test st";
 			System.out.println("Test addEmployee");
             addEmployee(con,eid,name,bid,wage,position,phone,address);
             
             //5) Test remove Employee
-            eid = null;
+            eid = "30000000";
 			System.out.println("Test removeEmployee");
             removeEmployee(con,eid);
             
             //6) Test addGameDatabase
-            name = null;
-            sku = null;
-            price = null;
-            did = null;
+            name = "Tester: Gold";
+            sku = "33300000";
+            price = new BigDecimal(10.00);
+            did = "20000000";
 			System.out.println("Test addGameDatabase");
             addGameDatabase(con,name,sku,price,did);
             
             //7) Test addGameStore
-            bid = null;
-            sku = null;
-            quantity = 0;
-            maxQuantity = 0;
+            bid = "00000000";
+            sku = "33300000";
+            quantity = 100;
+            maxQuantity = 100;
 			System.out.println("Test addGameStore");
             addGameStore(con,bid,sku,quantity,maxQuantity);
             

@@ -38,7 +38,7 @@ public class AppFrame extends JFrame {
         newMenuItem.setActionCommand("new");
         newMenuItem.addActionListener((ActionEvent e) -> {
             if (e.getActionCommand().equals("new")) {
-                NewProductDialog dialog = new NewProductDialog(this, new IDistributor[0]);
+                NewProductDialog dialog = new NewProductDialog(this, new IDistributor[0]); // TODO
                 dialog.pack();
                 dialog.setModal(true);
                 dialog.setVisible(true);
@@ -92,7 +92,7 @@ public class AppFrame extends JFrame {
     }
 
     /**
-     * @param message an html and plain string
+     * @param message an html or plain string
      */
     public void log(String message) {
         this.console.setText(message);

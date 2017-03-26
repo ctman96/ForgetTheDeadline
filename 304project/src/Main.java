@@ -26,6 +26,14 @@ public class Main {
 			System.out.println("Building Database...");
             createDatabase(con);
 
+            //Test basic queries
+			getBranch(con);
+			getCustomer(con);
+			getEmployee(con);
+			getProduct(con);
+			getSale(con);
+			getStock(con);
+
             String sku = "";
             String eid = "";
             String payment = "";
@@ -50,7 +58,7 @@ public class Main {
             cid = "35553916";
 			System.out.println("Test buyProduct");
             buyProduct(con,sku,eid,payment,cid);
-            
+
             //4) Test add Employee
 			//TODO
             eid = "33330000";
@@ -62,12 +70,12 @@ public class Main {
             address = "1234 test st";
 			System.out.println("Test addEmployee");
             addEmployee(con,eid,name,bid,wage,position,phone,address);
-            
+
             //5) Test remove Employee
             eid = "30000000";
 			System.out.println("Test removeEmployee");
             removeEmployee(con,eid);
-            
+
             //6) Test addGameDatabase
             name = "Tester: Gold";
             sku = "33300000";
@@ -75,7 +83,7 @@ public class Main {
             did = "20000000";
 			System.out.println("Test addGameDatabase");
             addGameDatabase(con,name,sku,price,did);
-            
+
             //7) Test addGameStore
             bid = "00000000";
             sku = "33300000";
@@ -167,6 +175,225 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
+	/*
+
+	Basic Queries
+
+	 */
+	public static ResultSet getBranch(Connection con){
+    	PreparedStatement select_stmt = null;
+    	ResultSet rs = null;
+    	String select_str = "SELECT * FROM Branch";
+    	try{
+    		con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	public static ResultSet getCustomer(Connection con){
+		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
+		String select_str = "SELECT * FROM Customer";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	public static ResultSet getDeveloper(Connection con){
+		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
+		String select_str = "SELECT * FROM Developer";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	public static ResultSet getEmployee(Connection con){
+		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
+		String select_str = "SELECT * FROM Employee";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	public static ResultSet getProduct(Connection con){
+		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
+		String select_str = "SELECT * FROM Product";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	public static ResultSet getSale(Connection con){
+		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
+		String select_str = "SELECT * FROM Sale";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	public static ResultSet getStock(Connection con){
+		PreparedStatement select_stmt = null;
+		ResultSet rs = null;
+		String select_str = "SELECT * FROM Stock";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt = con.prepareStatement(select_str);
+			System.out.println("Execute...");
+			rs = select_stmt.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(select_stmt != null){
+					select_stmt.close();
+					con.setAutoCommit(true);
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+
+
+
+
+	/*
+
+	Program Queries
+
+	 */
+
+
 	//Query 1
     public static void buyProduct(Connection con, String sku, String eid, String payment, String cid){
     	PreparedStatement update_stmt = null;

@@ -71,7 +71,7 @@ public class Main {
         		if(con != null)
         			con.close();
         	} catch(SQLException se){
-        		
+
         	}
         }
 
@@ -123,7 +123,7 @@ public class Main {
     		System.out.println("Create Statement...");
     		update_stmt = con.prepareStatement(update_str);
     		insert_stmt = con.prepareStatement(insert_str);
-    		
+
     		update_stmt.setString(1,eid);
     		update_stmt.setString(2,sku);
     		update_stmt.setString(3,sku);
@@ -131,7 +131,7 @@ public class Main {
 			update_stmt.setString(5,sku);
 			System.out.println("Execute...");
     		update_stmt.executeUpdate();
-    		
+
     		insert_stmt.setString(1, payment);
     		insert_stmt.setString(2, "50000000");
     		insert_stmt.setString(3, sku);
@@ -148,7 +148,7 @@ public class Main {
 
     		con.commit();
 			System.out.println("Changes commited");
-    		
+
     	} catch (Exception e){
     		e.printStackTrace();
     	} finally{
@@ -161,18 +161,72 @@ public class Main {
     				insert_stmt.close();
     			}
     			con.setAutoCommit(true);
-    			
+
     		} catch(SQLException se){
     		}
     	}
     }
 	//TODO
-    public static void addEmployee(Connection con, String eid, String bid, BigDecimal wage, String position, String phone, String address){
+    public static void addEmployee(Connection con, String eid, String name, String bid, BigDecimal wage, String position, String phone, String address){
+		PreparedStatement insert_stmt = null;
+		String insert_str = "insert into Employee values(?, ?"+
+				", ?, ?, ?, ?)";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			insert_stmt = con.prepareStatement(insert_str);
 
+
+			insert_stmt.setString(1, eid);
+			insert_stmt.setString(2, name);
+			insert_stmt.setString(3, address);
+			insert_stmt.setString(4, phone);
+			insert_stmt.setBigDecimal(5, wage);
+			insert_stmt.setString(6,position);
+			insert_stmt.setString(7,bid);
+			insert_stmt.executeUpdate();
+
+			con.commit();
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(insert_stmt != null){
+					insert_stmt.close();
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+		}
 	}
 	//TODO
-	public static void removeEmployee(Connection con, String eid){
+	public static void removeEmployee(Connection con,String eid){
+		Statement drop_stmt = null;
+		String drop_str = "delete from Employee" +
+				"where EID =" + eid;
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			drop_stmt = con.createStatement();
 
+			drop_stmt.executeUpdate(drop_str);
+
+			con.commit();
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(drop_stmt != null){
+					drop_stmt.close();
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+		}
 	}
 	//TODO
 	public static void addGameDatabase(Connection con, String sku, String did, String name, BigDecimal Price){
@@ -186,6 +240,7 @@ public class Main {
 	public static void changeGamePrice(Connection con, String sku, BigDecimal newPrice){
 
 	}
+
 	//TODO TEST
 	public static void checkCustomerAccount(Connection con, String cid){
 		PreparedStatement select_stmt1 = null;

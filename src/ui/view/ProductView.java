@@ -15,7 +15,7 @@ public class ProductView extends JTable {
 
     private static class ProductTableModel extends DataTableModel<IProduct, ProductTableModel.ColumnNames> {
         enum ColumnNames {
-            SKU, Name, Price, Distributor
+            SKU, Name, Price, Developer
         }
 
         ProductTableModel() {
@@ -33,7 +33,7 @@ public class ProductView extends JTable {
                 case 2:
                     return product.getPrice();
                 case 3:
-                    return product.getDistributor().getName();
+                    return product.getDeveloper().getName();
             }
             return null;
         }

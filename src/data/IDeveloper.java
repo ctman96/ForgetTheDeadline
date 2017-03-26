@@ -1,6 +1,6 @@
 package data;
 
-public interface IDistributor {
+public interface IDeveloper {
     public String getId(); // Primary Key
     public String getName();
     public String getAddress();

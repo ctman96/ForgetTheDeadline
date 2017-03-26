@@ -1,6 +1,6 @@
 package ui;
 
-import data.IDistributor;
+import data.IDeveloper;
 import data.IProduct;
 import ui.view.ProductView;
 
@@ -44,8 +44,8 @@ public class AppFrameController {
             }
 
             @Override
-            public IDistributor getDistributor() {
-                return new IDistributor() {
+            public IDeveloper getDeveloper() {
+                return new IDeveloper() {
                     @Override
                     public String getId() {
                         return null;

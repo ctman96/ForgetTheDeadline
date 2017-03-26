@@ -1,11 +1,9 @@
 package ui;
 
-import data.IDistributor;
+import data.IDeveloper;
 import ui.dialog.NewProductDialog;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -38,7 +36,7 @@ public class AppFrame extends JFrame {
         newMenuItem.setActionCommand("new");
         newMenuItem.addActionListener((ActionEvent e) -> {
             if (e.getActionCommand().equals("new")) {
-                NewProductDialog dialog = new NewProductDialog(this, new IDistributor[0]); // TODO
+                NewProductDialog dialog = new NewProductDialog(this, new IDeveloper[0]); // TODO
                 dialog.pack();
                 dialog.setModal(true);
                 dialog.setVisible(true);

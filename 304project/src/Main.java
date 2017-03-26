@@ -6,6 +6,7 @@ import java.text.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.math.BigDecimal;
 
 import oracle.jdbc.driver.OracleDriver;
 
@@ -21,15 +22,29 @@ public class Main {
 
             System.out.println("Creating Connection...");
             con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2e9", "a40149122");
-			System.out.println("Building Database...");
+			
+            System.out.println("Building Database...");
             createDatabase(con);
 
-
+            System.out.println("Buying a product...");
             String SKU = "10000000";
             String EID = "30000000";
             String payment = "CC123123";
             String CID = "35553916";
             buyProduct(con,SKU,EID,payment,CID);
+            
+            System.out.println("Adding an Employee...");
+            EID = null;
+            String Name = null;
+            String Address = null;
+            String Phone = null;
+            BigDecimal Wage = null;
+            String pname = null;
+            String BID = null;
+            
+            addEmployee(con,EID, Name, Address, Phone, Wage, pname, BID);
+            
+            
             
             
         } catch (SQLException e) {
@@ -130,4 +145,40 @@ public class Main {
     		}
     	}
     }
+    
+    public static void addEmployee(Connection con,String EID,String Name,String Address,String Phone,BigDecimal Wage,String pname,String BID){
+    	PreparedStatement insert_stmt = null;
+    	String insert_str = "insert into Employee values(?, ?"+
+    						", ?, ?, ?, ?)";
+    	try{
+    		con.setAutoCommit(false);
+    		System.out.println("Create Statement...");
+    		insert_stmt = con.prepareStatement(insert_str);
+    		
+    		
+    		insert_stmt.setString(1, EID);
+    		insert_stmt.setString(2, Name);
+    		insert_stmt.setString(3, Address);
+    		insert_stmt.setString(4, Phone);
+    		insert_stmt.setBigDecimal(5, Wage);
+			insert_stmt.setString(6,pname);
+    		insert_stmt.setString(7,BID);
+    		insert_stmt.executeUpdate();
+    		
+    		con.commit();
+    		
+    	} catch (Exception e){
+    		e.printStackTrace();
+    	} finally{
+    		try{
+    			if(insert_stmt != null){
+    				insert_stmt.close();
+    			}
+    			con.setAutoCommit(true);
+    			
+    		} catch(SQLException se){
+    		}
+    	}
+    }
 }
+

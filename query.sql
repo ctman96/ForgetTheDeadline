@@ -74,14 +74,14 @@ WHERE p.SKU = ?;
 --Case=CID
 	SELECT * FROM Customer c WHERE c.CID=?;
 	--?: (1,CID)
-	SELECT *
+	SELECT Payment, Snum, SKU, saleDate
 	FROM Sale s
 	WHERE s.CID = ? AND s.saleDate >= ?;
 	--?: (1,CID),(2,generatedDate)
 --Case Name and Phone
 	SELECT * FROM Customer c WHERE c.Name=? AND c.Phone=?;
 	--?: (1,Name),(2,Phone)
-	SELECT *
+	SELECT Payment, Snum, SKU, saleDate
 	FROM Sale s, Customer c
 	WHERE s.CID=c.CID AND c.Name = ? AND c.Phone=? 
 	AND s.saleDate >= ?;

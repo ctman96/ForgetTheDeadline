@@ -38,6 +38,7 @@ public class Main {
             int maxQuantity = 0;
             int addQuantity = 0;
             BigDecimal wage = null;
+            BigDecimal newPrice = null;
             String position = "";
             String phone = "";
             String address = "";
@@ -82,7 +83,20 @@ public class Main {
             maxQuantity = 100;
 			System.out.println("Test addGameStore");
             addGameStore(con,bid,sku,quantity,maxQuantity);
-            
+
+            //8) Test changeGamePrice
+			sku = "";
+			newPrice = new BigDecimal(90.00);
+			changeGamePrice(con, sku, newPrice);
+
+			//9) Test getCustomerInfo, checkCustomerAccount
+			cid = "";
+			name = "";
+			phone = "";
+			getCustomerInfo(con,cid);
+			checkCustomerAccount(con,cid);
+			getCustomerInfo(con,name,phone);
+			checkCustomerAccount(con,name,phone);
 
             //10) Test createPurchaseOrder
 			did = "20000000";
@@ -153,7 +167,7 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-
+	//Query 1
     public static void buyProduct(Connection con, String sku, String eid, String payment, String cid){
     	PreparedStatement update_stmt = null;
     	PreparedStatement insert_stmt = null;
@@ -214,7 +228,7 @@ public class Main {
     		}
     	}
     }
-	//TODO
+	//Query 4
     public static void addEmployee(Connection con, String eid, String name, String bid, BigDecimal wage, String position, String phone, String address){
 		PreparedStatement insert_stmt = null;
 		String insert_str = "insert into Employee values(?, ?"+
@@ -250,7 +264,7 @@ public class Main {
 			}
 		}
 	}
-	//TODO
+	//Query 5
 	public static void removeEmployee(Connection con,String eid){
 		Statement drop_stmt = null;
 		String drop_str = "DELETE FROM Employee " +
@@ -278,7 +292,7 @@ public class Main {
 			}
 		}
 	}
-	//TODO
+	//Query 6
 	public static void addGameDatabase(Connection con, String name, String sku, BigDecimal price, String did){
 		PreparedStatement insert_stmt = null;
 		String insert_str = "insert into Product values(?, ?"+
@@ -311,7 +325,7 @@ public class Main {
 			}
 		}
 	}
-	//TODO
+	//Query 7
 	public static void addGameStore(Connection con, String bid, String sku, int quantity, int maxQuantity){
 		PreparedStatement insert_stmt = null;
 		String insert_str = "insert into Stock values(?, ?"+
@@ -344,7 +358,7 @@ public class Main {
 			}
 		}
 	}
-	//TODO TEST
+	//Query 8
 	public static void changeGamePrice(Connection con, String sku, BigDecimal newPrice){
 		PreparedStatement update_stmt = null;
 		String update_str =
@@ -377,24 +391,83 @@ public class Main {
 		}
 	}
 
-	//TODO TEST
-	public static void checkCustomerAccount(Connection con, String cid){
+
+	// Query 9 Part 1 - cid
+	//Returns result set of customer information
+	public static ResultSet getCustomerInfo(Connection con, String cid){
 		PreparedStatement select_stmt1 = null;
-		PreparedStatement select_stmt2 = null;
+		ResultSet rs = null;
 		String select_str1 = "SELECT * FROM Customer c WHERE c.CID=?";
-		String select_str2 = "SELECT * " +
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt1 = con.prepareStatement(select_str1);
+
+			select_stmt1.setString(1,cid);
+			System.out.println("Execute...");
+			rs = select_stmt1.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt1 != null ){
+					select_stmt1.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+	// Query 9 Part 1 - name&phone
+	//Returns result set of customer information
+	public static ResultSet getCustomerInfo(Connection con, String name, String phone){
+		PreparedStatement select_stmt1 = null;
+		ResultSet rs = null;
+		String select_str1 = "SELECT * FROM Customer c WHERE c.Name = ? AND c.Phone = ?";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			select_stmt1 = con.prepareStatement(select_str1);
+
+			select_stmt1.setString(1,name);
+			select_stmt1.setString(2,phone);
+			System.out.println("Execute...");
+			rs = select_stmt1.executeQuery();
+
+			con.commit();
+			System.out.println("Changes commited");
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(select_stmt1 != null){
+					select_stmt1.close();
+					con.setAutoCommit(true);
+				}
+			} catch(SQLException se){
+			}
+			return rs;
+		}
+	}
+
+	//Query 9 part 2 - cid
+	//Returns result set of payment,snum,sku,saledate
+	public static ResultSet checkCustomerAccount(Connection con, String cid){
+		PreparedStatement select_stmt2 = null;
+		ResultSet rs = null;
+		String select_str2 = "SELECT Payment, Snum, SKU, saleDate " +
 				"FROM Sale s " +
 				"WHERE s.CID = ? AND s.saleDate >= ?";
 		try{
 			con.setAutoCommit(false);
 			System.out.println("Create Statement...");
-			select_stmt1 = con.prepareStatement(select_str1);
 			select_stmt2 = con.prepareStatement(select_str2);
-
-			select_stmt1.setString(1,cid);
-			System.out.println("Execute...");
-			select_stmt1.executeUpdate();
-			//do something
 
 			select_stmt2.setString(1,cid);
 			Calendar c = Calendar.getInstance();
@@ -403,8 +476,7 @@ public class Main {
 			java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 			select_stmt2.setDate(2,sqlDate);
 			System.out.println("Execute...");
-			select_stmt2.executeUpdate();
-			//do something
+			rs = select_stmt2.executeQuery();
 			con.commit();
 			System.out.println("Changes commited");
 
@@ -412,38 +484,30 @@ public class Main {
 			e.printStackTrace();
 		}finally{
 			try{
-				if(select_stmt1 != null && select_stmt2 != null){
-					select_stmt1.close();
+				if(select_stmt2 != null){
 					select_stmt2.close();
 					con.setAutoCommit(true);
 				}
 			} catch(SQLException se){
 			}
+			return rs;
 		}
 	}
 
-	//TODO TEST
-	// need to change, not void, needs to return info. ResultSet?
-	public static void checkCustomerAccount(Connection con, String name, String phone){
-		PreparedStatement select_stmt1 = null;
+	//Query 9 part 2 - name&phone
+	//Returns result set of payment,snum,sku,saledate
+	public static ResultSet checkCustomerAccount(Connection con, String name, String phone){
 		PreparedStatement select_stmt2 = null;
-		String select_str1 = "SELECT * FROM Customer c WHERE c.Name = ? AND c.Phone = ?";
+		ResultSet rs = null;
 		String select_str2 =
-				"SELECT * " +
+				"SELECT Payment, Snum, SKU, saleDate " +
 				"FROM Sale s, Customer c " +
 				"WHERE s.CID = c.CID AND c.Name = ? AND c.Phone=? " +
 				"AND s.saleDate >= ?";
 		try{
 			con.setAutoCommit(false);
 			System.out.println("Create Statement...");
-			select_stmt1 = con.prepareStatement(select_str1);
 			select_stmt2 = con.prepareStatement(select_str2);
-
-			select_stmt1.setString(1,name);
-			select_stmt1.setString(2,phone);
-			System.out.println("Execute...");
-			select_stmt1.executeUpdate();
-			//Do something with result
 
 			select_stmt2.setString(1,name);
 			select_stmt2.setString(2,phone);
@@ -453,8 +517,7 @@ public class Main {
 			java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 			select_stmt2.setDate(3,sqlDate);
 			System.out.println("Execute...");
-			select_stmt2.executeUpdate();
-			//Do something with result
+			rs = select_stmt2.executeQuery();
 
 			con.commit();
 			System.out.println("Changes commited");
@@ -463,16 +526,17 @@ public class Main {
 			e.printStackTrace();
 		}finally{
 			try{
-				if(select_stmt1 != null && select_stmt2 != null){
-					select_stmt1.close();
+				if(select_stmt2 != null){
 					select_stmt2.close();
 					con.setAutoCommit(true);
 				}
 			} catch(SQLException se){
 			}
+			return rs;
 		}
 	}
-	//
+	//Query 10
+	//Returns result set of name,sku,price
 	public static ResultSet createPurchaseOrder(Connection con, String did, String bid){
 		PreparedStatement select_stmt = null;
 		ResultSet rs = null;
@@ -511,7 +575,7 @@ public class Main {
 		}
 	}
 
-	//
+	//Query 11
 	public static void updateProductQuantity(Connection con, String bid, String sku, int addQuantity){
 		PreparedStatement update_stmt = null;
 		String update_str =
@@ -547,7 +611,8 @@ public class Main {
 		}
 	}
 
-	//
+	//Query 12
+	//Returns result set of pname,sku,price,quantity
 	public static ResultSet createInventoryCount(Connection con, String bid){
 		PreparedStatement select_stmt = null;
 		ResultSet rs = null;

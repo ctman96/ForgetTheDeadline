@@ -7,6 +7,8 @@ import java.io.FileReader;
 
 import java.math.*;
 
+import java.util.Calendar;
+
 import oracle.jdbc.driver.OracleDriver;
 
 
@@ -103,10 +105,11 @@ public class Main {
     		insert_stmt.setString(1, payment);
     		insert_stmt.setString(2, "50000000");
     		insert_stmt.setString(3, sku);
-    		String stringDate = new String("18/08/01");
-    		SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
-			java.util.Date utilDate = fm.parse(stringDate);
-    		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+    		//String stringDate = new String("18/08/01");
+    		//SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
+			//java.util.Date utilDate = fm.parse(stringDate);
+    		//java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+			java.sql.Date sqlDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());;
     		insert_stmt.setDate(4,sqlDate);
 			insert_stmt.setString(5,cid);
     		insert_stmt.setString(6,eid);

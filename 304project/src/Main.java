@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import java.math.*;
+
 import oracle.jdbc.driver.OracleDriver;
 
 
@@ -22,11 +24,11 @@ public class Main {
 			System.out.println("Building Database...");
             createDatabase(con);
 
-            String SKU = "10000000";
-            String EID = "30000000";
+            String sku = "10000000";
+            String eid = "30000000";
             String payment = "CC123123";
-            String CID = "35553916";
-            buyProduct(con,SKU,EID,payment,CID);
+            String cid = "35553916";
+            buyProduct(con,sku,eid,payment,cid);
             
             
         } catch (SQLException e) {
@@ -60,7 +62,7 @@ public class Main {
 			Statement stmt = con.createStatement();
 			for(int i=0;i<inst.length;i++){
 				if(!inst[i].trim().equals("")){
-					System.out.println(">>"+inst[i]);
+					//System.out.println(">>"+inst[i]);
 					stmt.executeUpdate(inst[i]);
 					System.out.println(">>"+inst[i]);
 				}
@@ -71,7 +73,7 @@ public class Main {
 		}
 	}
 
-    public static void buyProduct(Connection con, String SKU, String EID, String payment, String CID){
+    public static void buyProduct(Connection con, String sku, String eid, String payment, String cid){
     	PreparedStatement update_stmt = null;
     	PreparedStatement insert_stmt = null;
     	String update_str = "UPDATE Stock s " +
@@ -89,26 +91,31 @@ public class Main {
     		update_stmt = con.prepareStatement(update_str);
     		insert_stmt = con.prepareStatement(insert_str);
     		
-    		update_stmt.setString(1,EID);
-    		update_stmt.setString(2,SKU);
-    		update_stmt.setString(3,SKU);
-			update_stmt.setString(4,EID);
-			update_stmt.setString(5,SKU);
+    		update_stmt.setString(1,eid);
+    		update_stmt.setString(2,sku);
+    		update_stmt.setString(3,sku);
+			update_stmt.setString(4,eid);
+			update_stmt.setString(5,sku);
+			System.out.println("Executing statement: "+update_stmt);
     		update_stmt.executeUpdate();
+			System.out.println("Executed");
     		
     		insert_stmt.setString(1, payment);
     		insert_stmt.setString(2, "50000000");
-    		insert_stmt.setString(3, SKU);
+    		insert_stmt.setString(3, sku);
     		String stringDate = new String("18/08/01");
     		SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
 			java.util.Date utilDate = fm.parse(stringDate);
     		java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
     		insert_stmt.setDate(4,sqlDate);
-			insert_stmt.setString(5,CID);
-    		insert_stmt.setString(6,EID);
+			insert_stmt.setString(5,cid);
+    		insert_stmt.setString(6,eid);
+			System.out.println("Executing statement: "+insert_stmt);
     		insert_stmt.executeUpdate();
-    		
+			System.out.println("Executed");
+
     		con.commit();
+			System.out.println("Changes commited");
     		
     	} catch (Exception e){
     		e.printStackTrace();
@@ -127,4 +134,56 @@ public class Main {
     		}
     	}
     }
+	//TODO
+    public static void addEmployee(Connection con, String eid, String bid, BigDecimal wage, String position, String phone, String address){
+
+	}
+	//TODO
+	public static void removeEmployee(Connection con, String eid){
+
+	}
+	//TODO
+	public static void addGameDatabase(Connection con, String sku, String did, String name, BigDecimal Price){
+
+	}
+	//TODO
+	public static void addGameStore(Connection con, String bid, String sku, int quantity, int maxQuantity){
+
+	}
+	//TODO
+	public static void changeGamePrice(Connection con, String sku, BigDecimal newPrice){
+
+	}
+	//TODO
+	public static void checkCustomerAccount(Connection con, String cid){
+
+	}
+
+	//TODO
+	// need to change, not void, needs to return info. ResultSet?
+	public static void checkCustomerAccount(Connection con, String name, String phone){
+
+	}
+	//TODO
+	// need to change, not void, needs to return info. ResultSet?
+	public static void createPurchaseOrder(Connection con, String did, String bid){
+
+	}
+	//TODO
+	public static void updateProductQuantity(Connection con, String bid, String sku, int addQuantity){
+
+	}
+
+	//TODO
+	// need to change, not void, needs to return info. ResultSet?
+	public static void createInventoryCount(Connection con, String bid){
+
+	}
+
+	//TODO
+	// need to change, not void, needs to return info. ResultSet?
+	public static void createSaleReport(Connection con, Date startDate, Date endDate){
+
+	}
+
 }

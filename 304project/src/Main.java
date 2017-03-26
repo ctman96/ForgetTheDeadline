@@ -59,6 +59,7 @@ public class Main {
             addEmployee(con,eid,name,bid,wage,position,phone,address);
             
             //5) Test remove Employee
+            eid = null;
             removeEmployee(con,eid);
             
             //6) Test addGameDatabase

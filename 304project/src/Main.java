@@ -2,6 +2,7 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.text.*;
 
 import oracle.jdbc.driver.OracleDriver;
@@ -16,9 +17,12 @@ public class Main {
         	System.out.println("Register Driver...");
             DriverManager.registerDriver(new OracleDriver());
             
-            System.out.println("Creating Connection...");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145");
+            Date date = new Date();
+            System.out.println(date);
             
+            System.out.println("Creating Connection...");
+            //con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145");
+            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_o2e9", "a40149122");
             String SKU = "10000000";
             String EID = "30000000";
             String payment = "CC123123";

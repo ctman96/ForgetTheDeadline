@@ -26,7 +26,7 @@ VALUES(?,?,?,?,?,?);
 
 
 --===================
---4)Adding Employee to Store UNTESTED
+--4)Adding Employee to Store TESTED CONFIRMED
 --===================
 --Inputs: EID,BID,Wage,Position,Phone,Address
 INSERT INTO Employee
@@ -34,7 +34,7 @@ VALUES(?,?,?,?,?,?);
 --?: (1,EID),(2,BID),(3,Wage),(4,Position),(5,Phone),(6,Address)
 
 --===================
---5)Remove Employee from a Store UNTESTED
+--5)Remove Employee from a Store TESTED CONFIRMED
 --===================
 --Inputs: EID
 DELETE FROM Employee e
@@ -42,7 +42,7 @@ WHERE e.EID = ?;
 --?: (1,EID)
 
 --===================
---6)Add game to Database UNTESTED
+--6)Add game to Database TESTED CONFIRMED
 --===================
 --Inputs: SKU,DID,name,price
 INSERT INTO Product
@@ -50,7 +50,7 @@ VALUES(?,?,?,?);
 --?: (1,name),(2,SKU),(3,price),(4,DID)
 
 --===================
---7)Add game to Store UNTESTED
+--7)Add game to Store TESTED CONFIRMED
 --===================
 --Inputs: BID,SKU,Quantity,maxQuantity
 INSERT INTO Stock
@@ -58,7 +58,7 @@ VALUES(?,?,?,?)
 --?: (1,BID),(2,SKU),(3,Quantity),(4,maxQuantity)
 
 --===================
---8)Changing game price UNTESTED
+--8)Changing game price TESTED CONFIRMED
 --===================
 --Inputs: SKU,newPrice
 UPDATE Product p
@@ -67,7 +67,7 @@ WHERE p.SKU = ?;
 --?: (1,newPrice),(2,SKU)
 
 --===================
---9)Check Customer Account UNTESTED
+--9)Check Customer Account TESTED CONFIRMED
 --===================
 --Inputs: CID  OR Name and Phone
 --Also generated date for 30 days prior to today's date
@@ -89,6 +89,7 @@ WHERE p.SKU = ?;
 --===================
 --10) Purchase order TESTED CONFIRMED
 --===================
+--Inputs: DID, BID
 SELECT Name, s.SKU, Price,
   maxquantity - quantity as orderQuantity,
   Price*(maxquantity - quantity) as orderPrice
@@ -98,12 +99,22 @@ WHERE p.DID = ? AND s.BID = ?
 --?: (1,DID), (2,BID)
 
 --===================
---11) Update Product Quantity UNFINISHED UNTESTED
+--11) Update Product Quantity TESTED CONFIRMED
 --===================
+--Inputs: BID,SKU,addQuantity
+UPDATE Stock s
+SET quantity = s.quantity+?
+WHERE s.BID=? AND s.SKU=?;
+--?: (1,addQuantity),(2,BID),(3,SKU)
 
 --===================
---12) INVENTORY COUNT UNFINISHED UNTESTED
+--12) INVENTORY COUNT TESTED CONFIRMED
 --===================
+--Inputs: BID
+SELECT Name, s.SKU, Price, Quantity
+FROM Stock s, Product p
+WHERE s.SKU=p.SKU AND s.BID=?;
+--?: (1,BID)
 
 --===================
 --13) SALE REPORT -- TESTED CONFIRMED

@@ -32,6 +32,14 @@ public class Main {
             String cid = "";
             String bid = "";
             String did = "";
+            BigDecimal price = null;
+            String name = "";
+            int quantity = 0;
+            int maxQuantity = 0;
+            BigDecimal wage = null;
+            String position = null;
+            String phone = null;
+            String address = null;
 
 			//1) Test buyProduct
             sku = "10000000";
@@ -39,6 +47,34 @@ public class Main {
             payment = "CC123123";
             cid = "35553916";
             buyProduct(con,sku,eid,payment,cid);
+            
+            //4) Test add Employee
+            eid = null;
+            name = null;
+            bid = null;
+            wage = null;
+            position = null;
+            phone = null;
+            address = null;
+            addEmployee(con,eid,name,bid,wage,position,phone,address);
+            
+            //5) Test remove Employee
+            removeEmployee(con,eid);
+            
+            //6) Test addGameDatabase
+            name = null;
+            sku = null;
+            price = null;
+            did = null;
+            addGameDatabase(con,name,sku,price,did);
+            
+            //7) Test addGameStore
+            bid = null;
+            sku = null;
+            quantity = 0;
+            maxQuantity = 0;
+            addGameStore(con,bid,sku,quantity,maxQuantity);
+            
 
             //10) Test createPurchaseOrder
 			did = "20000000";
@@ -229,12 +265,68 @@ public class Main {
 		}
 	}
 	//TODO
-	public static void addGameDatabase(Connection con, String sku, String did, String name, BigDecimal Price){
+	public static void addGameDatabase(Connection con, String name, String sku, BigDecimal price, String did){
+		PreparedStatement insert_stmt = null;
+		String insert_str = "insert into Product values(?, ?"+
+				", ?, ?)";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			insert_stmt = con.prepareStatement(insert_str);
 
+
+			insert_stmt.setString(1, name);
+			insert_stmt.setString(2, sku);
+			insert_stmt.setBigDecimal(3, price);
+			insert_stmt.setString(4, did);
+			insert_stmt.executeUpdate();
+
+			con.commit();
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(insert_stmt != null){
+					insert_stmt.close();
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+		}
 	}
 	//TODO
 	public static void addGameStore(Connection con, String bid, String sku, int quantity, int maxQuantity){
+		PreparedStatement insert_stmt = null;
+		String insert_str = "insert into Stock values(?, ?"+
+				", ?, ?)";
+		try{
+			con.setAutoCommit(false);
+			System.out.println("Create Statement...");
+			insert_stmt = con.prepareStatement(insert_str);
 
+
+			insert_stmt.setString(1, bid);
+			insert_stmt.setString(2, sku);
+			insert_stmt.setInt(3, quantity);
+			insert_stmt.setInt(4, maxQuantity);
+			insert_stmt.executeUpdate();
+
+			con.commit();
+
+		} catch (Exception e){
+			e.printStackTrace();
+		} finally{
+			try{
+				if(insert_stmt != null){
+					insert_stmt.close();
+				}
+				con.setAutoCommit(true);
+
+			} catch(SQLException se){
+			}
+		}
 	}
 	//TODO
 	public static void changeGamePrice(Connection con, String sku, BigDecimal newPrice){

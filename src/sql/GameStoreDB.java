@@ -37,6 +37,7 @@ public class GameStoreDB {
             try {
                 System.out.println("Building Database...");
                 createDatabase(con);
+                populateDatabase(con);
 
                 //Test basic queries
                 getBranch(con);

@@ -15,7 +15,7 @@ public class SQLUtil {
      * @param connection database connection
      * @param file file from which query strings are read
      */
-    public static void executeFile(Connection connection, File file) throws IOException {
+    public static void executeFile(Connection connection, File file) throws IOException, SQLException {
         String fileName = file.getName();
         int statementCount = 0;
 
@@ -45,8 +45,8 @@ public class SQLUtil {
 
             System.out.printf("%d statements executed from file %s.\n", statementCount, fileName);
         } catch (SQLException e) {
-            e.printStackTrace();
             System.out.printf("%d statements executed from file %s before exception.\n", statementCount, fileName);
+            throw e;
         }
     }
 

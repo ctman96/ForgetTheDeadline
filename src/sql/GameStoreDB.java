@@ -160,7 +160,15 @@ public class GameStoreDB {
 
     public static void createDatabase(Connection connection) throws SQLException {
         try {
-            SQLUtil.executeFile(connection, new File("resource/sql/create_database"));
+            SQLUtil.executeFile(connection, new File("resource/sql/create_db.sql"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void populateDatabase(Connection connection) throws SQLException {
+        try {
+            SQLUtil.executeFile(connection, new File("resource/sql/populate_db.sql"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -20,9 +20,8 @@ public class SQLUtil {
         int statementCount = 0;
 
         System.out.printf("Executing file %s.\n", fileName);
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
+        try (FileReader fReader = new FileReader(file);
+             BufferedReader reader = new BufferedReader(fReader)) {
             StringBuilder buf = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {

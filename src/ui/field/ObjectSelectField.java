@@ -3,11 +3,12 @@ package ui.field;
 import ui.util.CheckedInput;
 
 import javax.swing.*;
+import java.util.Vector;
 
 public class ObjectSelectField<InputT> extends JComboBox<InputT> implements CheckedInput<InputT> {
-    private InputT[] options;
+    private Vector<InputT> options;
 
-    public ObjectSelectField(InputT[] options) {
+    public ObjectSelectField(Vector<InputT> options) {
         super(options);
     }
 

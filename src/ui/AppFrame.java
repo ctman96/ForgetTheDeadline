@@ -6,6 +6,7 @@ import ui.dialog.NewProductDialog;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Vector;
 
 public class AppFrame extends JFrame {
 
@@ -36,7 +37,7 @@ public class AppFrame extends JFrame {
         newMenuItem.setActionCommand("new");
         newMenuItem.addActionListener((ActionEvent e) -> {
             if (e.getActionCommand().equals("new")) {
-                NewProductDialog dialog = new NewProductDialog(this, new IDeveloper[0]); // TODO
+                NewProductDialog dialog = new NewProductDialog(this, new Vector<IDeveloper>()); // TODO
                 dialog.pack();
                 dialog.setModal(true);
                 dialog.setVisible(true);

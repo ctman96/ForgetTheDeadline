@@ -8,6 +8,7 @@ import ui.field.StringTextField;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.util.Vector;
 
 public class NewProductDialog extends CheckedInputDialog<IProduct> {
     private StringTextField skuField;
@@ -37,7 +38,7 @@ public class NewProductDialog extends CheckedInputDialog<IProduct> {
         }
     };
 
-    public NewProductDialog(Frame owner, IDeveloper[] developers) {
+    public NewProductDialog(Frame owner, Vector<IDeveloper> developers) {
         super(owner);
         this.setTitle("New Product...");
 

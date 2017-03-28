@@ -3,8 +3,8 @@ package data;
 import java.math.BigDecimal;
 
 public interface IProduct {
-    public String getSKU(); // Primary Key
-    public String getName();
-    public BigDecimal getPrice();
-    public IDeveloper getDeveloper(); // Foreign Key
+    String getSKU(); // Primary Key
+    String getName();
+    BigDecimal getPrice();
+    IDeveloper getDeveloper(); // Foreign Key
 }

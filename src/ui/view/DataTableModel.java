@@ -2,6 +2,9 @@ package ui.view;
 
 import javax.swing.table.AbstractTableModel;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 import java.util.function.Function;
 
 public abstract class DataTableModel<T> extends AbstractTableModel {
@@ -10,15 +13,15 @@ public abstract class DataTableModel<T> extends AbstractTableModel {
         Function<T, Object> getRenderer();
     }
 
-    private DataTableColumn[] columns;
-    protected T[] data;
+    private Vector<DataTableColumn<T>> columns;
+    private Vector<T> data;
 
-    public DataTableModel(Class<T> dataType, DataTableColumn<T>[] columns) {
+    public DataTableModel(Vector<DataTableColumn<T>> columns) {
         this.columns = columns;
-        this.data = (T[]) Array.newInstance(dataType, 0);
+        this.data = new Vector<T>(0);
     }
 
-    public void setData(T[] newData) {
+    public void setData(Vector<T> newData) {
         this.data = newData;
         this.fireTableDataChanged();
     }
@@ -39,22 +42,22 @@ public abstract class DataTableModel<T> extends AbstractTableModel {
 
     @Override
     public String getColumnName(int i) {
-        return columns[i].getColumnName();
+        return columns.get(i).getColumnName();
     }
 
     @Override
     public int getRowCount() {
-        return this.data.length;
+        return this.data.size();
     }
 
     @Override
     public int getColumnCount() {
-        return columns.length;
+        return columns.size();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        T value = data[rowIndex];
-        return columns[columnIndex].getRenderer().apply(value);
+        T value = data.get(rowIndex);
+        return columns.get(columnIndex).getRenderer().apply(value);
     }
 }

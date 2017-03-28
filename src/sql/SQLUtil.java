@@ -1,13 +1,10 @@
 package sql;
 
-//import com.sun.javafx.binding.StringFormatter;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-
 public class SQLUtil {
 
     /**

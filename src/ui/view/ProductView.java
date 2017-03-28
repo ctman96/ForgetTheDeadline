@@ -3,25 +3,30 @@ package ui.view;
 import data.IProduct;
 
 import javax.swing.*;
+import java.util.Vector;
 
 public class ProductView extends JTable {
     public ProductView() {
         super(new ProductTableModel());
     }
 
-    public void setData(IProduct[] newData) {
+    public void setData(Vector<IProduct> newData) {
         ((ProductTableModel)this.getModel()).setData(newData);
     }
 
     private static class ProductTableModel extends DataTableModel<IProduct> {
 
+        static final Vector<DataTableColumn<IProduct>> columns;
+        static {
+            columns = new Vector<>(4);
+            columns.add(createColumn("SKU", IProduct::getSKU));
+            columns.add(createColumn("Name", IProduct::getName));
+            columns.add(createColumn("Price", IProduct::getPrice));
+            columns.add(createColumn("Developer", IProduct::getDeveloper));
+        }
+
         ProductTableModel() {
-            super(IProduct.class, new DataTableColumn[] {
-                    createColumn("SKU", (IProduct product) -> product.getSKU()),
-                    createColumn("Name", (IProduct product) -> product.getName()),
-                    createColumn("Price", (IProduct product) -> product.getPrice()),
-                    createColumn("Developer", (IProduct product) -> product.getDeveloper().getName())
-            });
+            super(columns);
         }
     }
 

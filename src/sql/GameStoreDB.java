@@ -1,14 +1,19 @@
 package sql;
 
+import data.*;
 import oracle.jdbc.driver.OracleDriver;
+import sql.function.SQLConsumer;
+import sql.function.SQLFunction;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.Map;
 
 public class GameStoreDB {
 
@@ -22,7 +27,7 @@ public class GameStoreDB {
      * Creates a connection to be used for callback, closes the connection afterwards
      * @param callback
      */
-    public static void withConnection(Consumer<Connection> callback) throws SQLException {
+    public static void withConnection(SQLConsumer<Connection> callback) throws SQLException {
         System.out.println("Creating Connection...");
         try (Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145")) {
             connection.setAutoCommit(false);
@@ -32,17 +37,17 @@ public class GameStoreDB {
     }
 
 
-    public static void main() {
-        Consumer<Connection> callback = (con) -> {
+    public static void main(String[] args) {
+        SQLConsumer<Connection> callback = (con) -> {
             try {
                 System.out.println("Building Database...");
                 createDatabase(con);
                 populateDatabase(con);
 
                 //Test basic queries
-                getBranch(con);
-                getCustomer(con);
-                getEmployee(con);
+                getBranchResultSet(con);
+                getCustomerResultSet(con);
+                getEmployeeResultSet(con);
                 getProduct(con);
                 getSale(con);
                 getStock(con);
@@ -144,8 +149,6 @@ public class GameStoreDB {
                 java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
                 System.out.println("Test createSaleReport");
                 createSaleReport(con, startDate, endDate);
-            } catch (SQLException e) {
-                e.printStackTrace();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -177,23 +180,50 @@ public class GameStoreDB {
     }
 
     // Basic Queries
-    public static ResultSet getBranch(Connection connection) throws SQLException {
+    private static ResultSet getBranchResultSet(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTable(connection, "Branch");
     }
 
+    public static List<IBranch> getBranch() throws SQLException {
+        return getData(GameStoreDB::getBranchResultSet, Branch::fromResultSet);
+    }
 
-    public static ResultSet getCustomer(Connection connection) throws SQLException {
+    private static ResultSet getCustomerResultSet(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTable(connection, "Customer");
     }
 
-    public static ResultSet getDeveloper(Connection connection) throws SQLException {
+    public static List<ICustomer> getCustomer() throws SQLException {
+        return getData(GameStoreDB::getCustomerResultSet, Customer::fromResultSet);
+    }
+
+    private static ResultSet getDeveloperResultSet(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTable(connection, "Developer");
     }
 
-    public static ResultSet getEmployee(Connection connection) throws SQLException {
+    public static List<IDeveloper> getDeveloper() throws SQLException {
+        return getData(GameStoreDB::getDeveloperResultSet, Developer::fromResultSet);
+    }
+
+    private static ResultSet getEmployeeResultSet(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTable(connection, "Employee");
     }
 
+    public static List<IEmployee> getEmployee(Map<String, IBranch> branchIdMap) throws SQLException {
+        return getData(GameStoreDB::getCustomerResultSet, (rs) -> Employee.fromResultSet(rs, branchIdMap));
+    }
+
+    private static <T> List<T> getData(SQLFunction<Connection, ResultSet> getter, SQLFunction<ResultSet, T> transformer) throws SQLException {
+        final ResultSet[] rsRef = new ResultSet[1];
+        withConnection((con) -> rsRef[0] = getter.apply(con));
+        ResultSet rs = rsRef[0];
+        ArrayList<T> data = new ArrayList<>();
+        while (rs.next()) {
+            data.add(transformer.apply(rs));
+        }
+        return data;
+    }
+
+    // TODO
     public static ResultSet getProduct(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTable(connection, "Product");
     }

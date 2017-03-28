@@ -3,11 +3,11 @@ package data;
 import java.math.BigDecimal;
 
 public interface IEmployee {
-    public String getId(); // Primary Key
-    public String getName();
-    public String getAddress();
-    public String getPhone();
-    public BigDecimal getWage();
-    public String getPositionName();
-    public IBranch getBranch(); // Foreign Key
+    String getId(); // Primary Key
+    String getName();
+    String getAddress();
+    String getPhone();
+    BigDecimal getWage();
+    String getPositionName();
+    IBranch getBranch(); // Foreign Key
 }

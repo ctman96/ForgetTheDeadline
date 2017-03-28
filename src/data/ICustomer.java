@@ -1,8 +1,8 @@
 package data;
 
 public interface ICustomer {
-    public String getId(); // Primary Key
-    public String getName();
-    public String getPhone();
-    public String getAddress();
+    String getId(); // Primary Key
+    String getName();
+    String getPhone();
+    String getAddress();
 }

@@ -13,29 +13,15 @@ public class ProductView extends JTable {
         ((ProductTableModel)this.getModel()).setData(newData);
     }
 
-    private static class ProductTableModel extends DataTableModel<IProduct, ProductTableModel.ColumnNames> {
-        enum ColumnNames {
-            SKU, Name, Price, Developer
-        }
+    private static class ProductTableModel extends DataTableModel<IProduct> {
 
         ProductTableModel() {
-            super(IProduct.class, ColumnNames.class);
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            IProduct product = this.data[rowIndex];
-            switch (columnIndex) {
-                case 0:
-                    return product.getSKU();
-                case 1:
-                    return product.getName();
-                case 2:
-                    return product.getPrice();
-                case 3:
-                    return product.getDeveloper().getName();
-            }
-            return null;
+            super(IProduct.class, new DataTableColumn[] {
+                    createColumn("SKU", (IProduct product) -> product.getSKU()),
+                    createColumn("Name", (IProduct product) -> product.getName()),
+                    createColumn("Price", (IProduct product) -> product.getPrice()),
+                    createColumn("Developer", (IProduct product) -> product.getDeveloper().getName())
+            });
         }
     }
 

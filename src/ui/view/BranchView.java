@@ -6,38 +6,21 @@ import javax.swing.*;
 
 public class BranchView extends JTable {
     public BranchView() {
-        super(new BranchTableModel());
+        super(new ProductTableModel());
     }
 
     public void setData(IBranch[] newData) {
-        ((BranchTableModel)this.getModel()).setData(newData);
+        ((ProductTableModel)this.getModel()).setData(newData);
     }
 
-    private static class BranchTableModel extends DataTableModel<IBranch, BranchTableModel.ColumnNames>
-    {
-        enum ColumnNames
-        {
-            BID, Phone, Address
-        }
+    private static class ProductTableModel extends DataTableModel<IBranch> {
 
-        BranchTableModel()
-        {
-            super(IBranch.class, ColumnNames.class);
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex)
-        {
-            IBranch branch = this.data[rowIndex];
-            switch (columnIndex) {
-                case 0:
-                    return branch.getId();
-                case 1:
-                    return branch.getPhone();
-                case 2:
-                    return branch.getAddress();
-            }
-            return null;
+        ProductTableModel() {
+            super(IBranch.class, new DataTableColumn[] {
+                    createColumn("ID", (IBranch branch) -> branch.getId()),
+                    createColumn("Address", (IBranch branch) -> branch.getAddress()),
+                    createColumn("Phone", (IBranch branch) -> branch.getPhone())
+            });
         }
     }
 

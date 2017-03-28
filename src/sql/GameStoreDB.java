@@ -32,7 +32,7 @@ public class GameStoreDB {
     }
 
 
-    static void main() {
+    public static void main() {
         Consumer<Connection> callback = (con) -> {
             try {
                 System.out.println("Building Database...");
@@ -152,6 +152,7 @@ public class GameStoreDB {
         };
 
         try {
+            setupDriver();
             withConnection(callback);
         } catch (SQLException e) {
             e.printStackTrace();

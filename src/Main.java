@@ -9,10 +9,10 @@ public class Main {
 
         try {
             GameStoreDB.setupDriver();
-            GameStoreDB.withConnection(connection ->  {
-                GameStoreDB.createDatabase(connection);
-                GameStoreDB.populateDatabase(connection);
-            });
+//            GameStoreDB.withConnection(connection ->  {
+//                GameStoreDB.createDatabase(connection);
+//                GameStoreDB.populateDatabase(connection);
+//            });
         } catch (SQLException e) {
             e.printStackTrace();
             return;

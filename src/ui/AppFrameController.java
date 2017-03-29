@@ -1,14 +1,13 @@
 package ui;
 
 import data.Developer;
+import data.Employee;
 import data.GameStore;
 import data.IDeveloper;
+import ui.dialog.NewCustomerDialog;
 import ui.dialog.NewProductDialog;
-import ui.dialog.UpdateStockDialog;
-import ui.view.BranchView;
-import ui.view.CustomerView;
-import ui.view.DeveloperView;
-import ui.view.ProductView;
+//import ui.dialog.UpdateStockDialog;
+import ui.view.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -23,6 +22,9 @@ public class AppFrameController {
     private DeveloperView developerView;
     private BranchView branchView;
     private CustomerView customerView;
+    private EmployeeView employeeView;
+    private SaleView saleView;
+    private StockView stockView;
 
     public AppFrameController() {
         setupAppFrame();
@@ -41,11 +43,17 @@ public class AppFrameController {
         branchView = new BranchView();
         productView = new ProductView();
         customerView = new CustomerView();
+        employeeView = new EmployeeView();
+        saleView = new SaleView();
+        stockView = new StockView();
 
         viewItems.add(appFrame.makeViewItem("Product", productView));
         viewItems.add(appFrame.makeViewItem("Developer", developerView));
         viewItems.add(appFrame.makeViewItem("Branch", branchView));
         viewItems.add(appFrame.makeViewItem("Customer", customerView));
+        viewItems.add(appFrame.makeViewItem("Employee", employeeView));
+        viewItems.add(appFrame.makeViewItem("Sale", saleView));
+        viewItems.add(appFrame.makeViewItem("Stock", stockView));
 
         this.refreshView();
 
@@ -85,17 +93,29 @@ public class AppFrameController {
             });
             fileMenu.add(newMenuItem);
 
-            JMenuItem updateStockMenuItem = new JMenuItem("Update stock...");
-            newMenuItem.setActionCommand("dialog");
-            newMenuItem.addActionListener((ActionEvent e) -> {
+            JMenuItem newCustomerMenuItem = new JMenuItem("New Customer...");
+            newCustomerMenuItem.setActionCommand("dialog");
+            newCustomerMenuItem.addActionListener((ActionEvent e) -> {
                 if (e.getActionCommand().equals("dialog")) {
-                    UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
+                    NewCustomerDialog dialog = new NewCustomerDialog(this.appFrame);
                     dialog.pack();
                     dialog.setModal(true);
                     dialog.setVisible(true);
                 }
             });
-            fileMenu.add(newMenuItem);
+            fileMenu.add(newCustomerMenuItem);
+
+//            JMenuItem updateStockMenuItem = new JMenuItem("Update stock...");
+//            newMenuItem.setActionCommand("dialog");
+//            newMenuItem.addActionListener((ActionEvent e) -> {
+//                if (e.getActionCommand().equals("dialog")) {
+//                    UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
+//                    dialog.pack();
+//                    dialog.setModal(true);
+//                    dialog.setVisible(true);
+//                }
+//            });
+//            fileMenu.add(newMenuItem);
 
             menuBar.add(fileMenu);
         }
@@ -118,6 +138,9 @@ public class AppFrameController {
             this.branchView.setData(new Vector<>(gameStore.branch));
             this.productView.setData(new Vector<>(gameStore.product));
             this.customerView.setData(new Vector<>(gameStore.customer));
+            this.employeeView.setData(new Vector<>(gameStore.employee));
+            this.saleView.setData(new Vector<>(gameStore.sale));
+            this.stockView.setData(new Vector<>(gameStore.stock));
         } catch (SQLException e) {
             e.printStackTrace();
         }

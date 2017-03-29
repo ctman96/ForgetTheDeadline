@@ -22,9 +22,9 @@ public class SaleView extends JTable {
             columns.add(createColumn("SaleNumber", ISale::getSaleNumber));
             columns.add(createColumn("Payment", ISale::getPayment));
             columns.add(createColumn("Date", ISale::getDate));
-            columns.add(createColumn("Product", ISale::getProduct));
-            columns.add(createColumn("Customer", ISale::getCustomer));
-            columns.add(createColumn("Employee", ISale::getEmployee));
+            columns.add(createColumn("Product", (s) -> s.getProduct().getName()));
+            columns.add(createColumn("Customer", (s) -> s.getCustomer().getName()));
+            columns.add(createColumn("Employee", (s) -> s.getEmployee().getName()));
         }
 
         ProductTableModel() {

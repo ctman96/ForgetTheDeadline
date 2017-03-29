@@ -47,12 +47,7 @@ public class SQLUtil {
         }
     }
 
-    public static ResultSet getAllFromTable(Connection connection, String tableName) throws SQLException {
-        ResultSet rs;
-        try (PreparedStatement stmt = connection.prepareStatement(String.format("SELECT * FROM %s", tableName))) {
-            rs = stmt.executeQuery();
-            connection.commit();
-        }
-        return rs;
+    public static PreparedStatement getAllFromTableQuery(Connection connection, String tableName) throws SQLException {
+        return connection.prepareStatement(String.format("SELECT * FROM %s", tableName));
     }
 }

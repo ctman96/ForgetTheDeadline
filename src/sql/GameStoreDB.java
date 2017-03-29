@@ -36,7 +36,6 @@ public class GameStoreDB {
         }
     }
 
-
     public static void main(String[] args) {
         SQLConsumer<Connection> callback = (con) -> {
             try {
@@ -45,9 +44,9 @@ public class GameStoreDB {
                 populateDatabase(con);
 
                 //Test basic queries
-                getBranchResultSet(con);
-                getCustomerResultSet(con);
-                getEmployeeResultSet(con);
+//                getBranchResultSet(con);
+//                getCustomerResultSet(con);
+//                getEmployeeResultSet(con);
                 getProduct(con);
                 getSale(con);
                 getStock(con);
@@ -180,60 +179,63 @@ public class GameStoreDB {
     }
 
     // Basic Queries
-    private static ResultSet getBranchResultSet(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Branch");
+    private static PreparedStatement getBranchQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Branch");
     }
 
     public static List<IBranch> getBranch() throws SQLException {
-        return getData(GameStoreDB::getBranchResultSet, Branch::fromResultSet);
+        return getData(GameStoreDB::getBranchQuery, Branch::fromResultSet);
     }
 
-    private static ResultSet getCustomerResultSet(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Customer");
+    private static PreparedStatement getCustomerQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Customer");
     }
 
     public static List<ICustomer> getCustomer() throws SQLException {
-        return getData(GameStoreDB::getCustomerResultSet, Customer::fromResultSet);
+        return getData(GameStoreDB::getCustomerQuery, Customer::fromResultSet);
     }
 
-    private static ResultSet getDeveloperResultSet(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Developer");
+    private static PreparedStatement getDeveloperQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Developer");
     }
 
     public static List<IDeveloper> getDeveloper() throws SQLException {
-        return getData(GameStoreDB::getDeveloperResultSet, Developer::fromResultSet);
+        return getData(GameStoreDB::getDeveloperQuery, Developer::fromResultSet);
     }
 
-    private static ResultSet getEmployeeResultSet(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Employee");
+    private static PreparedStatement getEmployeeQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Employee");
     }
 
     public static List<IEmployee> getEmployee(Map<String, IBranch> branchIdMap) throws SQLException {
-        return getData(GameStoreDB::getCustomerResultSet, (rs) -> Employee.fromResultSet(rs, branchIdMap));
+        return getData(GameStoreDB::getEmployeeQuery, (rs) -> Employee.fromResultSet(rs, branchIdMap));
     }
 
-    private static <T> List<T> getData(SQLFunction<Connection, ResultSet> getter, SQLFunction<ResultSet, T> transformer) throws SQLException {
-        final ResultSet[] rsRef = new ResultSet[1];
-        withConnection((con) -> rsRef[0] = getter.apply(con));
-        ResultSet rs = rsRef[0];
+    private static <T> List<T> getData(SQLFunction<Connection, PreparedStatement> toQuery, SQLFunction<ResultSet, T> resultParser) throws SQLException {
         ArrayList<T> data = new ArrayList<>();
-        while (rs.next()) {
-            data.add(transformer.apply(rs));
-        }
+        withConnection((con) -> {
+            try (PreparedStatement stmt = toQuery.apply(con)) {
+                ResultSet rs = stmt.executeQuery();
+                con.commit();
+                while (rs.next()) {
+                    data.add(resultParser.apply(rs));
+                }
+            }
+        });
         return data;
     }
 
     // TODO
-    public static ResultSet getProduct(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Product");
+    public static PreparedStatement getProduct(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Product");
     }
 
-    public static ResultSet getSale(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Sale");
+    public static PreparedStatement getSale(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Sale");
     }
 
-    public static ResultSet getStock(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTable(connection, "Stock");
+    public static PreparedStatement getStock(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Stock");
     }
 
 	// Program Queries

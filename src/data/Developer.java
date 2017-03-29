@@ -39,7 +39,7 @@ public class Developer implements  IDeveloper {
     }
 
     public static Developer fromResultSet(ResultSet rs) throws SQLException {
-        String id = rs.getString("CID");
+        String id = rs.getString("DID");
         String name = rs.getString("Name");
         String phone = rs.getString("Phone");
         String address = rs.getString("Address");

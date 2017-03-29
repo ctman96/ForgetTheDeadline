@@ -75,6 +75,20 @@ public class AppFrame extends JFrame {
         this.viewItems = viewItems;
     }
 
+    public ViewItem makeViewItem(Object label, Component component) {
+        return new ViewItem() {
+            @Override
+            public Object getName() {
+                return label;
+            }
+
+            @Override
+            public Runnable getCallback() {
+                return () -> setView(component);
+            }
+        };
+    }
+
     private void onViewSelect(int index) {
         this.log(String.format("%s selected", this.viewItems[index].getName()));
         this.viewItems[index].getCallback().run();

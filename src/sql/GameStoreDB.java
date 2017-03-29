@@ -47,9 +47,9 @@ public class GameStoreDB {
 //                getBranchResultSet(con);
 //                getCustomerResultSet(con);
 //                getEmployeeResultSet(con);
-                getProduct(con);
-                getSale(con);
-                getStock(con);
+//                getProduct(con);
+//                getSale(con);
+//                getStock(con);
 
                 String sku = "";
                 String eid = "";
@@ -207,8 +207,24 @@ public class GameStoreDB {
         return SQLUtil.getAllFromTableQuery(connection, "Employee");
     }
 
-    public static List<IEmployee> getEmployee(Map<String, IBranch> branchIdMap) throws SQLException {
-        return getData(GameStoreDB::getEmployeeQuery, (rs) -> Employee.fromResultSet(rs, branchIdMap));
+    public static List<IEmployee> getEmployee(Map<String, IBranch> idBranchMap) throws SQLException {
+        return getData(GameStoreDB::getEmployeeQuery, (rs) -> Employee.fromResultSet(rs, idBranchMap));
+    }
+
+    private static PreparedStatement getProductQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Product");
+    }
+
+    public static List<IProduct> getProduct(Map<String, IDeveloper> idDeveloperMap) throws SQLException {
+        return getData(GameStoreDB::getProductQuery, (rs) -> Product.fromResultSet(rs, idDeveloperMap));
+    }
+
+    private static PreparedStatement getSaleQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Sale");
+    }
+
+    public static List<ISale> getSale(Map<String, IProduct> skuProductMap, Map<String, ICustomer> idCustomerMap, Map<String, IEmployee> idEmployeeMap) throws SQLException {
+        return getData(GameStoreDB::getSaleQuery, (rs) -> Sale.fromResultSet(rs, skuProductMap, idCustomerMap, idEmployeeMap));
     }
 
     private static <T> List<T> getData(SQLFunction<Connection, PreparedStatement> toQuery, SQLFunction<ResultSet, T> resultParser) throws SQLException {
@@ -223,15 +239,6 @@ public class GameStoreDB {
             }
         });
         return data;
-    }
-
-    // TODO
-    public static PreparedStatement getProduct(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Product");
-    }
-
-    public static PreparedStatement getSale(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Sale");
     }
 
     public static PreparedStatement getStock(Connection connection) throws SQLException {

@@ -61,14 +61,14 @@ public class Employee implements IEmployee {
         return branch;
     }
 
-    public static Employee fromResultSet(ResultSet rs, Map<String, IBranch> branchIdMap) throws SQLException {
+    public static Employee fromResultSet(ResultSet rs, Map<String, IBranch> idBranchMap) throws SQLException {
         String id = rs.getString("EID");
         String name = rs.getString("Name");
         String phone = rs.getString("Phone");
         String address = rs.getString("Address");
         BigDecimal wage = rs.getBigDecimal("Wage");
         String pname = rs.getString("pname");
-        IBranch branch = branchIdMap.get(rs.getString("BID"));
+        IBranch branch = idBranchMap.get(rs.getString("BID"));
         return new Employee(id, name, phone, address, wage, pname, branch);
     }
 }

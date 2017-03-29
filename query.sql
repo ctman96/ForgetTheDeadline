@@ -15,15 +15,6 @@ INSERT INTO Sale
 VALUES(?,?,?,?,?,?);
 --?: (1,payment), (2,generated snum), (3,SKU), (4,Date), (5,CID), (6,EID)
 
---===================
---2)
---===================
-
-
---===================
---3)
---===================
-
 
 --===================
 --4)Adding Employee to Store TESTED CONFIRMED
@@ -124,3 +115,44 @@ SELECT *
 FROM Sale
 WHERE ? <= SALEDATE AND SALEDATE <= ?;
 --?: (1,startDate), (2,endDate)
+
+--===================
+--13) SALE REPORT - BEST EMPLOYEES -- AGGREGATION -- TESTED CONFIRMED
+--===================
+--Inputs: startDate, endDate
+SELECT e.EID, COUNT(e.EID)
+FROM Sale s, Employee e
+WHERE s.eid = e.eid 
+	AND ? <= SALEDATE AND SALEDATE <= ?
+GROUP BY e.EID
+ORDER BY COUNT(e.EID) DESC;
+--(1,startDate), (2,endDate)
+
+--Aggregation query: Pick one query that requires the use of aggregation (min, max, average, or count 
+--are all fine). Rerun with at least one other example of aggregation.
+
+--===================
+--14) SALE REPORT - BEST SELLING PRODUCTS BY BRANCH -- NESTED AGGREGATION -- TESTED CONFIRMED
+--===================
+--Inputs: startDate, endDate
+SELECT SKU, BID, COUNT(SKU)
+FROM Sale s, Employee e
+WHERE ? <= SALEDATE AND SALEDATE <= ?
+	AND s.eid = e.eid
+GROUP BY SKU, BID
+ORDER BY BID, COUNT(SKU) DESC;
+--?: (1,startDate), (2,endDate)
+
+--Nested aggregation with group-by: Pick one query that finds some aggregated value for each group 
+--(eg. the average number of items purchased per customer) and then rerun with a different aggregation.
+--Provide an interface for the user to specify whether the average, min, max or count is requested.
+
+
+
+--===================
+--15) TODO: DIVISION QUERY   STORES THAT STOCK ALL PRODUCTS?
+--===================
+--Division query: Pick one query of this category and provide an interface for the user to choose this
+--query (eg. find all the customers who bought all the items). Prove that your division results would 
+--change based on the data in your database. You can do it either by inserting a new tuple into or 
+--deleting an existing tuple from the appropriate tables.

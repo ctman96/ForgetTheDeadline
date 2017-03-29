@@ -1,9 +1,6 @@
 package ui;
 
-import data.IBranch;
-import data.IDeveloper;
-import data.IProduct;
-import sql.GameStoreDB;
+import data.GameStore;
 import ui.view.BranchView;
 import ui.view.DeveloperView;
 import ui.view.ProductView;
@@ -14,6 +11,7 @@ import java.util.*;
 
 public class AppFrameController {
     private AppFrame appFrame;
+    private GameStore gameStore;
 
     public AppFrameController() {
         setupAppFrame();
@@ -37,20 +35,10 @@ public class AppFrameController {
         viewItems.add(appFrame.makeViewItem("Branch", branchView));
 
         try {
-            Map<String, IDeveloper> idDeveloperMap = new HashMap<>();
-
-            List<IDeveloper> developers = GameStoreDB.getDeveloper();
-            developerView.setData(new Vector<>(developers));
-            for (IDeveloper developer : developers) {
-                idDeveloperMap.put(developer.getId(), developer);
-            }
-
-            List<IBranch> branches = GameStoreDB.getBranch();
-            branchView.setData(new Vector<>(branches));
-
-            List<IProduct> products = GameStoreDB.getProduct(idDeveloperMap);
-            productView.setData(new Vector<>(products));
-
+            this.gameStore = GameStore.getGameStore();
+            developerView.setData(new Vector<>(this.gameStore.developer));
+            branchView.setData(new Vector<>(this.gameStore.branch));
+            productView.setData(new Vector<>(this.gameStore.product));
         } catch (SQLException e) {
             e.printStackTrace();
         }

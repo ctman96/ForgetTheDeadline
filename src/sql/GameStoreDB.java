@@ -231,7 +231,7 @@ public class GameStoreDB {
         return SQLUtil.getAllFromTableQuery(connection, "Stock");
     }
 
-    public static List<Stock> getStock(Map<String, IProduct> skuProductMap, Map<String, IBranch> idBranchMap) throws SQLException {
+    public static List<IStock> getStock(Map<String, IProduct> skuProductMap, Map<String, IBranch> idBranchMap) throws SQLException {
         return getData(GameStoreDB::getStockQuery, (rs) -> Stock.fromResultSet(rs, skuProductMap, idBranchMap));
     }
 

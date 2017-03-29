@@ -150,8 +150,15 @@ ORDER BY BID, COUNT(SKU) DESC;
 
 
 --===================
---15) TODO: DIVISION QUERY   STORES THAT STOCK ALL PRODUCTS?
+--15)STORES THAT STOCK ALL PRODUCTS --Division --Untested TODO: change population script
 --===================
+SELECT b.BID
+FROM Branch b
+WHERE NOT EXISTS
+((SELECT p.SKU FROM Product p)
+ MINUS
+ (SELECT s.SKU FROM Stock s
+ WHERE s.BID=b.BID));
 --Division query: Pick one query of this category and provide an interface for the user to choose this
 --query (eg. find all the customers who bought all the items). Prove that your division results would 
 --change based on the data in your database. You can do it either by inserting a new tuple into or 

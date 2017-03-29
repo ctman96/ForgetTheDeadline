@@ -1,12 +1,7 @@
 package ui;
 
-import data.IDeveloper;
-import ui.dialog.NewProductDialog;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Vector;
 
 public class AppFrame extends JFrame {
 
@@ -33,17 +28,6 @@ public class AppFrame extends JFrame {
         super("ForgetTheDeadline");
 
         this.menuBar = new JMenuBar();
-        JMenuItem newMenuItem = new JMenuItem("New...");
-        newMenuItem.setActionCommand("new");
-        newMenuItem.addActionListener((ActionEvent e) -> {
-            if (e.getActionCommand().equals("new")) {
-                NewProductDialog dialog = new NewProductDialog(this, new Vector<IDeveloper>()); // TODO
-                dialog.pack();
-                dialog.setModal(true);
-                dialog.setVisible(true);
-            }
-        });
-        this.menuBar.add(newMenuItem);
 
         // View list
         this.viewList = new JList<>();

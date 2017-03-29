@@ -227,6 +227,14 @@ public class GameStoreDB {
         return getData(GameStoreDB::getSaleQuery, (rs) -> Sale.fromResultSet(rs, skuProductMap, idCustomerMap, idEmployeeMap));
     }
 
+    private static PreparedStatement getStockQuery(Connection connection) throws SQLException {
+        return SQLUtil.getAllFromTableQuery(connection, "Stock");
+    }
+
+    public static List<Stock> getStock(Map<String, IProduct> skuProductMap, Map<String, IBranch> idBranchMap) throws SQLException {
+        return getData(GameStoreDB::getStockQuery, (rs) -> Stock.fromResultSet(rs, skuProductMap, idBranchMap));
+    }
+
     private static <T> List<T> getData(SQLFunction<Connection, PreparedStatement> toQuery, SQLFunction<ResultSet, T> resultParser) throws SQLException {
         ArrayList<T> data = new ArrayList<>();
         withConnection((con) -> {
@@ -241,10 +249,6 @@ public class GameStoreDB {
         return data;
     }
 
-    public static PreparedStatement getStock(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Stock");
-    }
-
 	// Program Queries
 
     //Query 1
@@ -253,9 +257,10 @@ public class GameStoreDB {
                 "SET Quantity = (SELECT s.Quantity " +
                 "                FROM Stock s, Employee e " +
                 "                WHERE e.EID = ? AND s.BID = e.BID AND s.SKU = ?)-1 " +
-                "WHERE s.SKU = ? AND s.bid = (SELECT s.BID " +
+                "WHERE s.SKU = ? AND s.BID = (SELECT s.BID " +
                 "                 FROM Stock s, Employee e " +
                 "                 WHERE e.EID = ? AND s.BID = e.BID AND s.SKU = ?)";
+
         String insert_str = "insert into Sale values(?, ?, ?, ?, ?, ?)";
 
         System.out.println("Create Statement...");
@@ -270,7 +275,7 @@ public class GameStoreDB {
             update_stmt.executeUpdate();
 
             insert_stmt.setString(1, payment);
-            insert_stmt.setString(2, "50000000");
+            insert_stmt.setString(2, "50000000"); // TODO auto increment? UUID?
             insert_stmt.setString(3, sku);
             //String stringDate = new String("18/08/01");
             //SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");

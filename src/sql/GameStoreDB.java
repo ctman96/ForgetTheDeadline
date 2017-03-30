@@ -71,9 +71,9 @@ public class GameStoreDB {
 
                 //1) Test buyProduct
                 sku = "10000000";
-                eid = "30000000";
+                eid = "00000001";
                 payment = "CC123123";
-                cid = "35553916";
+                cid = "00000001";
                 System.out.println("Test buyProduct");
                 buyProduct(con, sku, eid, payment, cid);
 
@@ -88,7 +88,7 @@ public class GameStoreDB {
                 //4) Test add Employee
                 eid = "33330000";
                 name = "Tester Man";
-                bid = "00000000";
+                bid = "00000001";
                 wage = new BigDecimal(10.00);
                 position = "Janitor";
                 phone = "2501011011";
@@ -97,7 +97,7 @@ public class GameStoreDB {
                 addEmployee(con, eid, name, bid, wage, position, phone, address);
 
                 //5) Test remove Employee
-                eid = "30000000";
+                eid = "00000001";
                 System.out.println("Test removeEmployee");
                 removeEmployee(con, eid);
 
@@ -105,12 +105,12 @@ public class GameStoreDB {
                 name = "Tester: Gold";
                 sku = "33300000";
                 price = new BigDecimal(10.00);
-                did = "20000000";
+                did = "00000001";
                 System.out.println("Test addGameDatabase");
                 addGameDatabase(con, name, sku, price, did);
 
                 //7) Test addGameStore
-                bid = "00000000";
+                bid = "00000001";
                 sku = "33300000";
                 quantity = 100;
                 maxQuantity = 100;
@@ -123,29 +123,29 @@ public class GameStoreDB {
                 changeGamePrice(con, sku, newPrice);
 
                 //9) Test getCustomerInfo, checkCustomerAccount
-                cid = "";
-                name = "";
-                phone = "";
+                cid = "00000001";
+                name = "Richard Garza";
+                phone = "6135550169";
                 getCustomerInfo(con, cid);
                 checkCustomerAccount(con, cid);
                 getCustomerInfo(con, name, phone);
                 checkCustomerAccount(con, name, phone);
 
                 //10) Test createPurchaseOrder
-                did = "20000000";
-                bid = "00000000";
+                did = "00000001";
+                bid = "00000001";
                 System.out.println("Test createPurchaseOrder");
                 createPurchaseOrder(con, did, bid);
 
                 //11) Test updateProductQuantity
                 addQuantity = 10;
-                bid = "00000000";
+                bid = "00000001";
                 sku = "10000000";
                 System.out.println("Test updateProductQuantity");
                 updateProductQuantity(con, bid, sku, addQuantity);
 
                 //12) Test createInventoryCount
-                bid = "00000000";
+                bid = "00000001";
                 System.out.println("Test createInventoryCount");
                 createInventoryCount(con, bid);
 

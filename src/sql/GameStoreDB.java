@@ -295,6 +295,23 @@ public class GameStoreDB {
             System.out.println("Changes commited");
         }
     }
+    //Query 2
+    public static void addCustomer(Connection connection, String name, String cid, String phone, String address) throws SQLException {
+        String insert_str = "insert into Customer values(?, ?, ?, ?)";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = connection.prepareStatement(insert_str)) {
+            stmt.setString(1, name);
+            stmt.setString(2, cid);
+            stmt.setString(3, phone);
+            stmt.setString(4, address);
+            System.out.println("Execute...");
+            stmt.executeUpdate();
+
+            connection.commit();
+            System.out.println("Changes Commited");
+        }
+    }
 
     //Query 4
     public static void addEmployee(Connection connection, String eid, String name, String bid, BigDecimal wage, String position, String phone, String address) throws SQLException {
@@ -548,7 +565,8 @@ public class GameStoreDB {
         return rs;
     }
 
-    //
+    //Query 13
+    //Returns result set of Sale table
     public static ResultSet createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
         ResultSet rs;
         String select_str =
@@ -563,6 +581,85 @@ public class GameStoreDB {
             stmt.setDate(1,sqlStartDate);
             stmt.setDate(2,sqlEndDate);
 
+            System.out.println("Execute...");
+            rs = stmt.executeQuery();
+
+            con.commit();
+            System.out.println("Changes commited");
+        }
+        return rs;
+    }
+
+    //Query 14 TODO: Test
+    //Returns result set EID, count(EID)
+    //TODO: Add way to switch count() to min(count()), max(count()), avg(count())
+    public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        ResultSet rs;
+        String select_str =
+                "SELECT e.EID, COUNT(e.EID) " +
+                        "FROM Sale s, Employee e " +
+                        "WHERE s.eid = e.eid " +
+                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+                        "GROUP BY e.EID ORDER BY COUNT(e.EID) DESC)";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+            stmt.setDate(1,sqlStartDate);
+            stmt.setDate(2,sqlEndDate);
+
+            System.out.println("Execute...");
+            rs = stmt.executeQuery();
+
+            con.commit();
+            System.out.println("Changes commited");
+        }
+        return rs;
+    }
+
+    //Query 15 TODO: TEST
+    //Returns result set SKU, BID, count(SKU)
+    //TODO: Add way to switch count() to min(count()), max(count()), avg(count())
+    public static ResultSet createProductSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        ResultSet rs;
+        String select_str =
+                "SELECT SKU, BID, COUNT(SKU) " +
+                        "FROM Sale s, Employee e " +
+                        "WHERE s.eid = e.eid " +
+                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+                        "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC)";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+            stmt.setDate(1,sqlStartDate);
+            stmt.setDate(2,sqlEndDate);
+
+            System.out.println("Execute...");
+            rs = stmt.executeQuery();
+
+            con.commit();
+            System.out.println("Changes commited");
+        }
+        return rs;
+    }
+
+    //Query 16 TODO: Test
+    //Returns result set BID
+    public static ResultSet stocksAllProducts(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        ResultSet rs;
+        String select_str =
+                "SELECT b.BID FROM Branch b " +
+                        "WHERE NOT EXISTS " +
+                        "((SELECT p.SKU FROM Product p)" +
+                        "MINUS" +
+                        "(SELECT s.SKU FROM Stock s " +
+                        "WHERE s.BID = b.BID))";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = con.prepareStatement(select_str)){
             System.out.println("Execute...");
             rs = stmt.executeQuery();
 

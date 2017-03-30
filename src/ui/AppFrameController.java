@@ -258,16 +258,16 @@ public class AppFrameController {
             });
             fileMenu.add(restockOrderMenuItem);
 
-            JMenuItem restockMenuItem = makeMenuItem("Restock ALL...", () -> {
-                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Restock ALL...", JOptionPane.YES_NO_OPTION);
-                if (ok == JOptionPane.YES_OPTION) {
-                    try {
-                        GameStoreDB.withConnection(GameStoreDB::stocksAllProducts);
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
-                    }
-                } else {
-                    appFrame.log("Canceled");
+            JMenuItem restockMenuItem = makeMenuItem("Branch With All Products...", () -> {
+                try {
+                    List<IBranch> branchList = GameStoreDB.stocksAllProducts();
+                    BranchView view = new BranchView();
+                    view.setData(new Vector<>(branchList));
+                    ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                    viewDialog.setTitle("Matching Branches");
+                    showDialog(viewDialog, false);
+                } catch (SQLException e) {
+                    showErrorDialog(e.getMessage());
                 }
             });
             fileMenu.add(restockMenuItem);
@@ -364,11 +364,43 @@ public class AppFrameController {
                 SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
                 showDialog(dialog, true);
 
-                if (dialog.isInputValid()) { // TODO
+                if (dialog.isInputValid()) {
                     SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                    try {
+                        List<ISale> saleList = GameStoreDB.createSaleReport(interval.getStartDate(), interval.getEndDate());
+                        SaleView view = new SaleView();
+                        view.setData(new Vector<>(saleList));
+                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                        viewDialog.setTitle("Sale Report");
+                        showDialog(viewDialog, false);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
                 }
             });
             fileMenu.add(salesReportMenuItem);
+
+            JMenuItem employeeSalesReportMenuItem = makeMenuItem("Employee Sales Report...", () -> {
+                AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
+                    try {
+                        GameStoreDB.createEmployeeSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+//                        SaleView view = new SaleView();
+//                        view.setData(new Vector<>(saleList));
+//                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+//                        viewDialog.setTitle("Sale Report");
+//                        showDialog(viewDialog, false);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                }
+            });
+            fileMenu.add(employeeSalesReportMenuItem);
+
+
 
             JMenuItem createDBMenuItem = makeMenuItem("Create Database...", () -> {
                 int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);

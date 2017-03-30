@@ -797,74 +797,184 @@ public class GameStoreDB {
 
     //Query 13
     //Returns result set of Sale table
-    public static ResultSet createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
-        ResultSet rs;
-        String select_str =
-                "SELECT * " +
-                        "FROM Sale " +
-                        "WHERE ? <= SALEDATE AND SALEDATE <= ?";
+//    public static ResultSet createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+//        ResultSet rs;
+//        String select_str =
+//                "SELECT * " +
+//                        "FROM Sale " +
+//                        "WHERE ? <= SALEDATE AND SALEDATE <= ?";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+//            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+//            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+//            stmt.setDate(1,sqlStartDate);
+//            stmt.setDate(2,sqlEndDate);
+//
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
 
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+    public static List<ISale> createSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        String select_str =
+                "SELECT s.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name As ename " +
+                        "FROM Sale s, Customer c, Product p, Employee e " +
+                        "WHERE ? <= s.SALEDATE AND s.SALEDATE <= ? AND " +
+                        "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID";
+
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
             stmt.setDate(1,sqlStartDate);
             stmt.setDate(2,sqlEndDate);
-
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+            return stmt;
+        }, (rs) -> {
+            String snum = rs.getString("Snum");
+            String payment = rs.getString("Payment");
+            java.sql.Date date = rs.getDate("saleDate");
+            String cname = rs.getString("cname");
+            String pname = rs.getString("pname");
+            String ename = rs.getString("ename");
+            Sale sale = new Sale(snum, payment, date,
+                    new Product(null, pname, null, null),
+                    new Customer(null, cname, null, null),
+                    new Employee(null, ename, null, null, null, null, null));
+            return sale;
+        });
     }
 
     //Query 14
     //Returns result set EID, count(EID) OR just a number
-    public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
-        ResultSet rs;
-        String select_str =
+//    public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+//        ResultSet rs;
+//        String select_str =
+//                "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
+//                        "FROM Sale s, Employee e, Product p " +
+//                        "WHERE s.eid = e.eid AND s.SKU = p.SKU " +
+//                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+//                        "GROUP BY e.EID ORDER BY COUNT(e.EID) DESC";
+//        switch (agg) {
+//            case AVERAGE:
+//                select_str = "SELECT AVG(sum) FROM ("+select_str+")";
+//                break;
+//
+//            case MIN:
+//                select_str = "SELECT MIN(sum) FROM ("+select_str+")";
+//                break;
+//
+//            case MAX:
+//                select_str = "SELECT MAX(sum) FROM ("+select_str+")";
+//                break;
+//
+//            case COUNT:
+//                select_str = "SELECT COUNT(sum) FROM ("+select_str+")";
+//                break;
+//        }
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+//            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+//            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+//            stmt.setDate(1,sqlStartDate);
+//            stmt.setDate(2,sqlEndDate);
+//
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
+
+    public static BigDecimal createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+        String inner_select_str =
                 "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
                         "FROM Sale s, Employee e, Product p " +
                         "WHERE s.eid = e.eid AND s.SKU = p.SKU " +
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
                         "GROUP BY e.EID ORDER BY COUNT(e.EID) DESC";
+        String select_str;
         switch (agg) {
             case AVERAGE:
-                select_str = "SELECT AVG(sum) FROM ("+select_str+")";
+                select_str = "SELECT AVG(sum) FROM ("+inner_select_str+")";
                 break;
 
             case MIN:
-                select_str = "SELECT MIN(sum) FROM ("+select_str+")";
+                select_str = "SELECT MIN(sum) FROM ("+inner_select_str+")";
                 break;
 
             case MAX:
-                select_str = "SELECT MAX(sum) FROM ("+select_str+")";
+                select_str = "SELECT MAX(sum) FROM ("+inner_select_str+")";
                 break;
 
             case COUNT:
-                select_str = "SELECT COUNT(sum) FROM ("+select_str+")";
+                select_str = "SELECT COUNT(sum) FROM ("+inner_select_str+")";
                 break;
+            default:
+                throw new IllegalArgumentException("Unsupported Aggregation");
         }
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
             stmt.setDate(1,sqlStartDate);
             stmt.setDate(2,sqlEndDate);
-
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+            return stmt;
+        }, (rs) -> {
+            return rs.getBigDecimal(1);
+        }).get(0);
     }
 
     //Query 15  
     //Returns result set SKU, BID, count(SKU) OR BID,number
+//    public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+//        ResultSet rs;
+//        String select_str =
+//                "SELECT SKU, BID, COUNT(SKU) count " +
+//                        "FROM Sale s, Employee e " +
+//                        "WHERE s.eid = e.eid " +
+//                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+//                        "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC";
+//        switch(agg){
+//            case AVERAGE:
+//                select_str = "SELECT SKU, AVG(count) FROM ("+select_str+") GROUP BY SKU ORDER BY AVG(count) DESC";
+//                break;
+//
+//            case MIN:
+//                select_str = "SELECT SKU, MIN(count) FROM ("+select_str+") GROUP BY SKU ORDER BY MIN(count)";
+//                break;
+//
+//            case MAX:
+//                select_str = "SELECT SKU, MAX(count) FROM ("+select_str+") GROUP BY SKU ORDER BY MAX(count)";
+//                break;
+//
+//            case COUNT:
+//                select_str = "SELECT SKU, COUNT(count) FROM ("+select_str+") GROUP BY SKU ORDER BY COUNT(count)";
+//                break;
+//        }
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+//            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+//            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+//            stmt.setDate(1,sqlStartDate);
+//            stmt.setDate(2,sqlEndDate);
+//
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
+
     public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         ResultSet rs;
         String select_str =
@@ -908,24 +1018,35 @@ public class GameStoreDB {
 
     //Query 16
     //Returns result set BID
-    public static ResultSet stocksAllProducts(Connection con) throws SQLException {
-        ResultSet rs;
+//    public static ResultSet stocksAllProducts(Connection con) throws SQLException {
+//        ResultSet rs;
+//        String select_str =
+//                "SELECT b.BID FROM Branch b " +
+//                        "WHERE NOT EXISTS " +
+//                        "((SELECT p.SKU FROM Product p)" +
+//                        "MINUS" +
+//                        "(SELECT s.SKU FROM Stock s " +
+//                        "WHERE s.BID = b.BID))";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
+
+    public static List<IBranch> stocksAllProducts() throws SQLException {
         String select_str =
-                "SELECT b.BID FROM Branch b " +
+                "SELECT * FROM Branch b " +
                         "WHERE NOT EXISTS " +
                         "((SELECT p.SKU FROM Product p)" +
                         "MINUS" +
                         "(SELECT s.SKU FROM Stock s " +
                         "WHERE s.BID = b.BID))";
-
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)){
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+        return getData((con) -> con.prepareStatement(select_str), Branch::fromResultSet);
     }
 }

@@ -126,15 +126,15 @@ WHERE ? <= SALEDATE AND SALEDATE <= ?
 --?: (1,startDate), (2,endDate)
 
 --===================
---13) SALE REPORT - BEST EMPLOYEES -- AGGREGATION -- TESTED CONFIRMED
+--13) SALE REPORT - EMPLOYEES -- AGGREGATION -- TESTED CONFIRMED
 --===================
 --Inputs: startDate, endDate,
 --optional: AGGREGATE
 
---SELECT AGGREGATE(count) FROM(
-SELECT e.EID, COUNT(e.EID) count
-FROM Sale s, Employee e
-WHERE s.eid = e.eid 
+--SELECT AGGREGATE(sum) FROM(
+SELECT e.EID, COUNT(e.EID) count, SUM(price) sum
+FROM Sale s, Employee e, Product p
+WHERE s.eid = e.eid AND s.SKU = p.SKU
 	AND ? <= SALEDATE AND SALEDATE <= ?
 GROUP BY e.EID
 ORDER BY COUNT(e.EID) DESC
@@ -150,14 +150,14 @@ ORDER BY COUNT(e.EID) DESC
 --Inputs: startDate, endDate
 --optional: AGGREGATE
 
---SELECT BID, AGGREGATE(count) FROM (
+--SELECT SKU, AGGREGATE(count) FROM (
 SELECT SKU, BID, COUNT(SKU) count
 FROM Sale s, Employee e
 WHERE ? <= SALEDATE AND SALEDATE <= ?
 	AND s.eid = e.eid
 GROUP BY SKU, BID
 ORDER BY BID, COUNT(SKU) DESC
---)
+--) GROUP BY SKU ORDER BY AGGREGATE(count) DESC
 --?: (1,startDate), (2,endDate)
 
 --Nested aggregation with group-by: Pick one query that finds some aggregated value for each group 

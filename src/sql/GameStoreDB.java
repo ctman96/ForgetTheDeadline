@@ -13,6 +13,10 @@ import java.util.*;
 
 public class GameStoreDB {
 
+    public enum Aggregate {
+        AVERAGE, MIN, MAX, COUNT
+    }
+
     public static void setupDriver() throws SQLException {
         System.out.println("Registering Driver...");
         DriverManager.registerDriver(new OracleDriver());
@@ -155,11 +159,11 @@ public class GameStoreDB {
 
                 //14) Test createEmployeeSaleReport
                 System.out.println("Test createEmployeeSaleReport");
-                createEmployeeSaleReport(con, startDate, endDate);
+                createEmployeeSaleReport(con, startDate, endDate, Aggregate.MAX);
 
                 //15) Test createProductBranchSaleReport
                 System.out.println("Test createProductBranchSaleReport");
-                createProductBranchSaleReport(con, startDate, endDate);
+                createProductBranchSaleReport(con, startDate, endDate, Aggregate.MAX);
 
                 //16) Test stocksAllProducts
                 System.out.println("Test stocksAllProducts");
@@ -791,18 +795,33 @@ public class GameStoreDB {
         return rs;
     }
 
-    //Query 14 TODO: Test
-    //Returns result set EID, count(EID)
-    //TODO: Add way to switch count() to min(count()), max(count()), avg(count())
-    public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+    //Query 14
+    //Returns result set EID, count(EID) OR just a number
+    public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         ResultSet rs;
         String select_str =
-                "SELECT e.EID, COUNT(e.EID) " +
-                        "FROM Sale s, Employee e " +
-                        "WHERE s.eid = e.eid " +
+                "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
+                        "FROM Sale s, Employee e, Product p " +
+                        "WHERE s.eid = e.eid AND s.SKU = p.SKU " +
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
                         "GROUP BY e.EID ORDER BY COUNT(e.EID) DESC";
+        switch (agg) {
+            case AVERAGE:
+                select_str = "SELECT AVG(sum) FROM ("+select_str+")";
+                break;
 
+            case MIN:
+                select_str = "SELECT MIN(sum) FROM ("+select_str+")";
+                break;
+
+            case MAX:
+                select_str = "SELECT MAX(sum) FROM ("+select_str+")";
+                break;
+
+            case COUNT:
+                select_str = "SELECT COUNT(sum) FROM ("+select_str+")";
+                break;
+        }
         System.out.println("Create Statement...");
         try (PreparedStatement stmt = con.prepareStatement(select_str)){
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
@@ -819,18 +838,33 @@ public class GameStoreDB {
         return rs;
     }
 
-    //Query 15 TODO: TEST
-    //Returns result set SKU, BID, count(SKU)
-    //TODO: Add way to switch count() to min(count()), max(count()), avg(count())
-    public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+    //Query 15  
+    //Returns result set SKU, BID, count(SKU) OR BID,number
+    public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         ResultSet rs;
         String select_str =
-                "SELECT SKU, BID, COUNT(SKU) " +
+                "SELECT SKU, BID, COUNT(SKU) count " +
                         "FROM Sale s, Employee e " +
                         "WHERE s.eid = e.eid " +
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
                         "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC";
+        switch(agg){
+            case AVERAGE:
+                select_str = "SELECT SKU, AVG(count) FROM ("+select_str+") GROUP BY SKU ORDER BY AVG(count) DESC";
+                break;
 
+            case MIN:
+                select_str = "SELECT SKU, MIN(count) FROM ("+select_str+") GROUP BY SKU ORDER BY MIN(count)";
+                break;
+
+            case MAX:
+                select_str = "SELECT SKU, MAX(count) FROM ("+select_str+") GROUP BY SKU ORDER BY MAX(count)";
+                break;
+
+            case COUNT:
+                select_str = "SELECT SKU, COUNT(count) FROM ("+select_str+") GROUP BY SKU ORDER BY COUNT(count)";
+                break;
+        }
         System.out.println("Create Statement...");
         try (PreparedStatement stmt = con.prepareStatement(select_str)){
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
@@ -847,7 +881,7 @@ public class GameStoreDB {
         return rs;
     }
 
-    //Query 16 TODO: Test
+    //Query 16
     //Returns result set BID
     public static ResultSet stocksAllProducts(Connection con) throws SQLException {
         ResultSet rs;

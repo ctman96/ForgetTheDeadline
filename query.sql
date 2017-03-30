@@ -123,6 +123,7 @@ WHERE s.SKU=p.SKU AND s.BID=?
 SELECT *
 FROM Sale
 WHERE ? <= SALEDATE AND SALEDATE <= ?
+ORDER BY saleDate ASC
 --?: (1,startDate), (2,endDate)
 
 --===================

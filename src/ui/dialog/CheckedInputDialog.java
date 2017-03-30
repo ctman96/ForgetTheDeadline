@@ -81,7 +81,6 @@ public abstract class CheckedInputDialog<T> extends JDialog implements CheckedIn
             this.ok = true;
             dispose();
         });
-        this.okButton.setEnabled(false);
 
         this.cancelButton = new JButton("Cancel");
         this.cancelButton.addActionListener((e) -> {
@@ -137,6 +136,8 @@ public abstract class CheckedInputDialog<T> extends JDialog implements CheckedIn
 
             layout.setVerticalGroup(verticalGroup);
         }
+
+        onValueChange();
     }
 
     protected void onValueChange() {

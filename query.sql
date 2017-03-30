@@ -15,6 +15,13 @@ INSERT INTO Sale
 VALUES(?,?,?,?,?,?);
 --?: (1,payment), (2,generated snum), (3,SKU), (4,Date), (5,CID), (6,EID)
 
+--===================
+--2)Adding Customer TESTED CONFIRMED
+--===================
+--Inputs name, cid, phone, address
+INSERT INTO Customer
+ VALUES (?,?,?,?);
+--?: (1,name), (2,cid), (3,phone), (4,address)
 
 --===================
 --4)Adding Employee to Store TESTED CONFIRMED

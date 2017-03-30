@@ -82,6 +82,153 @@ public class AppFrameController {
 
         JMenu fileMenu = new JMenu("File");
         {
+            JMenuItem createDBMenuItem = makeMenuItem("Create Database...", () -> {
+                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
+                if (ok == JOptionPane.YES_OPTION) {
+                    try {
+                        GameStoreDB.withConnection(GameStoreDB::createDatabase);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            fileMenu.add(createDBMenuItem);
+
+            JMenuItem populateDBMenuItem = makeMenuItem("Populate Database...", () -> {
+                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
+                if (ok == JOptionPane.YES_OPTION) {
+                    try {
+                        GameStoreDB.withConnection(GameStoreDB::populateDatabase);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            fileMenu.add(populateDBMenuItem);
+        }
+        menuBar.add(fileMenu);
+
+        JMenu customerMenu = new JMenu("Customer");
+        {
+            JMenu findCustomerMenu = new JMenu("Find Customer");
+            {
+                JMenuItem findCustomerByIdMenuItem = makeMenuItem("Find Customer by ID...", () -> {
+                    SearchCustomerByIdDialog dialog = new SearchCustomerByIdDialog(this.appFrame);
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        String id = dialog.getInputValue();
+                        try {
+                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(id);
+                            CustomerView view = new CustomerView();
+                            view.setData(new Vector<>(customerList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Matching Users");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+                });
+                findCustomerMenu.add(findCustomerByIdMenuItem);
+
+                JMenuItem findCustomerByNameMenuItem = makeMenuItem("Find Customer by Name and Phone...", () -> {
+                    SearchCustomerByNameDialog dialog = new SearchCustomerByNameDialog(this.appFrame);
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        ICustomer customer = dialog.getInputValue();
+                        try {
+                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(customer.getName(), customer.getPhone());
+                            CustomerView view = new CustomerView();
+                            view.setData(new Vector<>(customerList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Matching Users");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+                });
+                findCustomerMenu.add(findCustomerByNameMenuItem);
+            }
+            customerMenu.add(findCustomerMenu);
+
+            JMenu getCustomerPurchaseMenu = new JMenu("Get Customer Purchases");
+            {
+                JMenuItem findCustomerByIdMenuItem = makeMenuItem("Find Customer by ID...", () -> {
+                    SearchCustomerByIdDialog dialog = new SearchCustomerByIdDialog(this.appFrame);
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        String id = dialog.getInputValue();
+                        try {
+                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(id);
+                            SaleView view = new SaleView();
+                            view.setData(new Vector<>(saleList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("User Purchase within 30 Days");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+                });
+                getCustomerPurchaseMenu.add(findCustomerByIdMenuItem);
+
+                JMenuItem findCustomerByNameMenuItem = makeMenuItem("Find Customer by Name and Phone...", () -> {
+                    SearchCustomerByNameDialog dialog = new SearchCustomerByNameDialog(this.appFrame);
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        ICustomer customer = dialog.getInputValue();
+                        try {
+                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(customer.getName(), customer.getPhone());
+                            SaleView view = new SaleView();
+                            view.setData(new Vector<>(saleList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("User Purchase within 30 Days");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+                });
+                getCustomerPurchaseMenu.add(findCustomerByNameMenuItem);
+            }
+            customerMenu.add(getCustomerPurchaseMenu);
+        }
+        menuBar.add(customerMenu);
+
+        JMenu employeeMenu = new JMenu("Employee");
+        {
+            JMenuItem makePurchaseMenuItem = makeMenuItem("Make Purchase...", () -> {
+                NewSaleDialog dialog = new NewSaleDialog(this.appFrame, new Vector<>(gameStore.product), new Vector<>(gameStore.customer), new Vector<>(gameStore.employee));
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    ISale sale = dialog.getInputValue();
+                    try {
+                        GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.buyProduct(con, sale.getProduct().getSKU(), sale.getEmployee().getId(), sale.getPayment(), sale.getCustomer().getId());
+                        });
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            employeeMenu.add(makePurchaseMenuItem);
+        }
+        menuBar.add(employeeMenu);
+
+        JMenu managerMenu = new JMenu("Manager");
+        {
             JMenu newMenu = new JMenu("New");
             {
                 JMenuItem newDeveloperMenuItem = makeMenuItem("Product...", () -> {
@@ -157,7 +304,7 @@ public class AppFrameController {
                 });
                 newMenu.add(newStockMenuItem);
             }
-            fileMenu.add(newMenu);
+            managerMenu.add(newMenu);
 
             JMenuItem changePriceMenuItem = makeMenuItem("Change Product Price...", () -> {
                 UpdateProductPriceDialog dialog = new UpdateProductPriceDialog(this.appFrame, new Vector<>(gameStore.product));
@@ -176,7 +323,7 @@ public class AppFrameController {
                     appFrame.log("Canceled");
                 }
             });
-            fileMenu.add(changePriceMenuItem);
+            managerMenu.add(changePriceMenuItem);
 
             JMenuItem removeEmployeeMenuItem = makeMenuItem("Remove Employee...", () -> {
                 RemoveEmployeeDialog dialog = new RemoveEmployeeDialog (this.appFrame, new Vector<>(gameStore.employee));
@@ -195,26 +342,7 @@ public class AppFrameController {
                     appFrame.log("Canceled");
                 }
             });
-            fileMenu.add(removeEmployeeMenuItem);
-
-            JMenuItem makePurchaseMenuItem = makeMenuItem("Make Purchase...", () -> {
-                NewSaleDialog dialog = new NewSaleDialog(this.appFrame, new Vector<>(gameStore.product), new Vector<>(gameStore.customer), new Vector<>(gameStore.employee));
-                showDialog(dialog, true);
-
-                if (dialog.isInputValid()) {
-                    ISale sale = dialog.getInputValue();
-                    try {
-                        GameStoreDB.withConnection((con) -> {
-                            GameStoreDB.buyProduct(con, sale.getProduct().getSKU(), sale.getEmployee().getId(), sale.getPayment(), sale.getCustomer().getId());
-                        });
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
-                    }
-                } else {
-                    appFrame.log("Canceled");
-                }
-            });
-            fileMenu.add(makePurchaseMenuItem);
+            managerMenu.add(removeEmployeeMenuItem);
 
             JMenuItem updateStockMenuItem = makeMenuItem("Add Stock to...", () -> {
                 UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
@@ -233,7 +361,7 @@ public class AppFrameController {
                     appFrame.log("Canceled");
                 }
             });
-            fileMenu.add(updateStockMenuItem);
+            managerMenu.add(updateStockMenuItem);
 
             JMenuItem restockOrderMenuItem = makeMenuItem("Generate Restock Order...", () -> {
                 RestockOrderDialog dialog = new RestockOrderDialog(this.appFrame, new Vector<>(gameStore.branch), new Vector<>(gameStore.developer));;
@@ -257,7 +385,7 @@ public class AppFrameController {
                     appFrame.log("Canceled");
                 }
             });
-            fileMenu.add(restockOrderMenuItem);
+            managerMenu.add(restockOrderMenuItem);
 
             JMenuItem inventoryCountMenuItem = makeMenuItem("Generate Inventory Count...",  () -> {
                 InventoryCountDialog dialog = new InventoryCountDialog(this.appFrame, new Vector<>(gameStore.branch));
@@ -267,12 +395,12 @@ public class AppFrameController {
                     IBranch branch = dialog.getInputValue();
                     try {
                         GameStoreDB.withConnection((con) -> {
-                           List<Inventory> inventoryList = GameStoreDB.createInventoryCount(branch.getId());
-                           InventoryView view = new InventoryView();
-                           view.setData(new Vector<>(inventoryList));
-                           ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                           viewDialog.setTitle("Inventory Count");
-                           showDialog(viewDialog, false);
+                            List<Inventory> inventoryList = GameStoreDB.createInventoryCount(branch.getId());
+                            InventoryView view = new InventoryView();
+                            view.setData(new Vector<>(inventoryList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Inventory Count");
+                            showDialog(viewDialog, false);
                         });
                     }catch (SQLException e) {
                         showErrorDialog(e.getMessage());
@@ -281,7 +409,7 @@ public class AppFrameController {
                     appFrame.log("Canceled");
                 }
             });
-            fileMenu.add(inventoryCountMenuItem);
+            managerMenu.add(inventoryCountMenuItem);
 
             JMenuItem restockMenuItem = makeMenuItem("Branch With All Products...", () -> {
                 try {
@@ -295,95 +423,7 @@ public class AppFrameController {
                     showErrorDialog(e.getMessage());
                 }
             });
-            fileMenu.add(restockMenuItem);
-
-            JMenu findCustomerMenu = new JMenu("Find Customer");
-            {
-                JMenuItem findCustomerByIdMenuItem = makeMenuItem("Find Customer by ID...", () -> {
-                    SearchCustomerByIdDialog dialog = new SearchCustomerByIdDialog(this.appFrame);
-                    showDialog(dialog, true);
-
-                    if (dialog.isInputValid()) {
-                        String id = dialog.getInputValue();
-                        try {
-                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(id);
-                            CustomerView view = new CustomerView();
-                            view.setData(new Vector<>(customerList));
-                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                            viewDialog.setTitle("Matching Users");
-                            showDialog(viewDialog, false);
-                        } catch (SQLException e) {
-                            showErrorDialog(e.getMessage());
-                        }
-                    }
-                });
-                findCustomerMenu.add(findCustomerByIdMenuItem);
-
-                JMenuItem findCustomerByNameMenuItem = makeMenuItem("Find Customer by Name and Phone...", () -> {
-                    SearchCustomerByNameDialog dialog = new SearchCustomerByNameDialog(this.appFrame);
-                    showDialog(dialog, true);
-
-                    if (dialog.isInputValid()) {
-                        ICustomer customer = dialog.getInputValue();
-                        try {
-                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(customer.getName(), customer.getPhone());
-                            CustomerView view = new CustomerView();
-                            view.setData(new Vector<>(customerList));
-                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                            viewDialog.setTitle("Matching Users");
-                            showDialog(viewDialog, false);
-                        } catch (SQLException e) {
-                            showErrorDialog(e.getMessage());
-                        }
-                    }
-                });
-                findCustomerMenu.add(findCustomerByNameMenuItem);
-            }
-            fileMenu.add(findCustomerMenu);
-
-            JMenu getCustomerPurchaseMenu = new JMenu("Get Customer Purchases");
-            {
-                JMenuItem findCustomerByIdMenuItem = makeMenuItem("Find Customer by ID...", () -> {
-                    SearchCustomerByIdDialog dialog = new SearchCustomerByIdDialog(this.appFrame);
-                    showDialog(dialog, true);
-
-                    if (dialog.isInputValid()) {
-                        String id = dialog.getInputValue();
-                        try {
-                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(id);
-                            SaleView view = new SaleView();
-                            view.setData(new Vector<>(saleList));
-                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                            viewDialog.setTitle("User Purchase within 30 Days");
-                            showDialog(viewDialog, false);
-                        } catch (SQLException e) {
-                            showErrorDialog(e.getMessage());
-                        }
-                    }
-                });
-                getCustomerPurchaseMenu.add(findCustomerByIdMenuItem);
-
-                JMenuItem findCustomerByNameMenuItem = makeMenuItem("Find Customer by Name and Phone...", () -> {
-                    SearchCustomerByNameDialog dialog = new SearchCustomerByNameDialog(this.appFrame);
-                    showDialog(dialog, true);
-
-                    if (dialog.isInputValid()) {
-                        ICustomer customer = dialog.getInputValue();
-                        try {
-                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(customer.getName(), customer.getPhone());
-                            SaleView view = new SaleView();
-                            view.setData(new Vector<>(saleList));
-                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                            viewDialog.setTitle("User Purchase within 30 Days");
-                            showDialog(viewDialog, false);
-                        } catch (SQLException e) {
-                            showErrorDialog(e.getMessage());
-                        }
-                    }
-                });
-                getCustomerPurchaseMenu.add(findCustomerByNameMenuItem);
-            }
-            fileMenu.add(getCustomerPurchaseMenu);
+            managerMenu.add(restockMenuItem);
 
             JMenuItem salesReportMenuItem = makeMenuItem("Sales Report...", () -> {
                 SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
@@ -403,7 +443,7 @@ public class AppFrameController {
                     }
                 }
             });
-            fileMenu.add(salesReportMenuItem);
+            managerMenu.add(salesReportMenuItem);
 
             JMenuItem employeeSalesReportMenuItem = makeMenuItem("Employee Sales Report...", () -> {
                 AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
@@ -423,39 +463,9 @@ public class AppFrameController {
                     }
                 }
             });
-            fileMenu.add(employeeSalesReportMenuItem);
-
-
-
-            JMenuItem createDBMenuItem = makeMenuItem("Create Database...", () -> {
-                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
-                if (ok == JOptionPane.YES_OPTION) {
-                    try {
-                        GameStoreDB.withConnection(GameStoreDB::createDatabase);
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
-                    }
-                } else {
-                    appFrame.log("Canceled");
-                }
-            });
-            fileMenu.add(createDBMenuItem);
-
-            JMenuItem populateDBMenuItem = makeMenuItem("Populate Database...", () -> {
-                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
-                if (ok == JOptionPane.YES_OPTION) {
-                    try {
-                        GameStoreDB.withConnection(GameStoreDB::populateDatabase);
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
-                    }
-                } else {
-                    appFrame.log("Canceled");
-                }
-            });
-            fileMenu.add(populateDBMenuItem);
+            managerMenu.add(employeeSalesReportMenuItem);
         }
-        menuBar.add(fileMenu);
+        menuBar.add(managerMenu);
 
         JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshViews);
         menuBar.add(refreshMenuItem);

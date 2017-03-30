@@ -163,11 +163,11 @@ public class GameStoreDB {
 
                 //14) Test createEmployeeSaleReport
                 System.out.println("Test createEmployeeSaleReport");
-                createEmployeeSaleReport(con, startDate, endDate);
+                createEmployeeSaleReport(con, startDate, endDate, Aggregate.MAX);
 
                 //15) Test createProductBranchSaleReport
                 System.out.println("Test createProductBranchSaleReport");
-                createProductBranchSaleReport(con, startDate, endDate);
+                createProductBranchSaleReport(con, startDate, endDate, Aggregate.MAX);
 
                 //16) Test stocksAllProducts
                 System.out.println("Test stocksAllProducts");
@@ -650,12 +650,12 @@ public class GameStoreDB {
         return rs;
     }
 
-    //Query 14 TODO: Test agg
+    //Query 14
     //Returns result set EID, count(EID) OR just a number
     public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         ResultSet rs;
         String select_str =
-                "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum" +
+                "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
                         "FROM Sale s, Employee e, Product p " +
                         "WHERE s.eid = e.eid AND s.SKU = p.SKU " +
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
@@ -693,12 +693,12 @@ public class GameStoreDB {
         return rs;
     }
 
-    //Query 15  //TODO test agg
+    //Query 15  
     //Returns result set SKU, BID, count(SKU) OR BID,number
     public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         ResultSet rs;
         String select_str =
-                "SELECT SKU, BID, COUNT(SKU) count" +
+                "SELECT SKU, BID, COUNT(SKU) count " +
                         "FROM Sale s, Employee e " +
                         "WHERE s.eid = e.eid " +
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +

@@ -1,9 +1,11 @@
-package data;
+package sql.data;
+
+import data.IDeveloper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Developer implements  IDeveloper {
+public class Developer implements IDeveloper {
     protected String id;
     protected String name;
     protected String phone;

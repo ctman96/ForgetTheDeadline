@@ -1,4 +1,7 @@
-package data;
+package sql.data;
+
+import data.IBranch;
+import data.IEmployee;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

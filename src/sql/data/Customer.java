@@ -1,4 +1,6 @@
-package data;
+package sql.data;
+
+import data.ICustomer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

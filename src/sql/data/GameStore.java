@@ -1,4 +1,6 @@
-package data;
+package sql.data;
+
+import data.*;
 
 import java.util.List;
 

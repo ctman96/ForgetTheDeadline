@@ -14,12 +14,12 @@ public class AppFrame extends JFrame {
         /**
          * @return The name to display as a view item
          */
-        public Object getName();
+        Object getName();
 
         /**
          * @return The callback to call when view item is selected
          */
-        public Runnable getCallback();
+        Runnable getCallback();
     }
 
     private ViewItem[] viewItems;

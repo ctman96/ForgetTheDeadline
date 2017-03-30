@@ -1,4 +1,7 @@
-package data;
+package sql.data;
+
+import data.IDeveloper;
+import data.IProduct;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

@@ -2,15 +2,13 @@ package sql;
 
 import data.*;
 import oracle.jdbc.driver.OracleDriver;
+import sql.data.*;
 import sql.function.SQLConsumer;
 import sql.function.SQLFunction;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class GameStoreDB {

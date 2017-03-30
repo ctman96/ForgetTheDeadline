@@ -6,13 +6,15 @@ import javax.swing.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DateTextField extends JFormattedTextField implements CheckedInput<Date> {
-    private static final DateFormat defaultDateFormat = new SimpleDateFormat("yyyyMMdd");
+    private static final DateFormat defaultDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
     public DateTextField() {
         super(defaultDateFormat);
+        this.setText(defaultDateFormat.format(Calendar.getInstance().getTime()));
     }
 
     @Override

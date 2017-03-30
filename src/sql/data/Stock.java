@@ -1,4 +1,8 @@
-package data;
+package sql.data;
+
+import data.IBranch;
+import data.IProduct;
+import data.IStock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

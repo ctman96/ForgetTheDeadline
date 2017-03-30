@@ -1,4 +1,6 @@
-package data;
+package sql.data;
+
+import data.IBranch;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

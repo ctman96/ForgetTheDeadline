@@ -2,7 +2,7 @@ package ui;
 
 import data.*;
 import sql.GameStoreDB;
-import sql.function.SQLConsumer;
+import sql.data.GameStore;
 import ui.dialog.*;
 import ui.view.*;
 
@@ -211,6 +211,16 @@ public class AppFrameController {
                 }
             });
             fileMenu.add(updateStockMenuItem);
+
+            JMenuItem salesReportMenuItem = makeMenuItem("Sales report...", () -> {
+                SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                }
+            });
+            fileMenu.add(salesReportMenuItem);
         }
         menuBar.add(fileMenu);
 

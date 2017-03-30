@@ -1,4 +1,9 @@
-package data;
+package sql.data;
+
+import data.ICustomer;
+import data.IEmployee;
+import data.IProduct;
+import data.ISale;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

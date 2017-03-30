@@ -239,7 +239,7 @@ public class GameStoreDB {
 
     // Basic Queries
     private static PreparedStatement getBranchQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Branch");
+        return SQLUtil.getAllFromTableQuery(connection, "Branch", "BID");
     }
 
     public static List<IBranch> getBranch() throws SQLException {
@@ -247,7 +247,7 @@ public class GameStoreDB {
     }
 
     private static PreparedStatement getCustomerQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Customer");
+        return SQLUtil.getAllFromTableQuery(connection, "Customer", "CID");
     }
 
     public static List<ICustomer> getCustomer() throws SQLException {
@@ -255,7 +255,7 @@ public class GameStoreDB {
     }
 
     private static PreparedStatement getDeveloperQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Developer");
+        return SQLUtil.getAllFromTableQuery(connection, "Developer", "DID");
     }
 
     public static List<IDeveloper> getDeveloper() throws SQLException {
@@ -263,7 +263,7 @@ public class GameStoreDB {
     }
 
     private static PreparedStatement getEmployeeQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Employee");
+        return SQLUtil.getAllFromTableQuery(connection, "Employee", "EID");
     }
 
     public static List<IEmployee> getEmployee(Map<String, IBranch> idBranchMap) throws SQLException {
@@ -271,7 +271,7 @@ public class GameStoreDB {
     }
 
     private static PreparedStatement getProductQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Product");
+        return SQLUtil.getAllFromTableQuery(connection, "Product", "SKU");
     }
 
     public static List<IProduct> getProduct(Map<String, IDeveloper> idDeveloperMap) throws SQLException {
@@ -279,7 +279,7 @@ public class GameStoreDB {
     }
 
     private static PreparedStatement getSaleQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Sale");
+        return SQLUtil.getAllFromTableQuery(connection, "Sale", "saleDate");
     }
 
     public static List<ISale> getSale(Map<String, IProduct> skuProductMap, Map<String, ICustomer> idCustomerMap, Map<String, IEmployee> idEmployeeMap) throws SQLException {
@@ -287,7 +287,7 @@ public class GameStoreDB {
     }
 
     private static PreparedStatement getStockQuery(Connection connection) throws SQLException {
-        return SQLUtil.getAllFromTableQuery(connection, "Stock");
+        return SQLUtil.getAllFromTableQuery(connection, "Stock", "BID");
     }
 
     public static List<IStock> getStock(Map<String, IProduct> skuProductMap, Map<String, IBranch> idBranchMap) throws SQLException {

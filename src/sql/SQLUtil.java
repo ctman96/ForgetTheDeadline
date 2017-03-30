@@ -47,7 +47,7 @@ public class SQLUtil {
         }
     }
 
-    public static PreparedStatement getAllFromTableQuery(Connection connection, String tableName) throws SQLException {
-        return connection.prepareStatement(String.format("SELECT * FROM %s", tableName));
+    public static PreparedStatement getAllFromTableQuery(Connection connection, String tableName, String mainColumn) throws SQLException {
+        return connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY %S", tableName,mainColumn));
     }
 }

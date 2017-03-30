@@ -776,23 +776,26 @@ public class GameStoreDB {
 
     //Query 12
     //Returns result set of pname,sku,price,quantity
-    public static ResultSet createInventoryCount(Connection con, String bid) throws SQLException {
-        ResultSet rs;
+    public static List<Inventory> createInventoryCount(String bid) throws SQLException {
         String select_str =
                 "SELECT Name, s.SKU, Price, Quantity " +
                         "FROM Stock s, Product p " +
                         "WHERE s.SKU = p.SKU AND s.BID = ?";
 
         System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
-            stmt.setString(1, bid);
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
 
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setString(1, bid);
+            return stmt;
+        }, (rs) -> {
+            String name = rs.getString("Name");
+            String sku = rs.getString("SKU");
+            BigDecimal price = rs.getBigDecimal("Price");
+            int quantity = rs.getInt("Quantity");
+            return new Inventory(new Product(sku, name, price, null),
+                    quantity);
+        });
     }
 
     //Query 13

@@ -4,6 +4,7 @@ import data.*;
 import sql.GameStoreDB;
 import sql.data.GameStore;
 import sql.data.Order;
+import sql.data.Inventory;
 import ui.dialog.*;
 import ui.view.*;
 
@@ -257,6 +258,30 @@ public class AppFrameController {
                 }
             });
             fileMenu.add(restockOrderMenuItem);
+
+            JMenuItem inventoryCountMenuItem = makeMenuItem("Generate Inventory Count...",  () -> {
+                InventoryCountDialog dialog = new InventoryCountDialog(this.appFrame, new Vector<>(gameStore.branch));
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    IBranch branch = dialog.getInputValue();
+                    try {
+                        GameStoreDB.withConnection((con) -> {
+                           List<Inventory> inventoryList = GameStoreDB.createInventoryCount(branch.getId());
+                           InventoryView view = new InventoryView();
+                           view.setData(new Vector<>(inventoryList));
+                           ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                           viewDialog.setTitle("Inventory Count");
+                           showDialog(viewDialog, false);
+                        });
+                    }catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            fileMenu.add(inventoryCountMenuItem);
 
             JMenuItem restockMenuItem = makeMenuItem("Branch With All Products...", () -> {
                 try {

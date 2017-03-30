@@ -29,8 +29,8 @@ public class GameStoreDB {
      */
     public static void withConnection(SQLConsumer<Connection> callback) throws SQLException {
         System.out.println("Creating Connection...");
-        try (Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_j2d0b", "a12222148")) {
-            //Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145"))
+        try (//Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_j2d0b", "a12222148")) {
+            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145"))  {
             connection.setAutoCommit(false);
             System.out.println("Creating Connection... Success");
             callback.accept(connection);
@@ -188,9 +188,45 @@ public class GameStoreDB {
     public static void createDatabase(Connection connection) throws SQLException {
         try {
             SQLUtil.executeFile(connection, new File("resource/sql/create_db.sql"));
+            createTriggers(connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void createTriggers(Connection con) throws SQLException{
+        Statement stmt = con.createStatement();
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER branch_on_insert " +
+                "  BEFORE INSERT ON Branch " +
+                "  FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.BID := trim(to_char(branch_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER employee_on_insert " +
+                "BEFORE INSERT ON Employee " +
+                "FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.EID := trim(to_char(employee_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER developer_on_insert " +
+                "  BEFORE INSERT ON Developer " +
+                "  FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.DID := trim(to_char(developer_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER customer_on_insert " +
+                "BEFORE INSERT ON Customer " +
+                "FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.CID := trim(to_char(customer_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER sale_on_insert " +
+                "BEFORE INSERT ON Sale " +
+                "FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.snum := trim(to_char(sale_sequence.nextval, '00000000')); " +
+                " END;");
+        con.commit();
     }
 
     public static void populateDatabase(Connection connection) throws SQLException {

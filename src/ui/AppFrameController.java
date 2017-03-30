@@ -424,104 +424,108 @@ public class AppFrameController {
             });
             managerMenu.add(restockMenuItem);
 
-            JMenuItem salesReportMenuItem = makeMenuItem("Sales Report...", () -> {
-                SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
-                showDialog(dialog, true);
+            JMenu salesMenu = new JMenu("Sales Reports");
+            {
+                JMenuItem salesReportMenuItem = makeMenuItem("Sales Report...", () -> {
+                    SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
+                    showDialog(dialog, true);
 
-                if (dialog.isInputValid()) {
-                    SalesReportDialog.DateInterval interval = dialog.getInputValue();
-                    try {
-                        List<ISale> saleList = GameStoreDB.createSaleReport(interval.getStartDate(), interval.getEndDate());
-                        SaleView view = new SaleView();
-                        view.setData(new Vector<>(saleList));
-                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                        viewDialog.setTitle("Sale Report");
-                        showDialog(viewDialog, false);
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
+                    if (dialog.isInputValid()) {
+                        SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                        try {
+                            List<ISale> saleList = GameStoreDB.createSaleReport(interval.getStartDate(), interval.getEndDate());
+                            SaleView view = new SaleView();
+                            view.setData(new Vector<>(saleList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Sale Report");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
-            managerMenu.add(salesReportMenuItem);
+                });
+                salesMenu.add(salesReportMenuItem);
 
-            JMenuItem employeeSalesReportMenuItem = makeMenuItem("Employee Sales Report...", () -> {
-                SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
-                showDialog(dialog, true);
-                if (dialog.isInputValid()){
-                    SalesReportDialog.DateInterval interval = dialog.getInputValue();
-                    try{
-                        List<EmployeeReport> reportList = GameStoreDB.createEmployeeSaleReport(interval.getStartDate(), interval.getEndDate());
-                        EmployeeReportView view = new EmployeeReportView();
-                        view.setData(new Vector<>(reportList));
-                        ViewDialog viewDialog= new ViewDialog(this.appFrame, new JScrollPane(view));
-                        viewDialog.setTitle("Employee Report");
-                        showDialog(viewDialog, false);
-                    }catch (SQLException e){
-                        showErrorDialog(e.getMessage());
+                JMenuItem employeeSalesReportMenuItem = makeMenuItem("Employee Sales Report...", () -> {
+                    SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
+                    showDialog(dialog, true);
+                    if (dialog.isInputValid()) {
+                        SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                        try {
+                            List<EmployeeReport> reportList = GameStoreDB.createEmployeeSaleReport(interval.getStartDate(), interval.getEndDate());
+                            EmployeeReportView view = new EmployeeReportView();
+                            view.setData(new Vector<>(reportList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Employee Report");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
-            managerMenu.add(employeeSalesReportMenuItem);
-            
-            JMenuItem employeeSalesReportAggregateMenuItem = makeMenuItem("Aggregated Employee Sales Report...", () -> {
-                AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
-                showDialog(dialog, true);
+                });
+                salesMenu.add(employeeSalesReportMenuItem);
 
-                if (dialog.isInputValid()) {
-                    AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
-                    try {
-                        List<AggregateEmployeeReport> list = GameStoreDB.createEmployeeSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
-                        AggregateEmployeeReportView view = new AggregateEmployeeReportView();
-                        view.setData(new Vector<>(list));
-                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                        viewDialog.setTitle("Sale Report");
-                        showDialog(viewDialog, false);
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
+                JMenuItem employeeSalesReportAggregateMenuItem = makeMenuItem("Aggregated Employee Sales Report...", () -> {
+                    AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
+                        try {
+                            List<AggregateEmployeeReport> list = GameStoreDB.createEmployeeSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+                            AggregateEmployeeReportView view = new AggregateEmployeeReportView();
+                            view.setData(new Vector<>(list));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Sale Report");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
-            managerMenu.add(employeeSalesReportAggregateMenuItem);
+                });
+                salesMenu.add(employeeSalesReportAggregateMenuItem);
 
-            JMenuItem BranchSalesReportMenuItem = makeMenuItem("Branch Sales Report...", () -> {
-                SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
-                showDialog(dialog, true);
+                JMenuItem BranchSalesReportMenuItem = makeMenuItem("Branch Sales Report...", () -> {
+                    SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
+                    showDialog(dialog, true);
 
-                if (dialog.isInputValid()) {
-                    SalesReportDialog.DateInterval interval = dialog.getInputValue();
-                    try {
-                        List<BranchReport> reportList = GameStoreDB.createProductBranchSaleReport(interval.getStartDate(), interval.getEndDate());
-                        BranchReportView view = new BranchReportView();
-                        view.setData(new Vector<>(reportList));
-                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                        viewDialog.setTitle("Branch Report");
-                        showDialog(viewDialog, false);
-                    } catch (SQLException e){
-                        showErrorDialog(e.getMessage());
+                    if (dialog.isInputValid()) {
+                        SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                        try {
+                            List<BranchReport> reportList = GameStoreDB.createProductBranchSaleReport(interval.getStartDate(), interval.getEndDate());
+                            BranchReportView view = new BranchReportView();
+                            view.setData(new Vector<>(reportList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Branch Report");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
-            managerMenu.add(BranchSalesReportMenuItem);
+                });
+                salesMenu.add(BranchSalesReportMenuItem);
 
-            JMenuItem AggregateBranchSalesReportMenuItem = makeMenuItem("Aggregated Product Sales Report...", () -> {
-                AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
-                showDialog(dialog, true);
+                JMenuItem AggregateBranchSalesReportMenuItem = makeMenuItem("Aggregated Product Sales Report...", () -> {
+                    AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
+                    showDialog(dialog, true);
 
-                if (dialog.isInputValid()) {
-                    AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
-                    try {
-                        List<AggregateBranchReport> reportList = GameStoreDB.createProductBranchSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
-                        AggregateBranchReportView view = new AggregateBranchReportView();
-                        view.setData(new Vector<>(reportList));
-                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-                        viewDialog.setTitle("Branch Report");
-                        showDialog(viewDialog, false);
-                    } catch (SQLException e){
-                        showErrorDialog(e.getMessage());
+                    if (dialog.isInputValid()) {
+                        AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
+                        try {
+                            List<AggregateBranchReport> reportList = GameStoreDB.createProductBranchSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+                            AggregateBranchReportView view = new AggregateBranchReportView();
+                            view.setData(new Vector<>(reportList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Branch Report");
+                            showDialog(viewDialog, false);
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
                     }
-                }
-            });
-            managerMenu.add(AggregateBranchSalesReportMenuItem);
+                });
+                salesMenu.add(AggregateBranchSalesReportMenuItem);
+            }
+            managerMenu.add(salesMenu);
         }
         menuBar.add(managerMenu);
 

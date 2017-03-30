@@ -37,153 +37,153 @@ public class GameStoreDB {
         }
     }
 
-    public static void main(String[] args) {
-        SQLConsumer<Connection> callback = (con) -> {
-            try {
-                System.out.println("Building Database...");
-                createDatabase(con);
-                populateDatabase(con);
-
-                //Test basic queries
-//                getBranchResultSet(con);
-//                getCustomerResultSet(con);
-//                getEmployeeResultSet(con);
-//                getProduct(con);
-//                getSale(con);
-//                getStock(con);
-/*
-                String sku = "";
-                String eid = "";
-                String payment = "";
-                String cid = "";
-                String bid = "";
-                String did = "";
-                BigDecimal price = null;
-                String name = "";
-                int quantity = 0;
-                int maxQuantity = 0;
-                int addQuantity = 0;
-                BigDecimal wage = null;
-                BigDecimal newPrice = null;
-                String position = "";
-                String phone = "";
-                String address = "";
-
-                //1) Test buyProduct
-                sku = "10000000";
-                eid = "00000001";
-                payment = "CC123123";
-                cid = "00000001";
-                System.out.println("Test buyProduct");
-                buyProduct(con, sku, eid, payment, cid);
-
-                //2) Test add Customer
-                cid = "10101010";
-                name= "Tester Jr";
-                phone="2501012222";
-                address="123 test rd";
-                System.out.println("Test addCustomer");
-                addCustomer(con, name, cid, phone, address);
-
-                //4) Test add Employee
-                eid = "33330000";
-                name = "Tester Man";
-                bid = "00000001";
-                wage = new BigDecimal(10.00);
-                position = "Janitor";
-                phone = "2501011011";
-                address = "1234 test st";
-                System.out.println("Test addEmployee");
-                addEmployee(con, eid, name, bid, wage, position, phone, address);
-
-                //5) Test remove Employee
-                eid = "00000001";
-                System.out.println("Test removeEmployee");
-                removeEmployee(con, eid);
-
-                //6) Test addGameDatabase
-                name = "Tester: Gold";
-                sku = "33300000";
-                price = new BigDecimal(10.00);
-                did = "00000001";
-                System.out.println("Test addGameDatabase");
-                addGameDatabase(con, name, sku, price, did);
-
-                //7) Test addGameStore
-                bid = "00000001";
-                sku = "33300000";
-                quantity = 100;
-                maxQuantity = 100;
-                System.out.println("Test addGameStore");
-                addGameStore(con, bid, sku, quantity, maxQuantity);
-
-                //8) Test changeGamePrice
-                sku = "";
-                newPrice = new BigDecimal(90.00);
-                changeGamePrice(con, sku, newPrice);
-
-                //9) Test getCustomerInfo, checkCustomerAccount
-                cid = "00000001";
-                name = "Richard Garza";
-                phone = "6135550169";
-                getCustomerInfo(con, cid);
-                checkCustomerAccount(con, cid);
-                getCustomerInfo(con, name, phone);
-                checkCustomerAccount(con, name, phone);
-
-                //10) Test createPurchaseOrder
-                did = "00000001";
-                bid = "00000001";
-                System.out.println("Test createPurchaseOrder");
-                createPurchaseOrder(con, did, bid);
-
-                //11) Test updateProductQuantity
-                addQuantity = 10;
-                bid = "00000001";
-                sku = "10000000";
-                System.out.println("Test updateProductQuantity");
-                updateProductQuantity(con, bid, sku, addQuantity);
-
-                //12) Test createInventoryCount
-                bid = "00000001";
-                System.out.println("Test createInventoryCount");
-                createInventoryCount(con, bid);
-
-                //13) Test createSaleReport
-                String strStartDate = new String("20/12/2016");
-                String strEndDate = new String("01/01/2017");
-                java.util.Date startDate = new SimpleDateFormat("dd/MM/yy").parse(strStartDate);
-                java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
-                System.out.println("Test createSaleReport");
-                createSaleReport(con, startDate, endDate);
-
-                //14) Test createEmployeeSaleReport
-                System.out.println("Test createEmployeeSaleReport");
-                createEmployeeSaleReport(con, startDate, endDate, Aggregate.MAX);
-
-                //15) Test createProductBranchSaleReport
-                System.out.println("Test createProductBranchSaleReport");
-                createProductBranchSaleReport(con, startDate, endDate, Aggregate.MAX);
-
-                //16) Test stocksAllProducts
-                System.out.println("Test stocksAllProducts");
-                stocksAllProducts(con);
-            } catch (ParseException p){
-                p.printStackTrace();
-*/
-            } catch (SQLException e) {
-                throw e;
-            }
-        };
-
-        try {
-            setupDriver();
-            withConnection(callback);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public static void main(String[] args) {
+//        SQLConsumer<Connection> callback = (con) -> {
+//            try {
+//                System.out.println("Building Database...");
+//                createDatabase(con);
+//                populateDatabase(con);
+//
+//                //Test basic queries
+////                getBranchResultSet(con);
+////                getCustomerResultSet(con);
+////                getEmployeeResultSet(con);
+////                getProduct(con);
+////                getSale(con);
+////                getStock(con);
+///*
+//                String sku = "";
+//                String eid = "";
+//                String payment = "";
+//                String cid = "";
+//                String bid = "";
+//                String did = "";
+//                BigDecimal price = null;
+//                String name = "";
+//                int quantity = 0;
+//                int maxQuantity = 0;
+//                int addQuantity = 0;
+//                BigDecimal wage = null;
+//                BigDecimal newPrice = null;
+//                String position = "";
+//                String phone = "";
+//                String address = "";
+//
+//                //1) Test buyProduct
+//                sku = "10000000";
+//                eid = "00000001";
+//                payment = "CC123123";
+//                cid = "00000001";
+//                System.out.println("Test buyProduct");
+//                buyProduct(con, sku, eid, payment, cid);
+//
+//                //2) Test add Customer
+//                cid = "10101010";
+//                name= "Tester Jr";
+//                phone="2501012222";
+//                address="123 test rd";
+//                System.out.println("Test addCustomer");
+//                addCustomer(con, name, cid, phone, address);
+//
+//                //4) Test add Employee
+//                eid = "33330000";
+//                name = "Tester Man";
+//                bid = "00000001";
+//                wage = new BigDecimal(10.00);
+//                position = "Janitor";
+//                phone = "2501011011";
+//                address = "1234 test st";
+//                System.out.println("Test addEmployee");
+//                addEmployee(con, eid, name, bid, wage, position, phone, address);
+//
+//                //5) Test remove Employee
+//                eid = "00000001";
+//                System.out.println("Test removeEmployee");
+//                removeEmployee(con, eid);
+//
+//                //6) Test addGameDatabase
+//                name = "Tester: Gold";
+//                sku = "33300000";
+//                price = new BigDecimal(10.00);
+//                did = "00000001";
+//                System.out.println("Test addGameDatabase");
+//                addGameDatabase(con, name, sku, price, did);
+//
+//                //7) Test addGameStore
+//                bid = "00000001";
+//                sku = "33300000";
+//                quantity = 100;
+//                maxQuantity = 100;
+//                System.out.println("Test addGameStore");
+//                addGameStore(con, bid, sku, quantity, maxQuantity);
+//
+//                //8) Test changeGamePrice
+//                sku = "";
+//                newPrice = new BigDecimal(90.00);
+//                changeGamePrice(con, sku, newPrice);
+//
+//                //9) Test getCustomerInfo, checkCustomerAccount
+//                cid = "00000001";
+//                name = "Richard Garza";
+//                phone = "6135550169";
+//                getCustomerInfo(con, cid);
+//                checkCustomerAccount(con, cid);
+//                getCustomerInfo(con, name, phone);
+//                checkCustomerAccount(con, name, phone);
+//
+//                //10) Test createPurchaseOrder
+//                did = "00000001";
+//                bid = "00000001";
+//                System.out.println("Test createPurchaseOrder");
+//                createPurchaseOrder(con, did, bid);
+//
+//                //11) Test updateProductQuantity
+//                addQuantity = 10;
+//                bid = "00000001";
+//                sku = "10000000";
+//                System.out.println("Test updateProductQuantity");
+//                updateProductQuantity(con, bid, sku, addQuantity);
+//
+//                //12) Test createInventoryCount
+//                bid = "00000001";
+//                System.out.println("Test createInventoryCount");
+//                createInventoryCount(con, bid);
+//
+//                //13) Test createSaleReport
+//                String strStartDate = new String("20/12/2016");
+//                String strEndDate = new String("01/01/2017");
+//                java.util.Date startDate = new SimpleDateFormat("dd/MM/yy").parse(strStartDate);
+//                java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
+//                System.out.println("Test createSaleReport");
+//                createSaleReport(con, startDate, endDate);
+//
+//                //14) Test createEmployeeSaleReport
+//                System.out.println("Test createEmployeeSaleReport");
+//                createEmployeeSaleReport(con, startDate, endDate, Aggregate.MAX);
+//
+//                //15) Test createProductBranchSaleReport
+//                System.out.println("Test createProductBranchSaleReport");
+//                createProductBranchSaleReport(con, startDate, endDate, Aggregate.MAX);
+//
+//                //16) Test stocksAllProducts
+//                System.out.println("Test stocksAllProducts");
+//                stocksAllProducts(con);
+//            } catch (ParseException p){
+//                p.printStackTrace();
+//*/
+//            } catch (SQLException e) {
+//                throw e;
+//            }
+//        };
+//
+//        try {
+//            setupDriver();
+//            withConnection(callback);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     public static void createDatabase(Connection connection) throws SQLException {
         try {

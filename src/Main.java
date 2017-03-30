@@ -6,18 +6,17 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
-        GameStoreDB.main(args);
-        /*try {
+
+        try {
             GameStoreDB.setupDriver();
 //            GameStoreDB.withConnection(connection ->  {
 //                GameStoreDB.createDatabase(connection);
 //                GameStoreDB.populateDatabase(connection);
 //            });
-
         } catch (SQLException e) {
             e.printStackTrace();
             return;
-        }*/
+        }
 
         new AppFrameController().setVisible(true);
     }

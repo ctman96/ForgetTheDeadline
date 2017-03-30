@@ -349,6 +349,34 @@ public class AppFrameController {
 
         JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshViews);
         menuBar.add(refreshMenuItem);
+
+        JMenuItem createDBMenuItem = makeMenuItem("Create Database...", () -> {
+            int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
+            if (ok == JOptionPane.YES_OPTION) {
+                try {
+                    GameStoreDB.withConnection(GameStoreDB::createDatabase);
+                } catch (SQLException e) {
+                    showErrorDialog(e.getMessage());
+                }
+            } else {
+                appFrame.log("Canceled");
+            }
+        });
+        menuBar.add(createDBMenuItem);
+
+        JMenuItem populateDBMenuItem = makeMenuItem("Populate Database...", () -> {
+            int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
+            if (ok == JOptionPane.YES_OPTION) {
+                try {
+                    GameStoreDB.withConnection(GameStoreDB::populateDatabase);
+                } catch (SQLException e) {
+                    showErrorDialog(e.getMessage());
+                }
+            } else {
+                appFrame.log("Canceled");
+            }
+        });
+        menuBar.add(populateDBMenuItem);
     }
 
     private void refreshViews() {

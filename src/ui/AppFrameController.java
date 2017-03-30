@@ -191,6 +191,7 @@ public class AppFrameController {
                     appFrame.log("Canceled");
                 }
             });
+            fileMenu.add(makePurchaseMenuItem);
 
             JMenuItem updateStockMenuItem = makeMenuItem("Add stock to...", () -> {
                 UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));

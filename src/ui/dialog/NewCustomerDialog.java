@@ -1,16 +1,9 @@
 package ui.dialog;
 
 import data.ICustomer;
-import data.IDeveloper;
-import data.IProduct;
-import ui.field.DecimalTextField;
-import ui.field.ObjectSelectField;
 import ui.field.StringTextField;
 
-import javax.swing.*;
 import java.awt.*;
-import java.math.BigDecimal;
-import java.util.Vector;
 
 public class NewCustomerDialog extends CheckedInputDialog<ICustomer> {
     StringTextField nameField;

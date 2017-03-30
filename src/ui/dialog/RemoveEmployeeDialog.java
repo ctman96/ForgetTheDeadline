@@ -3,7 +3,6 @@ package ui.dialog;
 import data.IEmployee;
 import ui.field.ObjectSelectField;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
 
@@ -16,7 +15,8 @@ public class RemoveEmployeeDialog extends CheckedInputDialog<IEmployee> {
         this.setTitle("Remove Employee...");
 
         this.employeeField = new ObjectSelectField<>(employees);
-        this.employeeField.setRenderer((list, value, index, isSelected, cellHasFocus) -> new JLabel(value.getName()));
+        this.employeeField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
       
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Employee:", employeeField)

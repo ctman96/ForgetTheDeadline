@@ -1,9 +1,6 @@
 package ui;
 
-import data.GameStore;
-import data.IEmployee;
-import data.IProduct;
-import data.IStock;
+import data.*;
 import sql.GameStoreDB;
 import sql.function.SQLConsumer;
 import ui.dialog.*;
@@ -96,6 +93,8 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                    } else {
+                        appFrame.log("Canceled");
                     }
                 });
                 newMenu.add(newDeveloperMenuItem);
@@ -103,12 +102,36 @@ public class AppFrameController {
                 JMenuItem newCustomerMenuItem = makeMenuItem("Customer...", () -> {
                     NewCustomerDialog dialog = new NewCustomerDialog(this.appFrame);
                     showDialog(dialog, true);
+                    if (dialog.isInputValid()) {
+                        try {
+                            ICustomer customer = dialog.getInputValue();
+                            GameStoreDB.withConnection((con) -> { // Place holder CID for generated PK
+                                GameStoreDB.addCustomer(con, customer.getName(), "[PH]ID", customer.getPhone(), customer.getAddress());
+                            });
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    } else {
+                        appFrame.log("Canceled");
+                    }
                 });
                 newMenu.add(newCustomerMenuItem);
 
                 JMenuItem newEmployeeMenuItem = makeMenuItem("Employee...", () -> {
                     NewEmployeeDialog dialog = new NewEmployeeDialog(this.appFrame, new Vector<>(gameStore.branch));
                     showDialog(dialog, true);
+                    if (dialog.isInputValid()) {
+                        try {
+                            IEmployee employee = dialog.getInputValue();
+                            GameStoreDB.withConnection((con) -> { // Place holder EID for generated PK
+                                GameStoreDB.addEmployee(con, "[PH]ID", employee.getName(), employee.getBranch().getId(), employee.getWage(), employee.getPositionName(), employee.getPhone(), employee.getAddress());
+                            });
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    } else {
+                        appFrame.log("Canceled");
+                    }
                 });
                 newMenu.add(newEmployeeMenuItem);
 
@@ -124,6 +147,8 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                    } else {
+                        appFrame.log("Canceled");
                     }
                 });
                 newMenu.add(newEmployeeMenuItem);
@@ -143,11 +168,31 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                } else {
+                    appFrame.log("Canceled");
                 }
             });
             fileMenu.add(removeEmployeeMenuItem);
 
-            JMenuItem updateStockMenuItem = makeMenuItem("Add stock...", () -> {
+            JMenuItem makePurchaseMenuItem = makeMenuItem("Make Purchase...", () -> {
+                NewSaleDialog dialog = new NewSaleDialog(this.appFrame, new Vector<>(gameStore.product), new Vector<>(gameStore.customer), new Vector<>(gameStore.employee));
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    ISale sale = dialog.getInputValue();
+                    try {
+                        GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.buyProduct(con, sale.getProduct().getSKU(), sale.getEmployee().getId(), sale.getPayment(), sale.getCustomer().getId());
+                        });
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+
+            JMenuItem updateStockMenuItem = makeMenuItem("Add stock to...", () -> {
                 UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
                 showDialog(dialog, true);
 
@@ -160,6 +205,8 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                } else {
+                    appFrame.log("Canceled");
                 }
             });
             fileMenu.add(updateStockMenuItem);
@@ -172,7 +219,7 @@ public class AppFrameController {
 
     private void refreshViews() {
         try {
-            this.gameStore = GameStore.getGameStore();
+            this.gameStore = GameStoreDB.getGameStore();
             this.developerView.setData(new Vector<>(gameStore.developer));
             this.branchView.setData(new Vector<>(gameStore.branch));
             this.productView.setData(new Vector<>(gameStore.product));

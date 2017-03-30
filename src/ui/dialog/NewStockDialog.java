@@ -6,7 +6,6 @@ import data.IStock;
 import ui.field.IntegerTextField;
 import ui.field.ObjectSelectField;
 
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
 import java.util.Vector;
 
@@ -42,15 +41,12 @@ public class NewStockDialog extends CheckedInputDialog<IStock> {
         super(owner);
         this.setTitle("Update Stock...");
 
-        BasicComboBoxRenderer renderer = new BasicComboBoxRenderer();
-
-
         this.branchField = new ObjectSelectField<>(branches);
         this.branchField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                renderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
         this.productField = new ObjectSelectField<>(products);
         this.productField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                renderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
         this.quantityField = new IntegerTextField();
         this.maxQuantityField = new IntegerTextField();
 

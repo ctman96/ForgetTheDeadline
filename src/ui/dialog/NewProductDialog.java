@@ -6,7 +6,6 @@ import ui.field.DecimalTextField;
 import ui.field.ObjectSelectField;
 import ui.field.StringTextField;
 
-import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.Vector;
@@ -47,12 +46,8 @@ public class NewProductDialog extends CheckedInputDialog<IProduct> {
         this.nameField = new StringTextField();
         this.priceField = new DecimalTextField(defaultPriceFormat);
         this.developerField = new ObjectSelectField<>(developers);
-        this.developerField.setRenderer(new ListCellRenderer<IDeveloper>() {
-            @Override
-            public Component getListCellRendererComponent(JList<? extends IDeveloper> list, IDeveloper value, int index, boolean isSelected, boolean cellHasFocus) {
-                return new JLabel(value.getName());
-            }
-        });
+        this.developerField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
 
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("SKU:", skuField),

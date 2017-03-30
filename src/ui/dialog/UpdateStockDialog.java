@@ -6,7 +6,6 @@ import data.IStock;
 import ui.field.IntegerTextField;
 import ui.field.ObjectSelectField;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
 
@@ -43,7 +42,7 @@ public class UpdateStockDialog extends CheckedInputDialog<IStock> {
         this.stockField = new ObjectSelectField<>(stocks);
         this.quantityField = new IntegerTextField();
         this.stockField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                new JLabel(String.format("%s@%s", value.getProduct().getName(), value.getBranch().getAddress())));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, String.format("%s@%s", value.getProduct().getName(), value.getBranch().getAddress()), index, isSelected, cellHasFocus));
 
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Stock:", stockField),

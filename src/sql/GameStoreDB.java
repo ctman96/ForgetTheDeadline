@@ -8,12 +8,10 @@ import sql.function.SQLFunction;
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameStoreDB {
 
@@ -294,6 +292,72 @@ public class GameStoreDB {
         return getData(GameStoreDB::getStockQuery, (rs) -> Stock.fromResultSet(rs, skuProductMap, idBranchMap));
     }
 
+    /**
+     * Provided as an optimization as establishing connection is not desirable
+     * @return A fully populated and joined GameStore
+     * @throws SQLException
+     */
+    public static GameStore getGameStore() throws SQLException {
+        GameStore gameStore = new GameStore();
+
+        withConnection((con) -> {
+            PreparedStatement branchStmt = getBranchQuery(con);
+            PreparedStatement customerStmt = getCustomerQuery(con);
+            PreparedStatement developerStmt = getDeveloperQuery(con);
+            PreparedStatement employeeStmt = getEmployeeQuery(con);
+            PreparedStatement productStmt = getProductQuery(con);
+            PreparedStatement saleStmt = getSaleQuery(con);
+            PreparedStatement stockStmt = getStockQuery(con);
+
+            ResultSet branchRs = branchStmt.executeQuery();
+            ResultSet customerRs = customerStmt.executeQuery();
+            ResultSet developerRs = developerStmt.executeQuery();
+            ResultSet employeeRs = employeeStmt.executeQuery();
+            ResultSet productRs = productStmt.executeQuery();
+            ResultSet saleRs = saleStmt.executeQuery();
+            ResultSet stockRs = stockStmt.executeQuery();
+
+            con.commit();
+
+            gameStore.branch = getDataFromRs(branchRs, Branch::fromResultSet);
+            gameStore.customer = getDataFromRs(customerRs, Customer::fromResultSet);
+            gameStore.developer = getDataFromRs(developerRs, Developer::fromResultSet);
+
+            Map<String, IDeveloper> idDeveloperMap = new HashMap<>();
+            for (IDeveloper developer : gameStore.developer) {
+                idDeveloperMap.put(developer.getId(), developer);
+            }
+
+            Map<String, ICustomer> idCustomerMap = new HashMap<>();
+            for (ICustomer customer : gameStore.customer) {
+                idCustomerMap.put(customer.getId(), customer);
+            }
+
+            Map<String, IBranch> idBranchMap = new HashMap<>();
+            for (IBranch branch : gameStore.branch) {
+                idBranchMap.put(branch.getId(), branch);
+            }
+
+            gameStore.employee = getDataFromRs(employeeRs, (rs) -> Employee.fromResultSet(rs, idBranchMap));
+            gameStore.product = getDataFromRs(productRs, (rs) -> Product.fromResultSet(rs, idDeveloperMap));
+
+            Map<String, IEmployee> idEmployeeMap = new HashMap<>();
+            for (IEmployee employee : gameStore.employee) {
+                idEmployeeMap.put(employee.getId(), employee);
+            }
+
+            Map<String, IProduct> idProductMap = new HashMap<>();
+            for (IProduct product : gameStore.product) {
+                idProductMap.put(product.getSKU(), product);
+            }
+
+            gameStore.sale = getDataFromRs(saleRs, (rs) -> Sale.fromResultSet(rs, idProductMap, idCustomerMap, idEmployeeMap));
+            gameStore.stock = getDataFromRs(stockRs, (rs) -> Stock.fromResultSet(rs, idProductMap, idBranchMap));
+        });
+
+        return gameStore;
+    }
+
     private static <T> List<T> getData(SQLFunction<Connection, PreparedStatement> toQuery, SQLFunction<ResultSet, T> resultParser) throws SQLException {
         ArrayList<T> data = new ArrayList<>();
         withConnection((con) -> {
@@ -305,6 +369,14 @@ public class GameStoreDB {
                 }
             }
         });
+        return data;
+    }
+
+    private static <T> List<T> getDataFromRs(ResultSet rs, SQLFunction<ResultSet, T> resultParser) throws SQLException {
+        ArrayList<T> data = new ArrayList<>();
+        while(rs.next()) {
+            data.add(resultParser.apply(rs));
+        }
         return data;
     }
 
@@ -334,12 +406,8 @@ public class GameStoreDB {
             update_stmt.executeUpdate();
 
             insert_stmt.setString(1, payment);
-            insert_stmt.setString(2, "50000000"); // TODO auto increment? UUID?
+            insert_stmt.setString(2, "[PH]ID"); // Place holder SID for generated PK
             insert_stmt.setString(3, sku);
-            //String stringDate = new String("18/08/01");
-            //SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yy");
-            //java.util.Date utilDate = fm.parse(stringDate);
-            //java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
             java.sql.Date sqlDate = new java.sql.Date(Calendar.getInstance().getTime().getTime());
             insert_stmt.setDate(4,sqlDate);
             insert_stmt.setString(5,cid);

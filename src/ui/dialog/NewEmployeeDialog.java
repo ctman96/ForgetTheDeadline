@@ -3,7 +3,6 @@ package ui.dialog;
 
 import data.IBranch;
 import data.IEmployee;
-import data.ISale;
 import ui.field.DecimalTextField;
 import ui.field.ObjectSelectField;
 import ui.field.StringTextField;
@@ -67,8 +66,10 @@ public class NewEmployeeDialog extends CheckedInputDialog<IEmployee> {
         this.phoneField = new StringTextField();
         this.wageField = new DecimalTextField(defaultPriceFormat);
         this.positionNameField = new StringTextField();
-        
+
         this.branchField = new ObjectSelectField<>(branch);
+        this.branchField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
 
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Name:", nameField),

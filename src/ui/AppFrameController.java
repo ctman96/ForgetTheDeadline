@@ -89,10 +89,10 @@ public class AppFrameController {
                         try {
                             IProduct product = dialog.getInputValue();
                             GameStoreDB.withConnection((con) -> {
-    //                            GameStoreDB.addEmployee();
+                                GameStoreDB.addGameDatabase(con, product.getName(), product.getSKU(), product.getPrice(), product.getDeveloper().getId());
                             });
                         } catch (SQLException e) {
-                            e.printStackTrace();
+                            showErrorDialog(e.getMessage());
                         }
                     }
                 });
@@ -126,8 +126,6 @@ public class AppFrameController {
                         showErrorDialog(e.getMessage());
                     }
                 }
-
-
             });
             fileMenu.add(removeEmployeeMenuItem);
 
@@ -154,7 +152,7 @@ public class AppFrameController {
             this.saleView.setData(new Vector<>(gameStore.sale));
             this.stockView.setData(new Vector<>(gameStore.stock));
         } catch (SQLException e) {
-            e.printStackTrace();
+            showErrorDialog("Refresh failed:\n" + e.getMessage());
         }
     }
 

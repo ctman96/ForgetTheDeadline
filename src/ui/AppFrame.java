@@ -86,6 +86,7 @@ public class AppFrame extends JFrame {
     public void setView(Component component) {
         this.viewPanel.removeAll();
         this.viewPanel.add(new JScrollPane(component));
+        this.viewPanel.updateUI();
     }
 
     /**

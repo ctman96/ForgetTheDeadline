@@ -1,12 +1,9 @@
 package ui;
 
-import data.Developer;
-import data.Employee;
 import data.GameStore;
-import data.IDeveloper;
 import ui.dialog.NewCustomerDialog;
 import ui.dialog.NewProductDialog;
-//import ui.dialog.UpdateStockDialog;
+import ui.dialog.UpdateStockDialog;
 import ui.view.*;
 
 import javax.swing.*;
@@ -55,7 +52,7 @@ public class AppFrameController {
         viewItems.add(appFrame.makeViewItem("Sale", saleView));
         viewItems.add(appFrame.makeViewItem("Stock", stockView));
 
-        this.refreshView();
+        this.refreshVeiws();
 
         viewItems.add(new AppFrame.ViewItem() {
             @Override
@@ -78,60 +75,47 @@ public class AppFrameController {
     private void setupMenuBar() {
         JMenuBar menuBar = this.appFrame.getJMenuBar();
 
+        JMenu fileMenu = new JMenu("File");
         {
-            JMenu fileMenu = new JMenu("File");
-
-            JMenuItem newMenuItem = new JMenuItem("New...");
-            newMenuItem.setActionCommand("dialog");
-            newMenuItem.addActionListener((ActionEvent e) -> {
-                if (e.getActionCommand().equals("dialog")) {
+            JMenu newMenu = new JMenu("New");
+            {
+                JMenuItem newDeveloperMenuItem = makeMenuItem("Product...", () -> {
                     NewProductDialog dialog = new NewProductDialog(this.appFrame, new Vector<>(gameStore.developer));
                     dialog.pack();
                     dialog.setModal(true);
                     dialog.setVisible(true);
-                }
-            });
-            fileMenu.add(newMenuItem);
+                });
+                newMenu.add(newDeveloperMenuItem);
 
-            JMenuItem newCustomerMenuItem = new JMenuItem("New Customer...");
-            newCustomerMenuItem.setActionCommand("dialog");
-            newCustomerMenuItem.addActionListener((ActionEvent e) -> {
-                if (e.getActionCommand().equals("dialog")) {
+                JMenuItem newCustomerMenuItem = makeMenuItem("Customer...", () -> {
                     NewCustomerDialog dialog = new NewCustomerDialog(this.appFrame);
+                    dialog.pack();
+                    dialog.setModal(true);
+                    dialog.setVisible(true);
+                });
+                newMenu.add(newCustomerMenuItem);
+            }
+            fileMenu.add(newMenu);
+
+            JMenuItem updateStockMenuItem = new JMenuItem("Update stock...");
+            updateStockMenuItem.setActionCommand("update.stock");
+            updateStockMenuItem.addActionListener((ActionEvent e) -> {
+                if (e.getActionCommand().equals("update.stock")) {
+                    UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
                     dialog.pack();
                     dialog.setModal(true);
                     dialog.setVisible(true);
                 }
             });
-            fileMenu.add(newCustomerMenuItem);
-
-//            JMenuItem updateStockMenuItem = new JMenuItem("Update stock...");
-//            newMenuItem.setActionCommand("dialog");
-//            newMenuItem.addActionListener((ActionEvent e) -> {
-//                if (e.getActionCommand().equals("dialog")) {
-//                    UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
-//                    dialog.pack();
-//                    dialog.setModal(true);
-//                    dialog.setVisible(true);
-//                }
-//            });
-//            fileMenu.add(newMenuItem);
-
-            menuBar.add(fileMenu);
+            fileMenu.add(updateStockMenuItem);
         }
+        menuBar.add(fileMenu);
 
-        JMenuItem refreshMenuItem = new JMenuItem("Refresh");
-        refreshMenuItem.setActionCommand("refresh");;
-        refreshMenuItem.addActionListener((ActionEvent e) -> {
-            if (e.getActionCommand().equals("refresh")) {
-                this.refreshView();
-            }
-        });
+        JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshVeiws);
         menuBar.add(refreshMenuItem);
-
     }
 
-    private void refreshView() {
+    private void refreshVeiws() {
         try {
             this.gameStore = GameStore.getGameStore();
             this.developerView.setData(new Vector<>(gameStore.developer));
@@ -144,5 +128,17 @@ public class AppFrameController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static JMenuItem makeMenuItem(String text, Runnable onClick) {
+        JMenuItem menuItem = new JMenuItem(text);
+        String actionCommand = "generated.on.click";
+        menuItem.setActionCommand(actionCommand);
+        menuItem.addActionListener((ActionEvent e) -> {
+            if (e.getActionCommand().equals(actionCommand)) {
+                onClick.run();
+            }
+        });
+        return menuItem;
     }
 }

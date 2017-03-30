@@ -3,7 +3,9 @@ package ui;
 import data.GameStore;
 import data.IEmployee;
 import data.IProduct;
+import data.IStock;
 import sql.GameStoreDB;
+import sql.function.SQLConsumer;
 import ui.dialog.*;
 import ui.view.*;
 
@@ -109,6 +111,22 @@ public class AppFrameController {
                     showDialog(dialog, true);
                 });
                 newMenu.add(newEmployeeMenuItem);
+
+                JMenuItem newStockMenuItem = makeMenuItem("Stock...", () -> {
+                    NewStockDialog dialog = new NewStockDialog(this.appFrame, new Vector<>(gameStore.branch), new Vector<>(gameStore.product));
+                    showDialog(dialog, true);
+                    if (dialog.isInputValid()) {
+                        try {
+                            IStock stock = dialog.getInputValue();
+                            GameStoreDB.withConnection((con) -> {
+                                GameStoreDB.addGameStore(con, stock.getBranch().getId(), stock.getProduct().getSKU(), stock.getQuantity(), stock.getMaxQuantity());
+                            });
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    }
+                });
+                newMenu.add(newEmployeeMenuItem);
             }
             fileMenu.add(newMenu);
 
@@ -129,9 +147,20 @@ public class AppFrameController {
             });
             fileMenu.add(removeEmployeeMenuItem);
 
-            JMenuItem updateStockMenuItem = makeMenuItem("Update stock...", () -> {
+            JMenuItem updateStockMenuItem = makeMenuItem("Add stock...", () -> {
                 UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
                 showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    IStock stock = dialog.getInputValue();
+                    try {
+                        GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.updateProductQuantity(con, stock.getBranch().getId(), stock.getProduct().getSKU(), stock.getQuantity());
+                        });
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                }
             });
             fileMenu.add(updateStockMenuItem);
         }

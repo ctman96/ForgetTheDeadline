@@ -80,7 +80,7 @@ public class AppFrame extends JFrame {
 
     public void clearView() {
         this.viewPanel.removeAll();
-        this.viewPanel.repaint();
+        this.viewPanel.updateUI();
     }
 
     public void setView(Component component) {

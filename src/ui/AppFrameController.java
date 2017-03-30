@@ -1,12 +1,14 @@
 package ui;
 
 import data.GameStore;
-import ui.dialog.NewCustomerDialog;
-import ui.dialog.NewProductDialog;
-import ui.dialog.UpdateStockDialog;
+import data.IEmployee;
+import data.IProduct;
+import sql.GameStoreDB;
+import ui.dialog.*;
 import ui.view.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.*;
@@ -52,7 +54,7 @@ public class AppFrameController {
         viewItems.add(appFrame.makeViewItem("Sale", saleView));
         viewItems.add(appFrame.makeViewItem("Stock", stockView));
 
-        this.refreshVeiws();
+        this.refreshViews();
 
         viewItems.add(new AppFrame.ViewItem() {
             @Override
@@ -81,41 +83,67 @@ public class AppFrameController {
             {
                 JMenuItem newDeveloperMenuItem = makeMenuItem("Product...", () -> {
                     NewProductDialog dialog = new NewProductDialog(this.appFrame, new Vector<>(gameStore.developer));
-                    dialog.pack();
-                    dialog.setModal(true);
-                    dialog.setVisible(true);
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        try {
+                            IProduct product = dialog.getInputValue();
+                            GameStoreDB.withConnection((con) -> {
+    //                            GameStoreDB.addEmployee();
+                            });
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 });
                 newMenu.add(newDeveloperMenuItem);
 
                 JMenuItem newCustomerMenuItem = makeMenuItem("Customer...", () -> {
                     NewCustomerDialog dialog = new NewCustomerDialog(this.appFrame);
-                    dialog.pack();
-                    dialog.setModal(true);
-                    dialog.setVisible(true);
+                    showDialog(dialog, true);
                 });
                 newMenu.add(newCustomerMenuItem);
+
+                JMenuItem newEmployeeMenuItem = makeMenuItem("Employee...", () -> {
+                    NewEmployeeDialog dialog = new NewEmployeeDialog(this.appFrame, new Vector<>(gameStore.branch));
+                    showDialog(dialog, true);
+                });
+                newMenu.add(newEmployeeMenuItem);
             }
             fileMenu.add(newMenu);
 
-            JMenuItem updateStockMenuItem = new JMenuItem("Update stock...");
-            updateStockMenuItem.setActionCommand("update.stock");
-            updateStockMenuItem.addActionListener((ActionEvent e) -> {
-                if (e.getActionCommand().equals("update.stock")) {
-                    UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
-                    dialog.pack();
-                    dialog.setModal(true);
-                    dialog.setVisible(true);
+            JMenuItem removeEmployeeMenuItem = makeMenuItem("Remove employee...", () -> {
+                RemoveEmployeeDialog dialog = new RemoveEmployeeDialog (this.appFrame, new Vector<>(gameStore.employee));
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    IEmployee employee = dialog.getInputValue();
+                    try {
+                        GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.removeEmployee(con, employee.getId());
+                        });
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
                 }
+
+
+            });
+            fileMenu.add(removeEmployeeMenuItem);
+
+            JMenuItem updateStockMenuItem = makeMenuItem("Update stock...", () -> {
+                UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
+                showDialog(dialog, true);
             });
             fileMenu.add(updateStockMenuItem);
         }
         menuBar.add(fileMenu);
 
-        JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshVeiws);
+        JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshViews);
         menuBar.add(refreshMenuItem);
     }
 
-    private void refreshVeiws() {
+    private void refreshViews() {
         try {
             this.gameStore = GameStore.getGameStore();
             this.developerView.setData(new Vector<>(gameStore.developer));
@@ -140,5 +168,15 @@ public class AppFrameController {
             }
         });
         return menuItem;
+    }
+
+    private void showErrorDialog(String text) {
+        JOptionPane.showMessageDialog(this.appFrame, text, "Oops...", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private static void showDialog(Dialog dialog, boolean modal) {
+        dialog.pack();
+        dialog.setModal(modal);
+        dialog.setVisible(true);
     }
 }

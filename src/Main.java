@@ -18,11 +18,6 @@ public class Main {
             return;
         }
 
-//        try {
-//            sql.GameStoreDB.main(args);
-//        }catch (Exception e){
-//          e.printStackTrace();
-//        }
         new AppFrameController().setVisible(true);
     }
 }

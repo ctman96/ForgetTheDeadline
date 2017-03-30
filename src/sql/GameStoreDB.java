@@ -895,6 +895,29 @@ public class GameStoreDB {
 //        }
 //        return rs;
 //    }
+    public static List<EmployeeReport> createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        String select_str =
+                "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
+                        "FROM Sale s, Employee e, Product p " +
+                        "WHERE s.eid = e.eid AND s.SKU = p.SKU " +
+                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+                        "GROUP BY e.EID ORDER BY COUNT(e.EID), SUM(price) DESC";
+
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+            stmt.setDate(1,sqlStartDate);
+            stmt.setDate(2,sqlEndDate);
+            return stmt;
+        }, (rs) -> {
+            String eid = rs.getString("EID");
+            int count = rs.getInt("count");
+            BigDecimal  price = rs.getBigDecimal("sum");
+            EmployeeReport er = new EmployeeReport(eid, count, price);
+            return er;
+        });
+    }
 
     public static BigDecimal createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         String inner_select_str =

@@ -2,6 +2,7 @@ package ui;
 
 import data.*;
 import sql.GameStoreDB;
+import sql.data.EmployeeReport;
 import sql.data.GameStore;
 import sql.data.Order;
 import sql.data.Inventory;
@@ -446,6 +447,25 @@ public class AppFrameController {
             managerMenu.add(salesReportMenuItem);
 
             JMenuItem employeeSalesReportMenuItem = makeMenuItem("Employee Sales Report...", () -> {
+                SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
+                showDialog(dialog, true);
+                if (dialog.isInputValid()){
+                    SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                    try{
+                        List<EmployeeReport> reportList = GameStoreDB.createEmployeeSaleReport(interval.getStartDate(), interval.getEndDate());
+                        EmployeeReportView view = new EmployeeReportView();
+                        view.setData(new Vector<>(reportList));
+                        ViewDialog viewDialog= new ViewDialog(this.appFrame, new JScrollPane(view));
+                        viewDialog.setTitle("Employee Report");
+                        showDialog(viewDialog, false);
+                    }catch (SQLException e){
+                        showErrorDialog(e.getMessage());
+                    }
+                }
+            });
+            managerMenu.add(employeeSalesReportMenuItem);
+
+            JMenuItem employeeSalesReportAggregateMenuItem = makeMenuItem("Aggregated Employee Sales Report...", () -> {
                 AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
                 showDialog(dialog, true);
 
@@ -463,7 +483,7 @@ public class AppFrameController {
                     }
                 }
             });
-            managerMenu.add(employeeSalesReportMenuItem);
+            managerMenu.add(employeeSalesReportAggregateMenuItem);
         }
         menuBar.add(managerMenu);
 

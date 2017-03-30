@@ -28,5 +28,4 @@ public class DeveloperView extends JTable {
             super(columns);
         }
     }
-
 }

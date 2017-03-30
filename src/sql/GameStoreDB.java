@@ -704,8 +704,31 @@ public class GameStoreDB {
 
     //Query 10
     //Returns result set of name,sku,price
-    public static ResultSet createPurchaseOrder(Connection con, String did, String bid) throws SQLException {
-        ResultSet rs;
+//    public static ResultSet createPurchaseOrder(Connection con, String did, String bid) throws SQLException {
+//        ResultSet rs;
+//        String select_str =
+//                "SELECT Name, s.SKU, Price, " +
+//                        "  maxquantity - quantity as orderQuantity, " +
+//                        "  Price*(maxquantity - quantity) as orderPrice " +
+//                        "FROM Stock s, Product p " +
+//                        "WHERE p.DID = ? AND s.BID = ? " +
+//                        "  AND s.SKU=p.SKU AND maxquantity-quantity > 0";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+//            stmt.setString(1,did);
+//            stmt.setString(2,bid);
+//
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
+
+    public static List<Order> createPurchaseOrder(String did, String bid) throws SQLException {
         String select_str =
                 "SELECT Name, s.SKU, Price, " +
                         "  maxquantity - quantity as orderQuantity, " +
@@ -714,18 +737,20 @@ public class GameStoreDB {
                         "WHERE p.DID = ? AND s.BID = ? " +
                         "  AND s.SKU=p.SKU AND maxquantity-quantity > 0";
 
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)){
-            stmt.setString(1,did);
-            stmt.setString(2,bid);
-
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setString(1, did);
+            stmt.setString(2, bid);
+            return stmt;
+        }, (rs) -> {
+            String name = rs.getString("Name");
+            String sku = rs.getString("SKU");
+            BigDecimal price = rs.getBigDecimal("Price");
+            int orderQuantity = rs.getInt("orderQuantity");
+            BigDecimal orderPrice = rs.getBigDecimal("orderPrice");
+            return new Order(new Product(sku, name, price, null),
+                    orderQuantity, orderPrice);
+        });
     }
 
     //Query 11

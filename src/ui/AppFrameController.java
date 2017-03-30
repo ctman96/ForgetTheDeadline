@@ -3,6 +3,7 @@ package ui;
 import data.*;
 import sql.GameStoreDB;
 import sql.data.GameStore;
+import sql.data.Order;
 import ui.dialog.*;
 import ui.view.*;
 
@@ -233,6 +234,30 @@ public class AppFrameController {
             });
             fileMenu.add(updateStockMenuItem);
 
+            JMenuItem restockOrderMenuItem = makeMenuItem("Generate Restock Order...", () -> {
+                RestockOrderDialog dialog = new RestockOrderDialog(this.appFrame, new Vector<>(gameStore.branch), new Vector<>(gameStore.developer));;
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    IStock stock = dialog.getInputValue();
+                    try {
+                        GameStoreDB.withConnection((con) -> {
+                            List<Order> orderList = GameStoreDB.createPurchaseOrder(stock.getBranch().getId(), stock.getProduct().getDeveloper().getId());
+                            OrderView view = new OrderView();
+                            view.setData(new Vector<>(orderList));
+                            ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                            viewDialog.setTitle("Restock Order");
+                            showDialog(viewDialog, false);
+                        });
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            fileMenu.add(restockOrderMenuItem);
+
             JMenuItem restockMenuItem = makeMenuItem("Restock ALL...", () -> {
                 int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Restock ALL...", JOptionPane.YES_NO_OPTION);
                 if (ok == JOptionPane.YES_OPTION) {
@@ -344,39 +369,39 @@ public class AppFrameController {
                 }
             });
             fileMenu.add(salesReportMenuItem);
+
+            JMenuItem createDBMenuItem = makeMenuItem("Create Database...", () -> {
+                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
+                if (ok == JOptionPane.YES_OPTION) {
+                    try {
+                        GameStoreDB.withConnection(GameStoreDB::createDatabase);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            fileMenu.add(createDBMenuItem);
+
+            JMenuItem populateDBMenuItem = makeMenuItem("Populate Database...", () -> {
+                int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
+                if (ok == JOptionPane.YES_OPTION) {
+                    try {
+                        GameStoreDB.withConnection(GameStoreDB::populateDatabase);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                } else {
+                    appFrame.log("Canceled");
+                }
+            });
+            fileMenu.add(populateDBMenuItem);
         }
         menuBar.add(fileMenu);
 
         JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshViews);
         menuBar.add(refreshMenuItem);
-
-        JMenuItem createDBMenuItem = makeMenuItem("Create Database...", () -> {
-            int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
-            if (ok == JOptionPane.YES_OPTION) {
-                try {
-                    GameStoreDB.withConnection(GameStoreDB::createDatabase);
-                } catch (SQLException e) {
-                    showErrorDialog(e.getMessage());
-                }
-            } else {
-                appFrame.log("Canceled");
-            }
-        });
-        menuBar.add(createDBMenuItem);
-
-        JMenuItem populateDBMenuItem = makeMenuItem("Populate Database...", () -> {
-            int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
-            if (ok == JOptionPane.YES_OPTION) {
-                try {
-                    GameStoreDB.withConnection(GameStoreDB::populateDatabase);
-                } catch (SQLException e) {
-                    showErrorDialog(e.getMessage());
-                }
-            } else {
-                appFrame.log("Canceled");
-            }
-        });
-        menuBar.add(populateDBMenuItem);
     }
 
     private void refreshViews() {

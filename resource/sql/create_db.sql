@@ -6,6 +6,17 @@ drop table Employee;
 drop table Branch;
 drop table Customer;
 
+drop sequence branch_sequence;
+drop sequence customer_sequence;
+drop sequence developer_sequence;
+drop sequence employee_sequence;
+drop sequence sale_sequence;
+
+CREATE SEQUENCE branch_sequence;
+CREATE SEQUENCE customer_sequence;
+CREATE SEQUENCE developer_sequence;
+CREATE SEQUENCE employee_sequence;
+CREATE SEQUENCE sale_sequence;
 
 CREATE TABLE Branch
 (BID		CHAR(8)			NOT NULL,

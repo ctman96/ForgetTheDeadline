@@ -29,7 +29,8 @@ public class GameStoreDB {
      */
     public static void withConnection(SQLConsumer<Connection> callback) throws SQLException {
         System.out.println("Creating Connection...");
-        try (Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_j2d0b", "a12222148")) {
+        try (//Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_j2d0b", "a12222148")) {
+            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145"))  {
             connection.setAutoCommit(false);
             System.out.println("Creating Connection... Success");
             callback.accept(connection);
@@ -50,107 +51,126 @@ public class GameStoreDB {
 //                getProduct(con);
 //                getSale(con);
 //                getStock(con);
-//
-//                String sku = "";
-//                String eid = "";
-//                String payment = "";
-//                String cid = "";
-//                String bid = "";
-//                String did = "";
-//                BigDecimal price = null;
-//                String name = "";
-//                int quantity = 0;
-//                int maxQuantity = 0;
-//                int addQuantity = 0;
-//                BigDecimal wage = null;
-//                BigDecimal newPrice = null;
-//                String position = "";
-//                String phone = "";
-//                String address = "";
-//
-//                //1) Test buyProduct
-//                sku = "10000000";
-//                eid = "30000000";
-//                payment = "CC123123";
-//                cid = "35553916";
-//                System.out.println("Test buyProduct");
-//                buyProduct(con, sku, eid, payment, cid);
-//
-//                //4) Test add Employee
-//                //TODO
-//                eid = "33330000";
-//                name = "Tester Man";
-//                bid = "00000000";
-//                wage = new BigDecimal(10.00);
-//                position = "Janitor";
-//                phone = "2501011011";
-//                address = "1234 test st";
-//                System.out.println("Test addEmployee");
-//                addEmployee(con, eid, name, bid, wage, position, phone, address);
-//
-//                //5) Test remove Employee
-//                eid = "30000000";
-//                System.out.println("Test removeEmployee");
-//                removeEmployee(con, eid);
-//
-//                //6) Test addGameDatabase
-//                name = "Tester: Gold";
-//                sku = "33300000";
-//                price = new BigDecimal(10.00);
-//                did = "20000000";
-//                System.out.println("Test addGameDatabase");
-//                addGameDatabase(con, name, sku, price, did);
-//
-//                //7) Test addGameStore
-//                bid = "00000000";
-//                sku = "33300000";
-//                quantity = 100;
-//                maxQuantity = 100;
-//                System.out.println("Test addGameStore");
-//                addGameStore(con, bid, sku, quantity, maxQuantity);
-//
-//                //8) Test changeGamePrice
-//                sku = "";
-//                newPrice = new BigDecimal(90.00);
-//                changeGamePrice(con, sku, newPrice);
-//
-//                //9) Test getCustomerInfo, checkCustomerAccount
-//                cid = "";
-//                name = "";
-//                phone = "";
-//                getCustomerInfo(con, cid);
-//                checkCustomerAccount(con, cid);
-//                getCustomerInfo(con, name, phone);
-//                checkCustomerAccount(con, name, phone);
-//
-//                //10) Test createPurchaseOrder
-//                did = "20000000";
-//                bid = "00000000";
-//                System.out.println("Test createPurchaseOrder");
-//                createPurchaseOrder(con, did, bid);
-//
-//                //11) Test updateProductQuantity
-//                addQuantity = 10;
-//                bid = "00000000";
-//                sku = "10000000";
-//                System.out.println("Test updateProductQuantity");
-//                updateProductQuantity(con, bid, sku, addQuantity);
-//
-//                //12) Test createInventoryCount
-//                bid = "00000000";
-//                System.out.println("Test createInventoryCount");
-//                createInventoryCount(con, bid);
-//
-//                //13) Test createSaleReport
-//                String strStartDate = new String("20/12/2016");
-//                String strEndDate = new String("01/01/2017");
-//                java.util.Date startDate = new SimpleDateFormat("dd/MM/yy").parse(strStartDate);
-//                java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
-//                System.out.println("Test createSaleReport");
-//                createSaleReport(con, startDate, endDate);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
+/*
+                String sku = "";
+                String eid = "";
+                String payment = "";
+                String cid = "";
+                String bid = "";
+                String did = "";
+                BigDecimal price = null;
+                String name = "";
+                int quantity = 0;
+                int maxQuantity = 0;
+                int addQuantity = 0;
+                BigDecimal wage = null;
+                BigDecimal newPrice = null;
+                String position = "";
+                String phone = "";
+                String address = "";
+
+                //1) Test buyProduct
+                sku = "10000000";
+                eid = "00000001";
+                payment = "CC123123";
+                cid = "00000001";
+                System.out.println("Test buyProduct");
+                buyProduct(con, sku, eid, payment, cid);
+
+                //2) Test add Customer
+                cid = "10101010";
+                name= "Tester Jr";
+                phone="2501012222";
+                address="123 test rd";
+                System.out.println("Test addCustomer");
+                addCustomer(con, name, cid, phone, address);
+
+                //4) Test add Employee
+                eid = "33330000";
+                name = "Tester Man";
+                bid = "00000001";
+                wage = new BigDecimal(10.00);
+                position = "Janitor";
+                phone = "2501011011";
+                address = "1234 test st";
+                System.out.println("Test addEmployee");
+                addEmployee(con, eid, name, bid, wage, position, phone, address);
+
+                //5) Test remove Employee
+                eid = "00000001";
+                System.out.println("Test removeEmployee");
+                removeEmployee(con, eid);
+
+                //6) Test addGameDatabase
+                name = "Tester: Gold";
+                sku = "33300000";
+                price = new BigDecimal(10.00);
+                did = "00000001";
+                System.out.println("Test addGameDatabase");
+                addGameDatabase(con, name, sku, price, did);
+
+                //7) Test addGameStore
+                bid = "00000001";
+                sku = "33300000";
+                quantity = 100;
+                maxQuantity = 100;
+                System.out.println("Test addGameStore");
+                addGameStore(con, bid, sku, quantity, maxQuantity);
+
+                //8) Test changeGamePrice
+                sku = "";
+                newPrice = new BigDecimal(90.00);
+                changeGamePrice(con, sku, newPrice);
+
+                //9) Test getCustomerInfo, checkCustomerAccount
+                cid = "00000001";
+                name = "Richard Garza";
+                phone = "6135550169";
+                getCustomerInfo(con, cid);
+                checkCustomerAccount(con, cid);
+                getCustomerInfo(con, name, phone);
+                checkCustomerAccount(con, name, phone);
+
+                //10) Test createPurchaseOrder
+                did = "00000001";
+                bid = "00000001";
+                System.out.println("Test createPurchaseOrder");
+                createPurchaseOrder(con, did, bid);
+
+                //11) Test updateProductQuantity
+                addQuantity = 10;
+                bid = "00000001";
+                sku = "10000000";
+                System.out.println("Test updateProductQuantity");
+                updateProductQuantity(con, bid, sku, addQuantity);
+
+                //12) Test createInventoryCount
+                bid = "00000001";
+                System.out.println("Test createInventoryCount");
+                createInventoryCount(con, bid);
+
+                //13) Test createSaleReport
+                String strStartDate = new String("20/12/2016");
+                String strEndDate = new String("01/01/2017");
+                java.util.Date startDate = new SimpleDateFormat("dd/MM/yy").parse(strStartDate);
+                java.util.Date endDate = new SimpleDateFormat("dd/MM/yy").parse(strEndDate);
+                System.out.println("Test createSaleReport");
+                createSaleReport(con, startDate, endDate);
+
+                //14) Test createEmployeeSaleReport
+                System.out.println("Test createEmployeeSaleReport");
+                createEmployeeSaleReport(con, startDate, endDate);
+
+                //15) Test createProductBranchSaleReport
+                System.out.println("Test createProductBranchSaleReport");
+                createProductBranchSaleReport(con, startDate, endDate);
+
+                //16) Test stocksAllProducts
+                System.out.println("Test stocksAllProducts");
+                stocksAllProducts(con);
+            } catch (ParseException p){
+                p.printStackTrace();
+*/
             } catch (SQLException e) {
                 throw e;
             }
@@ -168,9 +188,45 @@ public class GameStoreDB {
     public static void createDatabase(Connection connection) throws SQLException {
         try {
             SQLUtil.executeFile(connection, new File("resource/sql/create_db.sql"));
+            createTriggers(connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void createTriggers(Connection con) throws SQLException{
+        Statement stmt = con.createStatement();
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER branch_on_insert " +
+                "  BEFORE INSERT ON Branch " +
+                "  FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.BID := trim(to_char(branch_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER employee_on_insert " +
+                "BEFORE INSERT ON Employee " +
+                "FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.EID := trim(to_char(employee_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER developer_on_insert " +
+                "  BEFORE INSERT ON Developer " +
+                "  FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.DID := trim(to_char(developer_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER customer_on_insert " +
+                "BEFORE INSERT ON Customer " +
+                "FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.CID := trim(to_char(customer_sequence.nextval, '00000000')); " +
+                " END;");
+        stmt.executeQuery("CREATE OR REPLACE TRIGGER sale_on_insert " +
+                "BEFORE INSERT ON Sale " +
+                "FOR EACH ROW " +
+                " BEGIN " +
+                "  :new.snum := trim(to_char(sale_sequence.nextval, '00000000')); " +
+                " END;");
+        con.commit();
     }
 
     public static void populateDatabase(Connection connection) throws SQLException {
@@ -293,6 +349,23 @@ public class GameStoreDB {
 
             connection.commit();
             System.out.println("Changes commited");
+        }
+    }
+    //Query 2
+    public static void addCustomer(Connection connection, String name, String cid, String phone, String address) throws SQLException {
+        String insert_str = "insert into Customer values(?, ?, ?, ?)";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = connection.prepareStatement(insert_str)) {
+            stmt.setString(1, name);
+            stmt.setString(2, cid);
+            stmt.setString(3, phone);
+            stmt.setString(4, address);
+            System.out.println("Execute...");
+            stmt.executeUpdate();
+
+            connection.commit();
+            System.out.println("Changes Commited");
         }
     }
 
@@ -548,7 +621,8 @@ public class GameStoreDB {
         return rs;
     }
 
-    //
+    //Query 13
+    //Returns result set of Sale table
     public static ResultSet createSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
         ResultSet rs;
         String select_str =
@@ -563,6 +637,85 @@ public class GameStoreDB {
             stmt.setDate(1,sqlStartDate);
             stmt.setDate(2,sqlEndDate);
 
+            System.out.println("Execute...");
+            rs = stmt.executeQuery();
+
+            con.commit();
+            System.out.println("Changes commited");
+        }
+        return rs;
+    }
+
+    //Query 14 TODO: Test
+    //Returns result set EID, count(EID)
+    //TODO: Add way to switch count() to min(count()), max(count()), avg(count())
+    public static ResultSet createEmployeeSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        ResultSet rs;
+        String select_str =
+                "SELECT e.EID, COUNT(e.EID) " +
+                        "FROM Sale s, Employee e " +
+                        "WHERE s.eid = e.eid " +
+                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+                        "GROUP BY e.EID ORDER BY COUNT(e.EID) DESC";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+            stmt.setDate(1,sqlStartDate);
+            stmt.setDate(2,sqlEndDate);
+
+            System.out.println("Execute...");
+            rs = stmt.executeQuery();
+
+            con.commit();
+            System.out.println("Changes commited");
+        }
+        return rs;
+    }
+
+    //Query 15 TODO: TEST
+    //Returns result set SKU, BID, count(SKU)
+    //TODO: Add way to switch count() to min(count()), max(count()), avg(count())
+    public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate) throws SQLException {
+        ResultSet rs;
+        String select_str =
+                "SELECT SKU, BID, COUNT(SKU) " +
+                        "FROM Sale s, Employee e " +
+                        "WHERE s.eid = e.eid " +
+                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+                        "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+            stmt.setDate(1,sqlStartDate);
+            stmt.setDate(2,sqlEndDate);
+
+            System.out.println("Execute...");
+            rs = stmt.executeQuery();
+
+            con.commit();
+            System.out.println("Changes commited");
+        }
+        return rs;
+    }
+
+    //Query 16 TODO: Test
+    //Returns result set BID
+    public static ResultSet stocksAllProducts(Connection con) throws SQLException {
+        ResultSet rs;
+        String select_str =
+                "SELECT b.BID FROM Branch b " +
+                        "WHERE NOT EXISTS " +
+                        "((SELECT p.SKU FROM Product p)" +
+                        "MINUS" +
+                        "(SELECT s.SKU FROM Stock s " +
+                        "WHERE s.BID = b.BID))";
+
+        System.out.println("Create Statement...");
+        try (PreparedStatement stmt = con.prepareStatement(select_str)){
             System.out.println("Execute...");
             rs = stmt.executeQuery();
 

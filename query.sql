@@ -1,7 +1,8 @@
 --DDL and population can be found in /resorces/sql/
+--These queries can also be found in /src/sql/GameStoreDB.java
 
 --===================
---1) Buying a product TESTED CONFIRMED
+--1) Buying a product
 --===================
 --Inputs: EID, SKU, payment, CID
 -- also generated snum and Date
@@ -18,7 +19,7 @@ VALUES(?,?,?,?,?,?)
 --?: (1,payment), (2,generated snum), (3,SKU), (4,Date), (5,CID), (6,EID)
 
 --===================
---2)Adding Customer TESTED CONFIRMED
+--2)Adding Customer
 --===================
 --Inputs name, cid, phone, address
 INSERT INTO Customer
@@ -26,7 +27,7 @@ INSERT INTO Customer
 --?: (1,name), (2,cid), (3,phone), (4,address)
 
 --===================
---4)Adding Employee to Store TESTED CONFIRMED
+--4)Adding Employee to Store
 --===================
 --Inputs: EID,BID,Wage,Position,Phone,Address
 INSERT INTO Employee
@@ -34,7 +35,7 @@ VALUES(?,?,?,?,?,?)
 --?: (1,EID),(2,BID),(3,Wage),(4,Position),(5,Phone),(6,Address)
 
 --===================
---5)Remove Employee from a Store TESTED CONFIRMED
+--5)Remove Employee from a Store
 --===================
 --Inputs: EID
 DELETE FROM Employee e
@@ -42,7 +43,7 @@ WHERE e.EID = ?
 --?: (1,EID)
 
 --===================
---6)Add game to Database TESTED CONFIRMED
+--6)Add game to Database
 --===================
 --Inputs: SKU,DID,name,price
 INSERT INTO Product
@@ -50,7 +51,7 @@ VALUES(?,?,?,?)
 --?: (1,name),(2,SKU),(3,price),(4,DID)
 
 --===================
---7)Add game to Store TESTED CONFIRMED
+--7)Add game to Store
 --===================
 --Inputs: BID,SKU,Quantity,maxQuantity
 INSERT INTO Stock
@@ -58,7 +59,7 @@ VALUES(?,?,?,?)
 --?: (1,BID),(2,SKU),(3,Quantity),(4,maxQuantity)
 
 --===================
---8)Changing game price TESTED CONFIRMED
+--8)Changing game price
 --===================
 --Inputs: SKU,newPrice
 UPDATE Product p
@@ -67,27 +68,27 @@ WHERE p.SKU = ?
 --?: (1,newPrice),(2,SKU)
 
 --===================
---9)Check Customer Account TESTED CONFIRMED
+--9)Check Customer Account
 --===================
 --Inputs: CID  OR Name and Phone
 --Also generated date for 30 days prior to today's date
 --Case=CID
 	SELECT * FROM Customer c WHERE c.CID=?;
 	--?: (1,CID)
-	SELECT Payment, Snum, SKU, saleDate
+	SELECT s.snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename
 	FROM Sale s
 	WHERE s.CID = ? AND s.saleDate >= ?
 	--?: (1,CID),(2,generatedDate)
 --Case Name and Phone
 	SELECT * FROM Customer c WHERE c.Name=? AND c.Phone=?;
 	--?: (1,Name),(2,Phone)
-	SELECT Payment, Snum, SKU, saleDate
+	SELECT s.snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename
 	FROM Sale s, Customer c
 	WHERE s.CID=c.CID AND c.Name = ? AND c.Phone=? 
 	AND s.saleDate >= ?
 	--?: (1,Name),(2,Phone),(3,generatedDate)
 --===================
---10) Purchase order TESTED CONFIRMED
+--10) Purchase order
 --===================
 --Inputs: DID, BID
 SELECT Name, s.SKU, Price,
@@ -99,7 +100,7 @@ WHERE p.DID = ? AND s.BID = ?
 --?: (1,DID), (2,BID)
 
 --===================
---11) Update Product Quantity TESTED CONFIRMED
+--11) Update Product Quantity
 --===================
 --Inputs: BID,SKU,addQuantity
 UPDATE Stock s
@@ -108,7 +109,7 @@ WHERE s.BID=? AND s.SKU=?
 --?: (1,addQuantity),(2,BID),(3,SKU)
 
 --===================
---12) INVENTORY COUNT TESTED CONFIRMED
+--12) INVENTORY COUNT
 --===================
 --Inputs: BID
 SELECT Name, s.SKU, Price, Quantity
@@ -117,22 +118,22 @@ WHERE s.SKU=p.SKU AND s.BID=?
 --?: (1,BID)
 
 --===================
---13) SALE REPORT -- TESTED CONFIRMED
+--13) SALE REPORT
 --===================
 --Inputs: startDate, endDate
-SELECT *
+SELECT S.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename
 FROM Sale
 WHERE ? <= SALEDATE AND SALEDATE <= ?
 ORDER BY saleDate ASC
 --?: (1,startDate), (2,endDate)
 
 --===================
---13) SALE REPORT - EMPLOYEES -- AGGREGATION -- TESTED CONFIRMED
+--13) SALE REPORT - EMPLOYEES
 --===================
 --Inputs: startDate, endDate,
 --optional: AGGREGATE
 
---SELECT AGGREGATE(sum) FROM(
+--SELECT AGGREGATE(sum) num FROM(
 SELECT e.EID, COUNT(e.EID) count, SUM(price) sum
 FROM Sale s, Employee e, Product p
 WHERE s.eid = e.eid AND s.SKU = p.SKU
@@ -146,12 +147,12 @@ ORDER BY COUNT(e.EID) DESC
 --are all fine). Rerun with at least one other example of aggregation.
 
 --===================
---14) SALE REPORT - PRODUCT&BRANCH -- NESTED AGGREGATION -- TESTED CONFIRMED
+--14) SALE REPORT - PRODUCT&BRANCH
 --===================
 --Inputs: startDate, endDate
 --optional: AGGREGATE
 
---SELECT SKU, AGGREGATE(count) FROM (
+--SELECT SKU, AGGREGATE(count) num FROM (
 SELECT SKU, BID, COUNT(SKU) count
 FROM Sale s, Employee e
 WHERE ? <= SALEDATE AND SALEDATE <= ?
@@ -168,7 +169,7 @@ ORDER BY BID, COUNT(SKU) DESC
 
 
 --===================
---15)STORES THAT STOCK ALL PRODUCTS --Division --Untested TODO: change population script
+--15)STORES THAT STOCK ALL PRODUCTS
 --===================
 SELECT b.BID
 FROM Branch b

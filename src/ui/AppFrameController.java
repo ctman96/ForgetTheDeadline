@@ -2,16 +2,14 @@ package ui;
 
 import data.*;
 import sql.GameStoreDB;
-import sql.data.EmployeeReport;
-import sql.data.GameStore;
-import sql.data.Order;
-import sql.data.Inventory;
+import sql.data.*;
 import ui.dialog.*;
 import ui.view.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -464,7 +462,7 @@ public class AppFrameController {
                 }
             });
             managerMenu.add(employeeSalesReportMenuItem);
-
+            
             JMenuItem employeeSalesReportAggregateMenuItem = makeMenuItem("Aggregated Employee Sales Report...", () -> {
                 AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
                 showDialog(dialog, true);
@@ -472,18 +470,58 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
                     try {
-                        GameStoreDB.createEmployeeSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
-//                        SaleView view = new SaleView();
-//                        view.setData(new Vector<>(saleList));
-//                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
-//                        viewDialog.setTitle("Sale Report");
-//                        showDialog(viewDialog, false);
+                        List<AggregateEmployeeReport> list = GameStoreDB.createEmployeeSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+                        AggregateEmployeeReportView view = new AggregateEmployeeReportView();
+                        view.setData(new Vector<>(list));
+                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                        viewDialog.setTitle("Sale Report");
+                        showDialog(viewDialog, false);
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
                 }
             });
             managerMenu.add(employeeSalesReportAggregateMenuItem);
+
+            JMenuItem BranchSalesReportMenuItem = makeMenuItem("Branch Sales Report...", () -> {
+                SalesReportDialog dialog = new SalesReportDialog(this.appFrame);
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    SalesReportDialog.DateInterval interval = dialog.getInputValue();
+                    try {
+                        List<BranchReport> reportList = GameStoreDB.createProductBranchSaleReport(interval.getStartDate(), interval.getEndDate());
+                        BranchReportView view = new BranchReportView();
+                        view.setData(new Vector<>(reportList));
+                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                        viewDialog.setTitle("Branch Report");
+                        showDialog(viewDialog, false);
+                    } catch (SQLException e){
+                        showErrorDialog(e.getMessage());
+                    }
+                }
+            });
+            managerMenu.add(BranchSalesReportMenuItem);
+
+            JMenuItem AggregateBranchSalesReportMenuItem = makeMenuItem("Aggregated Product Sales Report...", () -> {
+                AggregateSalesReportDialog dialog = new AggregateSalesReportDialog(this.appFrame);
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
+                    try {
+                        List<AggregateBranchReport> reportList = GameStoreDB.createProductBranchSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+                        AggregateBranchReportView view = new AggregateBranchReportView();
+                        view.setData(new Vector<>(reportList));
+                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                        viewDialog.setTitle("Branch Report");
+                        showDialog(viewDialog, false);
+                    } catch (SQLException e){
+                        showErrorDialog(e.getMessage());
+                    }
+                }
+            });
+            managerMenu.add(AggregateBranchSalesReportMenuItem);
         }
         menuBar.add(managerMenu);
 

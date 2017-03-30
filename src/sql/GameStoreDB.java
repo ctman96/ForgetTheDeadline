@@ -919,7 +919,7 @@ public class GameStoreDB {
         });
     }
 
-    public static BigDecimal createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+    public static List<AggregateEmployeeReport> createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         String inner_select_str =
                 "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
                         "FROM Sale s, Employee e, Product p " +
@@ -955,12 +955,12 @@ public class GameStoreDB {
             stmt.setDate(2,sqlEndDate);
             return stmt;
         }, (rs) -> {
-            return rs.getBigDecimal(1);
-        }).get(0);
+            return new AggregateEmployeeReport(rs.getBigDecimal(1));
+        });
     }
 
     //Query 15  
-    //Returns result set SKU, BID, count(SKU) OR BID,number
+    //Returns result set SKU, BID, count(SKU) OR SKU,number
 //    public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
 //        ResultSet rs;
 //        String select_str =
@@ -1002,45 +1002,73 @@ public class GameStoreDB {
 //        return rs;
 //    }
 
-    public static ResultSet createProductBranchSaleReport(Connection con, java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
-        ResultSet rs;
+    public static List<BranchReport> createProductBranchSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT SKU, BID, COUNT(SKU) count " +
                         "FROM Sale s, Employee e " +
                         "WHERE s.eid = e.eid " +
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
                         "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC";
-        switch(agg){
-            case AVERAGE:
-                select_str = "SELECT SKU, AVG(count) FROM ("+select_str+") GROUP BY SKU ORDER BY AVG(count) DESC";
-                break;
 
-            case MIN:
-                select_str = "SELECT SKU, MIN(count) FROM ("+select_str+") GROUP BY SKU ORDER BY MIN(count)";
-                break;
-
-            case MAX:
-                select_str = "SELECT SKU, MAX(count) FROM ("+select_str+") GROUP BY SKU ORDER BY MAX(count)";
-                break;
-
-            case COUNT:
-                select_str = "SELECT SKU, COUNT(count) FROM ("+select_str+") GROUP BY SKU ORDER BY COUNT(count)";
-                break;
-        }
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)){
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
             stmt.setDate(1,sqlStartDate);
             stmt.setDate(2,sqlEndDate);
+            return stmt;
+        }, (rs) -> {
+            String sku = rs.getString("SKU");
+            String bid = rs.getString("BID");
+            int count = rs.getInt("count");
+            BranchReport br = new BranchReport(sku, bid, count);
+            return br;
+        });
+    }
 
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
+    public static List<AggregateBranchReport> createProductBranchSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+        String inner_select_str =
+                "SELECT SKU, BID, COUNT(SKU) count " +
+                        "FROM Sale s, Employee e " +
+                        "WHERE s.eid = e.eid " +
+                        "AND ? <= SALEDATE AND SALEDATE <= ? " +
+                        "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC";
+        String select_str;
+        switch(agg){
+            case AVERAGE:
+                select_str = "SELECT SKU, AVG(count) agg FROM ("+inner_select_str+") GROUP BY SKU ORDER BY AVG(count) DESC";
+                break;
 
-            con.commit();
-            System.out.println("Changes commited");
+            case MIN:
+                select_str = "SELECT SKU, MIN(count) agg FROM ("+inner_select_str+") GROUP BY SKU ORDER BY MIN(count)";
+                break;
+
+            case MAX:
+                select_str = "SELECT SKU, MAX(count) agg FROM ("+inner_select_str+") GROUP BY SKU ORDER BY MAX(count)";
+                break;
+
+            case COUNT:
+                select_str = "SELECT SKU, COUNT(count) agg FROM ("+inner_select_str+") GROUP BY SKU ORDER BY COUNT(count)";
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported Aggregation");
+
         }
-        return rs;
+        System.out.println("Create Statement...");
+
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
+            java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+            stmt.setDate(1,sqlStartDate);
+            stmt.setDate(2,sqlEndDate);
+            return stmt;
+        }, (rs) -> {
+            String sku = rs.getString("SKU");
+            BigDecimal num = rs.getBigDecimal("agg");
+            AggregateBranchReport br = new AggregateBranchReport(sku,num);
+            return br;
+        });
     }
 
     //Query 16

@@ -154,7 +154,7 @@ public class AppFrameController {
                         appFrame.log("Canceled");
                     }
                 });
-                newMenu.add(newEmployeeMenuItem);
+                newMenu.add(newStockMenuItem);
             }
             fileMenu.add(newMenu);
 

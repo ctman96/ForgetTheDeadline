@@ -825,7 +825,8 @@ public class GameStoreDB {
                 "SELECT s.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name As ename " +
                         "FROM Sale s, Customer c, Product p, Employee e " +
                         "WHERE ? <= s.SALEDATE AND s.SALEDATE <= ? AND " +
-                        "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID";
+                        "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID " +
+                        "ORDER BY s.saleDate ASC";
 
         return getData((con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);

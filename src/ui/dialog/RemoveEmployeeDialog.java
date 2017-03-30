@@ -16,7 +16,7 @@ public class RemoveEmployeeDialog extends CheckedInputDialog<IEmployee> {
 
         this.employeeField = new ObjectSelectField<>(employees);
         this.employeeField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getId()+ " "+ value.getName(), index, isSelected, cellHasFocus));
       
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Employee:", employeeField)

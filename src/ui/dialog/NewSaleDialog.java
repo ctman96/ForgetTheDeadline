@@ -54,13 +54,13 @@ public class NewSaleDialog extends CheckedInputDialog<ISale> {
 
         this.productField = new ObjectSelectField<>(products);
         this.productField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getSKU() +" "+ value.getName(), index, isSelected, cellHasFocus));
         this.customerField = new ObjectSelectField<>(customers);
         this.customerField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getId()+" "+value.getName(), index, isSelected, cellHasFocus));
         this.employeeField = new ObjectSelectField<>(employees);
         this.employeeField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getId()+" "+value.getName(), index, isSelected, cellHasFocus));
 
         paymentField = new StringTextField();
 

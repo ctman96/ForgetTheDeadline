@@ -19,7 +19,7 @@ public class EmployeeView extends JTable {
         static final Vector<DataTableColumn<IEmployee>> columns;
         static {
             columns = new Vector<DataTableColumn<IEmployee>>(7);
-            columns.add(createColumn("Id", IEmployee::getId));
+            columns.add(createColumn("ID", IEmployee::getId));
             columns.add(createColumn("Name", IEmployee::getName));
             columns.add(createColumn("Address", IEmployee::getAddress));
             columns.add(createColumn("Phone", IEmployee::getPhone));

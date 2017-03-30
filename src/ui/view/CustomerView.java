@@ -19,7 +19,8 @@ public class CustomerView extends JTable {
 
         static final Vector<DataTableColumn<ICustomer>> columns;
         static {
-            columns = new Vector<DataTableColumn<ICustomer>>(3);
+            columns = new Vector<DataTableColumn<ICustomer>>(4);
+            columns.add(createColumn("ID", ICustomer::getId));
             columns.add(createColumn("Name", ICustomer::getName));
             columns.add(createColumn("Address", ICustomer::getAddress));
             columns.add(createColumn("Phone", ICustomer::getPhone));

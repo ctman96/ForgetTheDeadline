@@ -526,97 +526,176 @@ public class GameStoreDB {
         }
     }
 
-
     // Query 9 Part 1 - cid
     //Returns result set of customer information
-    public static ResultSet getCustomerInfo(Connection con, String cid) throws SQLException {
-        ResultSet rs;
+//    public static ResultSet getCustomerInfo(Connection con, String cid) throws SQLException {
+//        ResultSet rs;
+//        String select_str = "SELECT * FROM Customer c WHERE c.CID = ?";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
+//            stmt.setString(1,cid);
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
+
+    public static List<ICustomer> getCustomerInfo(String cid) throws SQLException {
         String select_str = "SELECT * FROM Customer c WHERE c.CID = ?";
 
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
-            stmt.setString(1,cid);
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setString(1, cid);
+            return stmt;
+        }, Customer::fromResultSet);
     }
-
 
     // Query 9 Part 1 - name&phone
     //Returns result set of customer information
-    public static ResultSet getCustomerInfo(Connection con, String name, String phone) throws SQLException {
-        ResultSet rs;
+//    public static ResultSet getCustomerInfo(Connection con, String name, String phone) throws SQLException {
+//        ResultSet rs;
+//        String select_str = "SELECT * FROM Customer c WHERE c.Name = ? AND c.Phone = ?";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
+//            stmt.setString(1,name);
+//            stmt.setString(2,phone);
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
+
+    public static List<ICustomer> getCustomerInfo(String name, String phone) throws SQLException {
         String select_str = "SELECT * FROM Customer c WHERE c.Name = ? AND c.Phone = ?";
 
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
-            stmt.setString(1,name);
-            stmt.setString(2,phone);
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setString(1, name);
+            stmt.setString(2, phone);
+            return stmt;
+        }, Customer::fromResultSet);
     }
 
     //Query 9 part 2 - cid
     //Returns result set of payment,snum,sku,saledate
-    public static ResultSet checkCustomerAccount(Connection con, String cid) throws SQLException {
-        ResultSet rs;
-        String select_str = "SELECT Payment, Snum, SKU, saleDate " +
-                "FROM Sale s " +
-                "WHERE s.CID = ? AND s.saleDate >= ?";
+//    public static ResultSet checkCustomerAccount(Connection con, String cid) throws SQLException {
+//        ResultSet rs;
+//        String select_str = "SELECT Payment, Snum, SKU, saleDate " +
+//                "FROM Sale s " +
+//                "WHERE s.CID = ? AND s.saleDate >= ?";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
+//            stmt.setString(1,cid);
+//            Calendar c = Calendar.getInstance();
+//            c.add(Calendar.DAY_OF_MONTH, -30);
+//            java.util.Date date = c.getTime();
+//            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//            stmt.setDate(2,sqlDate);
+//            System.out.println("Execute...");
+//            rs = stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//
+//        return rs;
+//    }
+    public static List<ISale> checkCustomerAccount(String cid) throws SQLException {
+        String select_str =
+                "SELECT s.snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename " +
+                "FROM Sale s, Customer c, Product p, Employee e " +
+                "WHERE s.CID = ? AND s.saleDate >= ? AND " +
+                        "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID";
 
-        System.out.println("Create Statement...");
-        try (PreparedStatement stmt = con.prepareStatement(select_str)) {
-            stmt.setString(1,cid);
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setString(1, cid);
             Calendar c = Calendar.getInstance();
             c.add(Calendar.DAY_OF_MONTH, -30);
-            java.util.Date date = c.getTime();
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            stmt.setDate(2,sqlDate);
-            System.out.println("Execute...");
-            rs = stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-
-        return rs;
+            java.sql.Date date = new java.sql.Date(c.getTime().getTime());
+            stmt.setDate(2, date);
+            return stmt;
+        }, (rs) -> {
+            String snum = rs.getString("Snum");
+            String payment = rs.getString("Payment");
+            java.sql.Date date = rs.getDate("saleDate");
+            String cname = rs.getString("cname");
+            String pname = rs.getString("pname");
+            String ename = rs.getString("ename");
+            Sale sale = new Sale(snum, payment, date, // Imagination shall fill the blank
+                    new Product(null, pname, null, null),
+                    new Customer(null, cname, null, null),
+                    new Employee(null, ename, null, null, null, null, null));
+            return sale;
+        });
     }
 
     //Query 9 part 2 - name&phone
     //Returns result set of payment,snum,sku,saledate
-    public static ResultSet checkCustomerAccount(Connection con, String name, String phone) throws SQLException {
-        ResultSet rs = null;
-        String select_str =
-                "SELECT Payment, Snum, SKU, saleDate " +
-                        "FROM Sale s, Customer c " +
-                        "WHERE s.CID = c.CID AND c.Name = ? AND c.Phone=? " +
-                        "AND s.saleDate >= ?";
+//    public static ResultSet checkCustomerAccount(Connection con, String name, String phone) throws SQLException {
+//        ResultSet rs = null;
+//        String select_str =
+//                "SELECT Payment, Snum, SKU, saleDate " +
+//                        "FROM Sale s, Customer c " +
+//                        "WHERE s.CID = c.CID AND c.Name = ? AND c.Phone=? " +
+//                        "AND s.saleDate >= ?";
+//
+//        System.out.println("Create Statement...");
+//        try (PreparedStatement select_stmt = con.prepareStatement(select_str)) {
+//            select_stmt.setString(1,name);
+//            select_stmt.setString(2,phone);
+//            Calendar c = Calendar.getInstance();
+//            c.add(Calendar.DAY_OF_MONTH, -30);
+//            java.util.Date date = c.getTime();
+//            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//            select_stmt.setDate(3,sqlDate);
+//            System.out.println("Execute...");
+//            rs = select_stmt.executeQuery();
+//
+//            con.commit();
+//            System.out.println("Changes commited");
+//        }
+//        return rs;
+//    }
 
-        System.out.println("Create Statement...");
-        try (PreparedStatement select_stmt = con.prepareStatement(select_str)) {
-            select_stmt.setString(1,name);
-            select_stmt.setString(2,phone);
+    public static List<ISale> checkCustomerAccount(String name, String phone) throws SQLException {
+        String select_str =
+                "SELECT s.snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename " +
+                        "FROM Sale s, Customer c, Product p, Employee e " +
+                        "WHERE c.Name = ? AND c.Phone = ?  AND s.saleDate >= ? AND " +
+                        "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID";
+
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setString(1, name);
+            stmt.setString(2, phone);
             Calendar c = Calendar.getInstance();
             c.add(Calendar.DAY_OF_MONTH, -30);
-            java.util.Date date = c.getTime();
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            select_stmt.setDate(3,sqlDate);
-            System.out.println("Execute...");
-            rs = select_stmt.executeQuery();
-
-            con.commit();
-            System.out.println("Changes commited");
-        }
-        return rs;
+            java.sql.Date date = new java.sql.Date(c.getTime().getTime());
+            stmt.setDate(3, date);
+            return stmt;
+        }, (rs) -> {
+            String snum = rs.getString("Snum");
+            String payment = rs.getString("Payment");
+            java.sql.Date date = rs.getDate("saleDate");
+            String cname = rs.getString("cname");
+            String pname = rs.getString("pname");
+            String ename = rs.getString("ename");
+            Sale sale = new Sale(snum, payment, date,
+                    new Product(null, pname, null, null),
+                    new Customer(null, cname, null, null),
+                    new Employee(null, ename, null, null, null, null, null));
+            return sale;
+        });
     }
 
     //Query 10

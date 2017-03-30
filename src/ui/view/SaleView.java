@@ -19,7 +19,7 @@ public class SaleView extends JTable {
         static final Vector<DataTableColumn<ISale>> columns;
         static {
             columns = new Vector<DataTableColumn<ISale>>(6);
-            columns.add(createColumn("SaleNumber", ISale::getSaleNumber));
+            columns.add(createColumn("ID", ISale::getSaleNumber));
             columns.add(createColumn("Payment", ISale::getPayment));
             columns.add(createColumn("Date", ISale::getDate));
             columns.add(createColumn("Product", (s) -> s.getProduct().getName()));

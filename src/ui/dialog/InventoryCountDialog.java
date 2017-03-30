@@ -1,6 +1,5 @@
 package ui.dialog;
 
-
 import data.IBranch;
 import ui.field.ObjectSelectField;
 

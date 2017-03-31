@@ -26,7 +26,7 @@ public class Sale implements ISale {
         this.date = date;
         this.product = product;
         this.customer = customer;
-        this.employee = employee;
+        this.employee = (employee == null) ? new Employee(null,null,null,null,null,null,null) : employee;
     }
 
     @Override
@@ -55,8 +55,7 @@ public class Sale implements ISale {
     }
 
     @Override
-    public IEmployee getEmployee() {
-        return employee;
+    public IEmployee getEmployee() {return employee;
     }
 
     public static Sale fromResultSet(ResultSet rs, Map<String, IProduct> skuProductMap, Map<String, ICustomer> idCustomerMap, Map<String, IEmployee> idEmployeeMap) throws SQLException {

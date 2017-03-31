@@ -2,9 +2,12 @@ package ui;
 
 import sql.GameStoreDB;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -12,9 +15,24 @@ import java.sql.SQLException;
  */
 public class Login {
     public void main() {
+
         String[] choices = {"Customer", "Employee", "Manager", "Admin"};
+        JPanel outerPanel = new JPanel();
+        outerPanel.setLayout(new GridLayout(0,1));
+
+        try {
+            JPanel imgPanel = new JPanel();
+            BufferedImage logo = ImageIO.read(new File("resource/img/logo.png"));
+            JLabel picLabel = new JLabel(new ImageIcon(logo));
+            //imgPanel.add(picLabel);
+            outerPanel.add(picLabel);
+        }catch (IOException e){
+            System.out.println(e);
+        }
+
         JPanel loginPanel = new JPanel();
         loginPanel.setLayout(new GridLayout(0,1));
+
         JTextField nameField = new JTextField();
         JTextField passField = new JTextField();
         loginPanel.add(new JLabel("Connection login"));
@@ -32,7 +50,9 @@ public class Login {
         nameField.setText("ora_UNIXID");
         passField.setText("aSTUDENTNUM");
 
-        int result = JOptionPane.showConfirmDialog(null, loginPanel,
+        outerPanel.add(loginPanel);
+
+        int result = JOptionPane.showConfirmDialog(null, outerPanel,
                 "FTD Games Login", JOptionPane.OK_CANCEL_OPTION);
         if(result == JOptionPane.OK_OPTION){
             String userLevel = (String) userSelect.getSelectedItem();
@@ -44,7 +64,9 @@ public class Login {
                 System.out.println("Test Success");
                 new AppFrameController(toVal(userLevel),user, pass).setVisible(true);
             }catch(SQLException e){
-                JOptionPane.showMessageDialog(null, e, "Oops...", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, e + "\n\nPlease check your " +
+                        "login credentials, and ensure you have created an ssh tunnel created \n" +
+                        "   ssh -l UNIXID -L localhost:1522:dbhost.ugrad.cs.ubc.ca:1522 remote.ugrad.cs.ubc.ca", "Oops...", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

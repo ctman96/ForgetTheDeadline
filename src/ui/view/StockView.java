@@ -19,8 +19,8 @@ public class StockView extends JTable {
         static final Vector<DataTableColumn<IStock>> columns;
         static {
             columns = new Vector<DataTableColumn<IStock>>(4);
-            columns.add(createColumn("Branch", (s) -> s.getBranch().getAddress()));
-            columns.add(createColumn("Product", (s) -> s.getProduct().getName()));
+            columns.add(createColumn("Branch", (s) -> s.getBranch().getId() + " "+ s.getBranch().getAddress()));
+            columns.add(createColumn("Product", (s) -> s.getProduct().getSKU() + " "+ s.getProduct().getName()));
             columns.add(createColumn("Quantity", IStock::getQuantity));
             columns.add(createColumn("MaxQuantity", IStock::getMaxQuantity));
         }

@@ -19,6 +19,7 @@ public class DeveloperView extends JTable {
         static final Vector<DataTableColumn<IDeveloper>> columns;
         static {
             columns = new Vector<DataTableColumn<IDeveloper>>(3);
+            columns.add(createColumn("ID", IDeveloper::getId));
             columns.add(createColumn("Name", IDeveloper::getName));
             columns.add(createColumn("Address", IDeveloper::getAddress));
             columns.add(createColumn("Phone", IDeveloper::getPhone));

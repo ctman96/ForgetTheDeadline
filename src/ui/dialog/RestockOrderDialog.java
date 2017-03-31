@@ -65,10 +65,10 @@ public class RestockOrderDialog extends CheckedInputDialog<IStock> {
 
         this.branchField = new ObjectSelectField<>(branches);
         this.branchField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getId()+" "+value.getAddress(), index, isSelected, cellHasFocus));
         this.developerField = new ObjectSelectField<>(developers);
         this.developerField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getId()+" "+value.getName(), index, isSelected, cellHasFocus));
 
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Branch:", branchField),

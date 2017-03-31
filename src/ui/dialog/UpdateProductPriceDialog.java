@@ -42,7 +42,7 @@ public class UpdateProductPriceDialog extends CheckedInputDialog<IProduct> {
 
         this.productField = new ObjectSelectField<>(products);
         this.productField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getSKU()+" "+value.getName(), index, isSelected, cellHasFocus));
         this.priceField = new DecimalTextField(defaultPriceFormat);
 
         CheckedInputComponent[] inputComponents = {

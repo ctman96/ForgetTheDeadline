@@ -130,9 +130,12 @@ WHERE s.SKU=p.SKU AND s.BID=?
 --13) SALE REPORT
 --===================
 --Inputs: startDate, endDate
-SELECT S.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename
-FROM Sale
-WHERE ? <= SALEDATE AND SALEDATE <= ?
+SELECT S.Snum, s.Payment, s.saleDate, c.cid as cid,
+c.Name AS cname, p.SKU as sku,p.Name AS pname,
+e.eid as eid, e.Name AS ename
+FROM Sale s, Customer c, Product p, Employee e
+WHERE ? <= SALEDATE AND SALEDATE <= ? AND
+s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID
 ORDER BY saleDate ASC
 --?: (1,startDate), (2,endDate)
 

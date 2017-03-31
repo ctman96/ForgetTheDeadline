@@ -95,6 +95,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -109,6 +110,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -137,6 +139,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 findCustomerMenu.add(findCustomerByIdMenuItem);
@@ -157,6 +160,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 findCustomerMenu.add(findCustomerByNameMenuItem);
@@ -181,6 +185,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 getCustomerPurchaseMenu.add(findCustomerByIdMenuItem);
@@ -201,6 +206,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 getCustomerPurchaseMenu.add(findCustomerByNameMenuItem);
@@ -223,6 +229,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 }
             });
             customerMenu.add(searchProduct);
@@ -244,6 +251,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -269,6 +277,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -287,6 +296,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -305,6 +315,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -323,6 +334,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -346,6 +358,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -365,6 +378,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -384,6 +398,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     } else {
                         appFrame.log("Canceled");
                     }
@@ -405,6 +420,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -424,6 +440,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -448,6 +465,7 @@ public class AppFrameController {
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -472,6 +490,7 @@ public class AppFrameController {
                     }catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
+                    this.refreshViews();
                 } else {
                     appFrame.log("Canceled");
                 }
@@ -489,6 +508,7 @@ public class AppFrameController {
                 } catch (SQLException e) {
                     showErrorDialog(e.getMessage());
                 }
+                this.refreshViews();
             });
             managerMenu.add(restockMenuItem);
 
@@ -510,6 +530,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 salesMenu.add(salesReportMenuItem);
@@ -529,6 +550,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 salesMenu.add(employeeSalesReportMenuItem);
@@ -549,6 +571,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 salesMenu.add(employeeSalesReportAggregateMenuItem);
@@ -569,6 +592,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 salesMenu.add(BranchSalesReportMenuItem);
@@ -589,6 +613,7 @@ public class AppFrameController {
                         } catch (SQLException e) {
                             showErrorDialog(e.getMessage());
                         }
+                        this.refreshViews();
                     }
                 });
                 salesMenu.add(AggregateBranchSalesReportMenuItem);

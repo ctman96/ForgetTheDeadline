@@ -25,7 +25,7 @@ public class EmployeeView extends JTable {
             columns.add(createColumn("Phone", IEmployee::getPhone));
             columns.add(createColumn("Wage", IEmployee::getWage));
             columns.add(createColumn("PositionName", IEmployee::getPositionName));
-            columns.add(createColumn("Branch", (e) -> e.getBranch().getId()));
+            columns.add(createColumn("Branch", (e) -> e.getBranch().getId() + " "+ e.getBranch().getAddress()));
         }
 
         ProductTableModel() {

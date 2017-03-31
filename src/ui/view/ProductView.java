@@ -22,7 +22,7 @@ public class ProductView extends JTable {
             columns.add(createColumn("SKU", IProduct::getSKU));
             columns.add(createColumn("Name", IProduct::getName));
             columns.add(createColumn("Price", IProduct::getPrice));
-            columns.add(createColumn("Developer", (p) -> p.getDeveloper().getName()));
+            columns.add(createColumn("Developer", (p) ->  p.getDeveloper().getId()+ " "+ p.getDeveloper().getName()));
         }
 
         ProductTableModel() {

@@ -42,7 +42,7 @@ public class UpdateStockDialog extends CheckedInputDialog<IStock> {
         this.stockField = new ObjectSelectField<>(stocks);
         this.quantityField = new IntegerTextField();
         this.stockField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, String.format("%s@%s", value.getProduct().getName(), value.getBranch().getAddress()), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, String.format("%s[%s] @ %s[%s]", value.getProduct().getSKU(),value.getProduct().getName(), value.getBranch().getId(), value.getBranch().getAddress()), index, isSelected, cellHasFocus));
 
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Stock:", stockField),

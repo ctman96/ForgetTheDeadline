@@ -304,7 +304,7 @@ public class GameStoreDB {
             String pname = rs.getString("name");
             BigDecimal pprice = rs.getBigDecimal("price");
             String did = rs.getString("did");
-            Product product = new Product(sku, pname, pprice, new Developer(did, null, null, null));
+            Product product = new Product(sku, pname, pprice, new Developer(did, "", null, null));
             return product;
         });
     }
@@ -559,7 +559,9 @@ public class GameStoreDB {
     //Query 13
     public static List<ISale> createSaleReport(String user, String pass,java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
-                "SELECT s.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name As ename " +
+                "SELECT S.Snum, s.Payment, s.saleDate, c.cid as cid, " +
+                        "c.Name AS cname, p.SKU as sku,p.Name AS pname, " +
+                        "e.eid as eid, e.Name AS ename " +
                         "FROM Sale s, Customer c, Product p, Employee e " +
                         "WHERE ? <= s.SALEDATE AND s.SALEDATE <= ? AND " +
                         "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID " +
@@ -577,12 +579,15 @@ public class GameStoreDB {
             String payment = rs.getString("Payment");
             java.sql.Date date = rs.getDate("saleDate");
             String cname = rs.getString("cname");
+            String cid = rs.getString("cid");
             String pname = rs.getString("pname");
+            String sku = rs.getString("sku");
             String ename = rs.getString("ename");
+            String eid = rs.getString("eid");
             Sale sale = new Sale(snum, payment, date,
-                    new Product(null, pname, null, null),
-                    new Customer(null, cname, null, null),
-                    new Employee(null, ename, null, null, null, null, null));
+                    new Product(sku, pname, null, null),
+                    new Customer(cid, cname, null, null),
+                    new Employee(eid, ename, null, null, null, null, null));
             return sale;
         });
     }

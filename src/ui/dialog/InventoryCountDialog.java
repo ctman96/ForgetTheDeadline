@@ -15,7 +15,7 @@ public class InventoryCountDialog extends CheckedInputDialog<IBranch> {
 
         this.branchField = new ObjectSelectField<>(branches);
         this.branchField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getId()+" "+value.getAddress(), index, isSelected, cellHasFocus));
 
         CheckedInputComponent[] inputComponents = {
                 makeCheckedInputComponent("Branch:", branchField),

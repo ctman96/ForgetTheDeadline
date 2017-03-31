@@ -15,11 +15,6 @@ To connect to the database, create an ssh tunnel using:
 ssh -l UNIXID -L localhost:1522:dbhost.ugrad.cs.ubc.ca:1522 remote.ugrad.cs.ubc.ca
 ```
 
-And change the login credentials in Main to
-```
-"ora_UNIXID", "aSTUDENTNUMBER"
-```
-
 
 ## What Was Accomplished
 Created an application to provide access to the database, and provide a set of queries available through the GUI. The tables were iteratively designed throughout the phases, resulting in our final database. 

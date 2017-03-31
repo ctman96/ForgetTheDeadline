@@ -200,6 +200,26 @@ public class AppFrameController {
                 getCustomerPurchaseMenu.add(findCustomerByNameMenuItem);
             }
             customerMenu.add(getCustomerPurchaseMenu);
+
+            JMenuItem searchProduct = makeMenuItem("Search Product by price...", () -> {
+                SearchProductPriceDialog dialog = new SearchProductPriceDialog(this.appFrame);
+                showDialog(dialog, true);
+
+                if (dialog.isInputValid()) {
+                    BigDecimal price = dialog.getInputValue();
+                    try {
+                        List<IProduct> productList = GameStoreDB.searchProduct(price);
+                        ProductView view = new ProductView();
+                        view.setData(new Vector<>(productList));
+                        ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
+                        viewDialog.setTitle("Products below $"+price.toString());
+                        showDialog(viewDialog, false);
+                    } catch (SQLException e) {
+                        showErrorDialog(e.getMessage());
+                    }
+                }
+            });
+            customerMenu.add(searchProduct);
         }
         menuBar.add(customerMenu);
 

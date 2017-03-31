@@ -292,26 +292,21 @@ public class GameStoreDB {
     }
 
     //Query 3
-    public static void removeProduct(Connection connection, String sku) throws SQLException{
-        String remove_str = "DELETE FROM PRODUCT WHERE SKU=? ";
-        System.out.println("Create Statement...");
-        PreparedStatement stmt = connection.prepareStatement(remove_str);
-        stmt.setString(1,sku);
-        System.out.println("Execute...");
-        stmt.executeUpdate();
-        connection.commit();
-        System.out.println("Changes Commited");
-    }
-    public static void removeStock(Connection connection, String bid, String sku) throws SQLException{
-        String remove_str = "DELETE FROM STOCK WHERE BID=? AND SKU=? ";
-        System.out.println("Create Statement...");
-        PreparedStatement stmt = connection.prepareStatement(remove_str);
-        stmt.setString(1,bid);
-        stmt.setString(2,sku);
-        System.out.println("Execute...");
-        stmt.executeUpdate();
-        connection.commit();
-        System.out.println("Changes Commited");
+    public static List<IProduct> searchProduct(BigDecimal price) throws SQLException {
+        String select_str = "SELECT * FROM Product WHERE price <= ?";
+
+        return getData((con) -> {
+            PreparedStatement stmt = con.prepareStatement(select_str);
+            stmt.setBigDecimal(1, price);
+            return stmt;
+        }, (rs) -> {
+            String sku = rs.getString("SKU");
+            String pname = rs.getString("name");
+            BigDecimal pprice = rs.getBigDecimal("price");
+            String did = rs.getString("did");
+            Product product = new Product(sku, pname, pprice, new Developer(did, null, null, null));
+            return product;
+        });
     }
 
     //Query 4
@@ -561,7 +556,7 @@ public class GameStoreDB {
         });
     }
 
-
+    //Query 13
     public static List<ISale> createSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT s.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name As ename " +
@@ -592,6 +587,7 @@ public class GameStoreDB {
         });
     }
 
+    //Query 14a
     public static List<EmployeeReport> createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
@@ -616,6 +612,7 @@ public class GameStoreDB {
         });
     }
 
+    //Query 14b
     public static List<AggregateEmployeeReport> createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         String inner_select_str =
                 "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
@@ -656,6 +653,7 @@ public class GameStoreDB {
         });
     }
 
+    //Query 15a
     public static List<BranchReport> createProductBranchSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT SKU, BID, COUNT(SKU) count " +
@@ -680,6 +678,7 @@ public class GameStoreDB {
         });
     }
 
+    //Query 15b
     public static List<AggregateBranchReport> createProductBranchSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         String inner_select_str =
                 "SELECT SKU, BID, COUNT(SKU) count " +
@@ -725,6 +724,7 @@ public class GameStoreDB {
         });
     }
 
+    //Query 16
     public static List<IBranch> stocksAllProducts() throws SQLException {
         String select_str =
                 "SELECT * FROM Branch b " +
@@ -734,5 +734,29 @@ public class GameStoreDB {
                         "(SELECT s.SKU FROM Stock s " +
                         "WHERE s.BID = b.BID))";
         return getData((con) -> con.prepareStatement(select_str), Branch::fromResultSet);
+    }
+
+    //Query 17
+    public static void removeProduct(Connection connection, String sku) throws SQLException{
+        String remove_str = "DELETE FROM PRODUCT WHERE SKU=? ";
+        System.out.println("Create Statement...");
+        PreparedStatement stmt = connection.prepareStatement(remove_str);
+        stmt.setString(1,sku);
+        System.out.println("Execute...");
+        stmt.executeUpdate();
+        connection.commit();
+        System.out.println("Changes Commited");
+    }
+    //Query 18
+    public static void removeStock(Connection connection, String bid, String sku) throws SQLException{
+        String remove_str = "DELETE FROM STOCK WHERE BID=? AND SKU=? ";
+        System.out.println("Create Statement...");
+        PreparedStatement stmt = connection.prepareStatement(remove_str);
+        stmt.setString(1,bid);
+        stmt.setString(2,sku);
+        System.out.println("Execute...");
+        stmt.executeUpdate();
+        connection.commit();
+        System.out.println("Changes Commited");
     }
 }

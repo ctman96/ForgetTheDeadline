@@ -1,5 +1,6 @@
 import sql.GameStoreDB;
 import ui.AppFrameController;
+import ui.Login;
 
 import java.sql.SQLException;
 
@@ -17,7 +18,7 @@ public class Main {
             e.printStackTrace();
             return;
         }
-
-        new AppFrameController().setVisible(true);
+        new Login().main();
+        //new AppFrameController(4).setVisible(true);
     }
 }

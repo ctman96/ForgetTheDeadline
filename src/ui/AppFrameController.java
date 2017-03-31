@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.List;
 
 public class AppFrameController {
+    private int userLevel;
     private AppFrame appFrame;
     private GameStore gameStore;
 
@@ -26,7 +27,8 @@ public class AppFrameController {
     private SaleView saleView;
     private StockView stockView;
 
-    public AppFrameController() {
+    public AppFrameController(int userLevel) {
+        this.userLevel = userLevel;
         setupAppFrame();
     }
 
@@ -109,7 +111,7 @@ public class AppFrameController {
             });
             fileMenu.add(populateDBMenuItem);
         }
-        menuBar.add(fileMenu);
+        if(userLevel >= 3) menuBar.add(fileMenu);
 
         JMenu customerMenu = new JMenu("Customer");
         {
@@ -221,7 +223,7 @@ public class AppFrameController {
             });
             customerMenu.add(searchProduct);
         }
-        menuBar.add(customerMenu);
+        if(userLevel >= 0) menuBar.add(customerMenu);
 
         JMenu employeeMenu = new JMenu("Employee");
         {
@@ -244,7 +246,7 @@ public class AppFrameController {
             });
             employeeMenu.add(makePurchaseMenuItem);
         }
-        menuBar.add(employeeMenu);
+        if(userLevel >= 1) menuBar.add(employeeMenu);
 
         JMenu managerMenu = new JMenu("Manager");
         {
@@ -589,7 +591,7 @@ public class AppFrameController {
             }
             managerMenu.add(salesMenu);
         }
-        menuBar.add(managerMenu);
+        if(userLevel >= 2) menuBar.add(managerMenu);
 
         JMenuItem refreshMenuItem = makeMenuItem("Refresh", this::refreshViews);
         menuBar.add(refreshMenuItem);

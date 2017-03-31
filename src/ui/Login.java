@@ -5,6 +5,7 @@ import sql.GameStoreDB;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.sql.SQLException;
 
 /**
  * Created by cody on 30/03/17.
@@ -25,13 +26,26 @@ public class Login {
         JComboBox userSelect = new JComboBox(choices);
         loginPanel.add(new JLabel("User Level"));
         loginPanel.add(userSelect);
+        loginPanel.add(Box.createHorizontalStrut(15));
+
+        userSelect.setSelectedIndex(3);
+        nameField.setText("ora_UNIXID");
+        passField.setText("aSTUDENTNUM");
 
         int result = JOptionPane.showConfirmDialog(null, loginPanel,
                 "FTD Games Login", JOptionPane.OK_CANCEL_OPTION);
         if(result == JOptionPane.OK_OPTION){
-            //TODO: Something with nameField.getText() and passField.getText()
-            String user = (String) userSelect.getSelectedItem();
-            new AppFrameController(toVal(user)).setVisible(true);
+            String userLevel = (String) userSelect.getSelectedItem();
+            String user = nameField.getText();
+            String pass = passField.getText();
+            try{
+                System.out.println("Test Conection...");
+                GameStoreDB.withConnection(user,pass,(con)->{});
+                System.out.println("Test Success");
+                new AppFrameController(toVal(userLevel),user, pass).setVisible(true);
+            }catch(SQLException e){
+                JOptionPane.showMessageDialog(null, e, "Oops...", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     private int toVal(String s){

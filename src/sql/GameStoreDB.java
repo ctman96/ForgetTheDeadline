@@ -27,10 +27,10 @@ public class GameStoreDB {
      * Creates a connection to be used for callback, closes the connection afterwards
      * @param callback
      */
-    public static void withConnection(SQLConsumer<Connection> callback) throws SQLException {
+    public static void withConnection(String user, String pass, SQLConsumer<Connection> callback) throws SQLException {
         System.out.println("Creating Connection...");
         try (//Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_j2d0b", "a12222148")) {
-            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", "ora_k2a0b", "a35833145"))  {
+            Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:ug", user, pass))  {
             connection.setAutoCommit(false);
             System.out.println("Creating Connection... Success");
             callback.accept(connection);
@@ -94,56 +94,56 @@ public class GameStoreDB {
         return SQLUtil.getAllFromTableQuery(connection, "Branch", "BID");
     }
 
-    public static List<IBranch> getBranch() throws SQLException {
-        return getData(GameStoreDB::getBranchQuery, Branch::fromResultSet);
+    public static List<IBranch> getBranch(String user, String pass) throws SQLException {
+        return getData(user,pass,GameStoreDB::getBranchQuery, Branch::fromResultSet);
     }
 
     private static PreparedStatement getCustomerQuery(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTableQuery(connection, "Customer", "CID");
     }
 
-    public static List<ICustomer> getCustomer() throws SQLException {
-        return getData(GameStoreDB::getCustomerQuery, Customer::fromResultSet);
+    public static List<ICustomer> getCustomer(String user, String pass) throws SQLException {
+        return getData(user,pass,GameStoreDB::getCustomerQuery, Customer::fromResultSet);
     }
 
     private static PreparedStatement getDeveloperQuery(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTableQuery(connection, "Developer", "DID");
     }
 
-    public static List<IDeveloper> getDeveloper() throws SQLException {
-        return getData(GameStoreDB::getDeveloperQuery, Developer::fromResultSet);
+    public static List<IDeveloper> getDeveloper(String user, String pass) throws SQLException {
+        return getData(user,pass,GameStoreDB::getDeveloperQuery, Developer::fromResultSet);
     }
 
     private static PreparedStatement getEmployeeQuery(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTableQuery(connection, "Employee", "EID");
     }
 
-    public static List<IEmployee> getEmployee(Map<String, IBranch> idBranchMap) throws SQLException {
-        return getData(GameStoreDB::getEmployeeQuery, (rs) -> Employee.fromResultSet(rs, idBranchMap));
+    public static List<IEmployee> getEmployee(String user, String pass,Map<String, IBranch> idBranchMap) throws SQLException {
+        return getData(user,pass,GameStoreDB::getEmployeeQuery, (rs) -> Employee.fromResultSet(rs, idBranchMap));
     }
 
     private static PreparedStatement getProductQuery(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTableQuery(connection, "Product", "SKU");
     }
 
-    public static List<IProduct> getProduct(Map<String, IDeveloper> idDeveloperMap) throws SQLException {
-        return getData(GameStoreDB::getProductQuery, (rs) -> Product.fromResultSet(rs, idDeveloperMap));
+    public static List<IProduct> getProduct(String user, String pass,Map<String, IDeveloper> idDeveloperMap) throws SQLException {
+        return getData(user,pass,GameStoreDB::getProductQuery, (rs) -> Product.fromResultSet(rs, idDeveloperMap));
     }
 
     private static PreparedStatement getSaleQuery(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTableQuery(connection, "Sale", "saleDate");
     }
 
-    public static List<ISale> getSale(Map<String, IProduct> skuProductMap, Map<String, ICustomer> idCustomerMap, Map<String, IEmployee> idEmployeeMap) throws SQLException {
-        return getData(GameStoreDB::getSaleQuery, (rs) -> Sale.fromResultSet(rs, skuProductMap, idCustomerMap, idEmployeeMap));
+    public static List<ISale> getSale(String user, String pass,Map<String, IProduct> skuProductMap, Map<String, ICustomer> idCustomerMap, Map<String, IEmployee> idEmployeeMap) throws SQLException {
+        return getData(user,pass,GameStoreDB::getSaleQuery, (rs) -> Sale.fromResultSet(rs, skuProductMap, idCustomerMap, idEmployeeMap));
     }
 
     private static PreparedStatement getStockQuery(Connection connection) throws SQLException {
         return SQLUtil.getAllFromTableQuery(connection, "Stock", "BID");
     }
 
-    public static List<IStock> getStock(Map<String, IProduct> skuProductMap, Map<String, IBranch> idBranchMap) throws SQLException {
-        return getData(GameStoreDB::getStockQuery, (rs) -> Stock.fromResultSet(rs, skuProductMap, idBranchMap));
+    public static List<IStock> getStock(String user, String pass,Map<String, IProduct> skuProductMap, Map<String, IBranch> idBranchMap) throws SQLException {
+        return getData(user,pass,GameStoreDB::getStockQuery, (rs) -> Stock.fromResultSet(rs, skuProductMap, idBranchMap));
     }
 
     /**
@@ -151,10 +151,10 @@ public class GameStoreDB {
      * @return A fully populated and joined GameStore
      * @throws SQLException
      */
-    public static GameStore getGameStore() throws SQLException {
+    public static GameStore getGameStore(String user, String pass) throws SQLException {
         GameStore gameStore = new GameStore();
 
-        withConnection((con) -> {
+        withConnection(user,pass,(con) -> {
             PreparedStatement branchStmt = getBranchQuery(con);
             PreparedStatement customerStmt = getCustomerQuery(con);
             PreparedStatement developerStmt = getDeveloperQuery(con);
@@ -212,9 +212,9 @@ public class GameStoreDB {
         return gameStore;
     }
 
-    private static <T> List<T> getData(SQLFunction<Connection, PreparedStatement> toQuery, SQLFunction<ResultSet, T> resultParser) throws SQLException {
+    private static <T> List<T> getData(String user, String pass, SQLFunction<Connection, PreparedStatement> toQuery, SQLFunction<ResultSet, T> resultParser) throws SQLException {
         ArrayList<T> data = new ArrayList<>();
-        withConnection((con) -> {
+        withConnection(user, pass, (con) -> {
             try (PreparedStatement stmt = toQuery.apply(con)) {
                 ResultSet rs = stmt.executeQuery();
                 con.commit();
@@ -292,10 +292,10 @@ public class GameStoreDB {
     }
 
     //Query 3
-    public static List<IProduct> searchProduct(BigDecimal price) throws SQLException {
+    public static List<IProduct> searchProduct(String user, String pass,BigDecimal price) throws SQLException {
         String select_str = "SELECT * FROM Product WHERE price <= ?";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setBigDecimal(1, price);
             return stmt;
@@ -401,10 +401,10 @@ public class GameStoreDB {
     }
 
     // Query 9 Part 1 - cid
-    public static List<ICustomer> getCustomerInfo(String cid) throws SQLException {
+    public static List<ICustomer> getCustomerInfo(String user, String pass,String cid) throws SQLException {
         String select_str = "SELECT * FROM Customer c WHERE c.CID = ?";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setString(1, cid);
             return stmt;
@@ -412,10 +412,10 @@ public class GameStoreDB {
     }
 
     // Query 9 Part 1 - name&phone
-    public static List<ICustomer> getCustomerInfo(String name, String phone) throws SQLException {
+    public static List<ICustomer> getCustomerInfo(String user, String pass,String name, String phone) throws SQLException {
         String select_str = "SELECT * FROM Customer c WHERE c.Name = ? AND c.Phone = ?";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setString(1, name);
             stmt.setString(2, phone);
@@ -424,14 +424,14 @@ public class GameStoreDB {
     }
 
     //Query 9 part 2 - cid
-    public static List<ISale> checkCustomerAccount(String cid) throws SQLException {
+    public static List<ISale> checkCustomerAccount(String user, String pass,String cid) throws SQLException {
         String select_str =
                 "SELECT s.snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename " +
                 "FROM Sale s, Customer c, Product p, Employee e " +
                 "WHERE s.CID = ? AND s.saleDate >= ? AND " +
                         "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setString(1, cid);
             Calendar c = Calendar.getInstance();
@@ -455,14 +455,14 @@ public class GameStoreDB {
     }
 
     //Query 9 part 2 - name&phone
-    public static List<ISale> checkCustomerAccount(String name, String phone) throws SQLException {
+    public static List<ISale> checkCustomerAccount(String user, String pass,String name, String phone) throws SQLException {
         String select_str =
                 "SELECT s.snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name AS ename " +
                         "FROM Sale s, Customer c, Product p, Employee e " +
                         "WHERE c.Name = ? AND c.Phone = ?  AND s.saleDate >= ? AND " +
                         "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setString(1, name);
             stmt.setString(2, phone);
@@ -487,7 +487,7 @@ public class GameStoreDB {
     }
 
     //Query 10
-    public static List<Order> createPurchaseOrder(String did, String bid) throws SQLException {
+    public static List<Order> createPurchaseOrder(String user, String pass,String did, String bid) throws SQLException {
         String select_str =
                 "SELECT Name, s.SKU, Price, " +
                         "  maxquantity - quantity as orderQuantity, " +
@@ -496,7 +496,7 @@ public class GameStoreDB {
                         "WHERE p.DID = ? AND s.BID = ? " +
                         "  AND s.SKU=p.SKU AND maxquantity-quantity > 0";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setString(1, did);
             stmt.setString(2, bid);
@@ -534,7 +534,7 @@ public class GameStoreDB {
     }
 
     //Query 12
-    public static List<Inventory> createInventoryCount(String bid) throws SQLException {
+    public static List<Inventory> createInventoryCount(String user, String pass,String bid) throws SQLException {
         String select_str =
                 "SELECT Name, s.SKU, Price, Quantity " +
                         "FROM Stock s, Product p " +
@@ -542,7 +542,7 @@ public class GameStoreDB {
 
         System.out.println("Create Statement...");
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             stmt.setString(1, bid);
             return stmt;
@@ -557,7 +557,7 @@ public class GameStoreDB {
     }
 
     //Query 13
-    public static List<ISale> createSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
+    public static List<ISale> createSaleReport(String user, String pass,java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT s.Snum, s.Payment, s.saleDate, c.Name AS cname, p.Name AS pname, e.Name As ename " +
                         "FROM Sale s, Customer c, Product p, Employee e " +
@@ -565,7 +565,7 @@ public class GameStoreDB {
                         "s.CID = c.CID AND s.SKU = p.SKU AND s.EID = e.EID " +
                         "ORDER BY s.saleDate ASC";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
@@ -588,7 +588,7 @@ public class GameStoreDB {
     }
 
     //Query 14a
-    public static List<EmployeeReport> createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
+    public static List<EmployeeReport> createEmployeeSaleReport(String user, String pass,java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
                         "FROM Sale s, Employee e, Product p " +
@@ -596,7 +596,7 @@ public class GameStoreDB {
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
                         "GROUP BY e.EID ORDER BY COUNT(e.EID), SUM(price) DESC";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
@@ -613,7 +613,7 @@ public class GameStoreDB {
     }
 
     //Query 14b
-    public static List<AggregateEmployeeReport> createEmployeeSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+    public static List<AggregateEmployeeReport> createEmployeeSaleReport(String user, String pass,java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         String inner_select_str =
                 "SELECT e.EID, COUNT(e.EID) count, SUM(price) sum " +
                         "FROM Sale s, Employee e, Product p " +
@@ -641,7 +641,7 @@ public class GameStoreDB {
                 throw new IllegalArgumentException("Unsupported Aggregation");
         }
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
@@ -654,7 +654,7 @@ public class GameStoreDB {
     }
 
     //Query 15a
-    public static List<BranchReport> createProductBranchSaleReport(java.util.Date startDate, java.util.Date endDate) throws SQLException {
+    public static List<BranchReport> createProductBranchSaleReport(String user, String pass,java.util.Date startDate, java.util.Date endDate) throws SQLException {
         String select_str =
                 "SELECT SKU, BID, COUNT(SKU) count " +
                         "FROM Sale s, Employee e " +
@@ -662,7 +662,7 @@ public class GameStoreDB {
                         "AND ? <= SALEDATE AND SALEDATE <= ? " +
                         "GROUP BY SKU, BID ORDER BY BID, COUNT(SKU) DESC";
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
@@ -679,7 +679,7 @@ public class GameStoreDB {
     }
 
     //Query 15b
-    public static List<AggregateBranchReport> createProductBranchSaleReport(java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
+    public static List<AggregateBranchReport> createProductBranchSaleReport(String user, String pass,java.util.Date startDate, java.util.Date endDate, Aggregate agg) throws SQLException {
         String inner_select_str =
                 "SELECT SKU, BID, COUNT(SKU) count " +
                         "FROM Sale s, Employee e " +
@@ -709,7 +709,7 @@ public class GameStoreDB {
         }
         System.out.println("Create Statement...");
 
-        return getData((con) -> {
+        return getData(user,pass,(con) -> {
             PreparedStatement stmt = con.prepareStatement(select_str);
             java.sql.Date sqlStartDate = new java.sql.Date(startDate.getTime());
             java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
@@ -725,7 +725,7 @@ public class GameStoreDB {
     }
 
     //Query 16
-    public static List<IBranch> stocksAllProducts() throws SQLException {
+    public static List<IBranch> stocksAllProducts(String user, String pass) throws SQLException {
         String select_str =
                 "SELECT * FROM Branch b " +
                         "WHERE NOT EXISTS " +
@@ -733,7 +733,7 @@ public class GameStoreDB {
                         "MINUS" +
                         "(SELECT s.SKU FROM Stock s " +
                         "WHERE s.BID = b.BID))";
-        return getData((con) -> con.prepareStatement(select_str), Branch::fromResultSet);
+        return getData(user,pass,(con) -> con.prepareStatement(select_str), Branch::fromResultSet);
     }
 
     //Query 17

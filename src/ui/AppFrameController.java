@@ -16,6 +16,8 @@ import java.util.List;
 
 public class AppFrameController {
     private int userLevel;
+    private String user;
+    private String pass;
     private AppFrame appFrame;
     private GameStore gameStore;
 
@@ -27,8 +29,10 @@ public class AppFrameController {
     private SaleView saleView;
     private StockView stockView;
 
-    public AppFrameController(int userLevel) {
+    public AppFrameController(int userLevel, String user, String pass) {
         this.userLevel = userLevel;
+        this.user = user;
+        this.pass = pass;
         setupAppFrame();
     }
 
@@ -87,7 +91,7 @@ public class AppFrameController {
                 int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
                 if (ok == JOptionPane.YES_OPTION) {
                     try {
-                        GameStoreDB.withConnection(GameStoreDB::createDatabase);
+                        GameStoreDB.withConnection(user,pass,GameStoreDB::createDatabase);
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
@@ -101,7 +105,7 @@ public class AppFrameController {
                 int ok = JOptionPane.showConfirmDialog(appFrame, "Are you sure?", "Create Database...", JOptionPane.YES_NO_OPTION);
                 if (ok == JOptionPane.YES_OPTION) {
                     try {
-                        GameStoreDB.withConnection(GameStoreDB::populateDatabase);
+                        GameStoreDB.withConnection(user,pass,GameStoreDB::populateDatabase);
                     } catch (SQLException e) {
                         showErrorDialog(e.getMessage());
                     }
@@ -124,7 +128,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         String id = dialog.getInputValue();
                         try {
-                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(id);
+                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(user,pass,id);
                             CustomerView view = new CustomerView();
                             view.setData(new Vector<>(customerList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -144,7 +148,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         ICustomer customer = dialog.getInputValue();
                         try {
-                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(customer.getName(), customer.getPhone());
+                            List<ICustomer> customerList = GameStoreDB.getCustomerInfo(user,pass,customer.getName(), customer.getPhone());
                             CustomerView view = new CustomerView();
                             view.setData(new Vector<>(customerList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -168,7 +172,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         String id = dialog.getInputValue();
                         try {
-                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(id);
+                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(user,pass,id);
                             SaleView view = new SaleView();
                             view.setData(new Vector<>(saleList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -188,7 +192,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         ICustomer customer = dialog.getInputValue();
                         try {
-                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(customer.getName(), customer.getPhone());
+                            List<ISale> saleList = GameStoreDB.checkCustomerAccount(user,pass,customer.getName(), customer.getPhone());
                             SaleView view = new SaleView();
                             view.setData(new Vector<>(saleList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -210,7 +214,7 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     BigDecimal price = dialog.getInputValue();
                     try {
-                        List<IProduct> productList = GameStoreDB.searchProduct(price);
+                        List<IProduct> productList = GameStoreDB.searchProduct(user,pass,price);
                         ProductView view = new ProductView();
                         view.setData(new Vector<>(productList));
                         ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -234,7 +238,7 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     ISale sale = dialog.getInputValue();
                     try {
-                        GameStoreDB.withConnection((con) -> {
+                        GameStoreDB.withConnection(user,pass,(con) -> {
                             GameStoreDB.buyProduct(con, sale.getProduct().getSKU(), sale.getEmployee().getId(), sale.getPayment(), sale.getCustomer().getId());
                         });
                     } catch (SQLException e) {
@@ -259,7 +263,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         try {
                             IProduct product = dialog.getInputValue();
-                            GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.withConnection(user,pass,(con) -> {
                                 GameStoreDB.addGameDatabase(con, product.getName(), product.getSKU(), product.getPrice(), product.getDeveloper().getId());
                             });
                         } catch (SQLException e) {
@@ -277,7 +281,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         try {
                             ICustomer customer = dialog.getInputValue();
-                            GameStoreDB.withConnection((con) -> { // Place holder CID for generated PK
+                            GameStoreDB.withConnection(user,pass,(con) -> { // Place holder CID for generated PK
                                 GameStoreDB.addCustomer(con, customer.getName(), "[PH]ID", customer.getPhone(), customer.getAddress());
                             });
                         } catch (SQLException e) {
@@ -295,7 +299,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         try {
                             IEmployee employee = dialog.getInputValue();
-                            GameStoreDB.withConnection((con) -> { // Place holder EID for generated PK
+                            GameStoreDB.withConnection(user,pass,(con) -> { // Place holder EID for generated PK
                                 GameStoreDB.addEmployee(con, "[PH]ID", employee.getName(), employee.getBranch().getId(), employee.getWage(), employee.getPositionName(), employee.getPhone(), employee.getAddress());
                             });
                         } catch (SQLException e) {
@@ -313,7 +317,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         try {
                             IStock stock = dialog.getInputValue();
-                            GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.withConnection(user,pass,(con) -> {
                                 GameStoreDB.addGameStore(con, stock.getBranch().getId(), stock.getProduct().getSKU(), stock.getQuantity(), stock.getMaxQuantity());
                             });
                         } catch (SQLException e) {
@@ -336,7 +340,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         IEmployee employee = dialog.getInputValue();
                         try {
-                            GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.withConnection(user,pass,(con) -> {
                                 GameStoreDB.removeEmployee(con, employee.getId());
                             });
                         } catch (SQLException e) {
@@ -355,7 +359,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         IStock stock = dialog.getInputValue();
                         try {
-                            GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.withConnection(user,pass,(con) -> {
                                 GameStoreDB.removeStock(con, stock.getBranch().getId(),stock.getProduct().getSKU());
                             });
                         } catch (SQLException e) {
@@ -374,7 +378,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         IProduct product = dialog.getInputValue();
                         try {
-                            GameStoreDB.withConnection((con) -> {
+                            GameStoreDB.withConnection(user,pass,(con) -> {
                                 GameStoreDB.removeProduct(con, product.getSKU());
                             });
                         } catch (SQLException e) {
@@ -395,7 +399,7 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     IProduct product = dialog.getInputValue();
                     try {
-                        GameStoreDB.withConnection((con) -> {
+                        GameStoreDB.withConnection(user,pass,(con) -> {
                             GameStoreDB.changeGamePrice(con, product.getSKU(), product.getPrice());
                         });
                     } catch (SQLException e) {
@@ -414,7 +418,7 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     IStock stock = dialog.getInputValue();
                     try {
-                        GameStoreDB.withConnection((con) -> {
+                        GameStoreDB.withConnection(user,pass,(con) -> {
                             GameStoreDB.updateProductQuantity(con, stock.getBranch().getId(), stock.getProduct().getSKU(), stock.getQuantity());
                         });
                     } catch (SQLException e) {
@@ -433,8 +437,8 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     IStock stock = dialog.getInputValue();
                     try {
-                        GameStoreDB.withConnection((con) -> {
-                            List<Order> orderList = GameStoreDB.createPurchaseOrder(stock.getBranch().getId(), stock.getProduct().getDeveloper().getId());
+                        GameStoreDB.withConnection(user,pass,(con) -> {
+                            List<Order> orderList = GameStoreDB.createPurchaseOrder(user,pass,stock.getBranch().getId(), stock.getProduct().getDeveloper().getId());
                             OrderView view = new OrderView();
                             view.setData(new Vector<>(orderList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -457,8 +461,8 @@ public class AppFrameController {
                 if (dialog.isInputValid()) {
                     IBranch branch = dialog.getInputValue();
                     try {
-                        GameStoreDB.withConnection((con) -> {
-                            List<Inventory> inventoryList = GameStoreDB.createInventoryCount(branch.getId());
+                        GameStoreDB.withConnection(user,pass,(con) -> {
+                            List<Inventory> inventoryList = GameStoreDB.createInventoryCount(user,pass,branch.getId());
                             InventoryView view = new InventoryView();
                             view.setData(new Vector<>(inventoryList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -476,7 +480,7 @@ public class AppFrameController {
 
             JMenuItem restockMenuItem = makeMenuItem("Branch With All Products...", () -> {
                 try {
-                    List<IBranch> branchList = GameStoreDB.stocksAllProducts();
+                    List<IBranch> branchList = GameStoreDB.stocksAllProducts(user,pass);
                     BranchView view = new BranchView();
                     view.setData(new Vector<>(branchList));
                     ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -497,7 +501,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         SalesReportDialog.DateInterval interval = dialog.getInputValue();
                         try {
-                            List<ISale> saleList = GameStoreDB.createSaleReport(interval.getStartDate(), interval.getEndDate());
+                            List<ISale> saleList = GameStoreDB.createSaleReport(user,pass,interval.getStartDate(), interval.getEndDate());
                             SaleView view = new SaleView();
                             view.setData(new Vector<>(saleList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -516,7 +520,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         SalesReportDialog.DateInterval interval = dialog.getInputValue();
                         try {
-                            List<EmployeeReport> reportList = GameStoreDB.createEmployeeSaleReport(interval.getStartDate(), interval.getEndDate());
+                            List<EmployeeReport> reportList = GameStoreDB.createEmployeeSaleReport(user,pass,interval.getStartDate(), interval.getEndDate());
                             EmployeeReportView view = new EmployeeReportView();
                             view.setData(new Vector<>(reportList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -536,7 +540,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
                         try {
-                            List<AggregateEmployeeReport> list = GameStoreDB.createEmployeeSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+                            List<AggregateEmployeeReport> list = GameStoreDB.createEmployeeSaleReport(user,pass,input.getStartDate(), input.getEndDate(), input.getAggregate());
                             AggregateEmployeeReportView view = new AggregateEmployeeReportView();
                             view.setData(new Vector<>(list));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -556,7 +560,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         SalesReportDialog.DateInterval interval = dialog.getInputValue();
                         try {
-                            List<BranchReport> reportList = GameStoreDB.createProductBranchSaleReport(interval.getStartDate(), interval.getEndDate());
+                            List<BranchReport> reportList = GameStoreDB.createProductBranchSaleReport(user,pass,interval.getStartDate(), interval.getEndDate());
                             BranchReportView view = new BranchReportView();
                             view.setData(new Vector<>(reportList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -576,7 +580,7 @@ public class AppFrameController {
                     if (dialog.isInputValid()) {
                         AggregateSalesReportDialog.AggregatedSaleReportInput input = dialog.getInputValue();
                         try {
-                            List<AggregateBranchReport> reportList = GameStoreDB.createProductBranchSaleReport(input.getStartDate(), input.getEndDate(), input.getAggregate());
+                            List<AggregateBranchReport> reportList = GameStoreDB.createProductBranchSaleReport(user,pass,input.getStartDate(), input.getEndDate(), input.getAggregate());
                             AggregateBranchReportView view = new AggregateBranchReportView();
                             view.setData(new Vector<>(reportList));
                             ViewDialog viewDialog = new ViewDialog(this.appFrame, new JScrollPane(view));
@@ -599,7 +603,7 @@ public class AppFrameController {
 
     private void refreshViews() {
         try {
-            this.gameStore = GameStoreDB.getGameStore();
+            this.gameStore = GameStoreDB.getGameStore(user,pass);
             this.developerView.setData(new Vector<>(gameStore.developer));
             this.branchView.setData(new Vector<>(gameStore.branch));
             this.productView.setData(new Vector<>(gameStore.product));

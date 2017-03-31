@@ -1,26 +1,26 @@
-# @https://github.com/github/gitignore/blob/master/Java.gitignore
-# Compiled class file
-*.class
+# # @https://github.com/github/gitignore/blob/master/Java.gitignore
+# # Compiled class file
+# *.class
 
-# Log file
-*.log
+# # Log file
+# *.log
 
-# BlueJ files
-*.ctxt
+# # BlueJ files
+# *.ctxt
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# # Mobile Tools for Java (J2ME)
+# .mtj.tmp/
 
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# # Package Files #
+# *.jar
+# *.war
+# *.ear
+# *.zip
+# *.tar.gz
+# *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# hs_err_pid*
 
 # @https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 .idea/

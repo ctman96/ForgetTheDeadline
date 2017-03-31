@@ -27,6 +27,15 @@ INSERT INTO Customer
 --?: (1,name), (2,cid), (3,phone), (4,address)
 
 --===================
+--3)Search Product By Price
+--===================
+--Inputs: price
+SELECT *
+FROM Product
+WHERE price <= ?
+--?: (1,price)
+
+--===================
 --4)Adding Employee to Store
 --===================
 --Inputs: EID,BID,Wage,Position,Phone,Address
@@ -128,7 +137,7 @@ ORDER BY saleDate ASC
 --?: (1,startDate), (2,endDate)
 
 --===================
---13) SALE REPORT - EMPLOYEES
+--14) SALE REPORT - EMPLOYEES
 --===================
 --Inputs: startDate, endDate,
 --optional: AGGREGATE
@@ -147,7 +156,7 @@ ORDER BY COUNT(e.EID) DESC
 --are all fine). Rerun with at least one other example of aggregation.
 
 --===================
---14) SALE REPORT - PRODUCT&BRANCH
+--15) SALE REPORT - PRODUCT&BRANCH
 --===================
 --Inputs: startDate, endDate
 --optional: AGGREGATE
@@ -169,8 +178,9 @@ ORDER BY BID, COUNT(SKU) DESC
 
 
 --===================
---15)STORES THAT STOCK ALL PRODUCTS
+--16) STORES THAT STOCK ALL PRODUCTS
 --===================
+
 SELECT b.BID
 FROM Branch b
 WHERE NOT EXISTS
@@ -178,13 +188,27 @@ WHERE NOT EXISTS
  MINUS
  (SELECT s.SKU FROM Stock s
  WHERE s.BID=b.BID));
+ 
 --Division query: Pick one query of this category and provide an interface for the user to choose this
 --query (eg. find all the customers who bought all the items). Prove that your division results would 
 --change based on the data in your database. You can do it either by inserting a new tuple into or 
 --deleting an existing tuple from the appropriate tables.
 
+--===================
+--17) REMOVE PRODUCT
+--===================
+--Input: sku
+DELETE FROM Product 
+WHERE SKU=?
+--?: (1,sku)
 
-
+--===================
+--18) REMOVE STOCK
+--===================
+--Input: bid, sku
+DELETE FROM Stock
+WHERE BID=?,SKU=?
+--?:(1,bid), (2,sku)
 
 
 

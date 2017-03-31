@@ -291,6 +291,29 @@ public class GameStoreDB {
         }
     }
 
+    //Query 3
+    public static void removeProduct(Connection connection, String sku) throws SQLException{
+        String remove_str = "DELETE FROM PRODUCT WHERE SKU=? ";
+        System.out.println("Create Statement...");
+        PreparedStatement stmt = connection.prepareStatement(remove_str);
+        stmt.setString(1,sku);
+        System.out.println("Execute...");
+        stmt.executeUpdate();
+        connection.commit();
+        System.out.println("Changes Commited");
+    }
+    public static void removeStock(Connection connection, String bid, String sku) throws SQLException{
+        String remove_str = "DELETE FROM STOCK WHERE BID=? AND SKU=? ";
+        System.out.println("Create Statement...");
+        PreparedStatement stmt = connection.prepareStatement(remove_str);
+        stmt.setString(1,bid);
+        stmt.setString(2,sku);
+        System.out.println("Execute...");
+        stmt.executeUpdate();
+        connection.commit();
+        System.out.println("Changes Commited");
+    }
+
     //Query 4
     public static void addEmployee(Connection connection, String eid, String name, String bid, BigDecimal wage, String position, String phone, String address) throws SQLException {
         String insert_str = "insert into Employee values(?, ?, ?, ?, ?, ?, ?)";

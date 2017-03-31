@@ -46,7 +46,7 @@ public class NewStockDialog extends CheckedInputDialog<IStock> {
                 ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getAddress(), index, isSelected, cellHasFocus));
         this.productField = new ObjectSelectField<>(products);
         this.productField.setRenderer((list, value, index, isSelected, cellHasFocus) ->
-                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus));
+                ObjectSelectField.defaultRenderer.getListCellRendererComponent(list, value.getSKU()+" "+value.getName(), index, isSelected, cellHasFocus));
         this.quantityField = new IntegerTextField();
         this.maxQuantityField = new IntegerTextField();
 

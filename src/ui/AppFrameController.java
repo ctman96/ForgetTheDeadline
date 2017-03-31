@@ -305,6 +305,67 @@ public class AppFrameController {
             }
             managerMenu.add(newMenu);
 
+            JMenu removeMenu = new JMenu("Remove...");
+            {
+                JMenuItem removeEmployeeMenuItem = makeMenuItem("Employee...", () -> {
+                    RemoveEmployeeDialog dialog = new RemoveEmployeeDialog (this.appFrame, new Vector<>(gameStore.employee));
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        IEmployee employee = dialog.getInputValue();
+                        try {
+                            GameStoreDB.withConnection((con) -> {
+                                GameStoreDB.removeEmployee(con, employee.getId());
+                            });
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    } else {
+                        appFrame.log("Canceled");
+                    }
+                });
+                removeMenu.add(removeEmployeeMenuItem);
+
+                JMenuItem removeStockMenuItem = makeMenuItem("Stock...", () -> {
+                    RemoveStockDialog dialog = new RemoveStockDialog (this.appFrame, new Vector<>(gameStore.stock));
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        IStock stock = dialog.getInputValue();
+                        try {
+                            GameStoreDB.withConnection((con) -> {
+                                GameStoreDB.removeStock(con, stock.getBranch().getId(),stock.getProduct().getSKU());
+                            });
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    } else {
+                        appFrame.log("Canceled");
+                    }
+                });
+                removeMenu.add(removeStockMenuItem);
+
+                JMenuItem removeProductMenuItem = makeMenuItem("Product...", () -> {
+                    RemoveProductDialog dialog = new RemoveProductDialog (this.appFrame, new Vector<>(gameStore.product));
+                    showDialog(dialog, true);
+
+                    if (dialog.isInputValid()) {
+                        IProduct product = dialog.getInputValue();
+                        try {
+                            GameStoreDB.withConnection((con) -> {
+                                GameStoreDB.removeProduct(con, product.getSKU());
+                            });
+                        } catch (SQLException e) {
+                            showErrorDialog(e.getMessage());
+                        }
+                    } else {
+                        appFrame.log("Canceled");
+                    }
+                });
+                removeMenu.add(removeProductMenuItem);
+            }
+            managerMenu.add(removeMenu);
+
             JMenuItem changePriceMenuItem = makeMenuItem("Change Product Price...", () -> {
                 UpdateProductPriceDialog dialog = new UpdateProductPriceDialog(this.appFrame, new Vector<>(gameStore.product));
                 showDialog(dialog, true);
@@ -323,25 +384,6 @@ public class AppFrameController {
                 }
             });
             managerMenu.add(changePriceMenuItem);
-
-            JMenuItem removeEmployeeMenuItem = makeMenuItem("Remove Employee...", () -> {
-                RemoveEmployeeDialog dialog = new RemoveEmployeeDialog (this.appFrame, new Vector<>(gameStore.employee));
-                showDialog(dialog, true);
-
-                if (dialog.isInputValid()) {
-                    IEmployee employee = dialog.getInputValue();
-                    try {
-                        GameStoreDB.withConnection((con) -> {
-                            GameStoreDB.removeEmployee(con, employee.getId());
-                        });
-                    } catch (SQLException e) {
-                        showErrorDialog(e.getMessage());
-                    }
-                } else {
-                    appFrame.log("Canceled");
-                }
-            });
-            managerMenu.add(removeEmployeeMenuItem);
 
             JMenuItem updateStockMenuItem = makeMenuItem("Add Stock to...", () -> {
                 UpdateStockDialog dialog = new UpdateStockDialog(this.appFrame, new Vector<>(gameStore.stock));
